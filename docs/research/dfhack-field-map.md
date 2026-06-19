@@ -35,6 +35,13 @@ FailureCount  : 0
 
 The uploaded zip included 8 snapshot entries because unit `6603` appeared twice in the bundled artifact, once as `dwarf-6603.json` and once as `dwarf-6603 copy.json`. The analysis in this document deduplicates by `identity.id`.
 
+The raw research bundle and probe-schema snapshots used during the spike are no longer the canonical repo artifacts. The retained source of truth is:
+
+- production Lua under `dfhack/scripts/fortress-souls/get-dwarf-snapshot.lua`
+- canonical sample JSON under `dfhack/samples/`
+
+The older probe output schema (`fortress-souls-probe-dwarf-soul.v0.2`) was superseded by the production-oriented snapshot schema checked into `dfhack/samples/`.
+
 ---
 
 ## 3. Citizen coverage summary
@@ -328,6 +335,7 @@ R-002A concludes that soul/personality extraction through DFHack Lua is reliable
 
 Proceed to:
 
-1. update `probe-dwarf-soul.lua` into a production-oriented `get-dwarf-snapshot.lua`,
-2. create sample JSON under `dfhack/samples/`,
-3. start R-002B for live unit state: health, wounds, location, inventory, roles, and relationships.
+1. keep `dfhack/scripts/fortress-souls/get-dwarf-snapshot.lua` as the canonical production script for this slice,
+2. keep production-oriented sample JSON under `dfhack/samples/`,
+3. treat the spike-only probe scripts and raw bundle artifacts as absorbed and removable,
+4. continue deferred live-state mapping separately for health, wounds, location, inventory, roles, and relationships.

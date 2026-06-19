@@ -94,7 +94,7 @@ DFHack path:
 C:\Program Files (x86)\Steam\steamapps\common\DFHack\hack
 
 Repo / research path:
-C:\coding\DwarfTalk\research
+C:\coding\DwarfTalk
 
 DFHack command runner:
 C:\Program Files (x86)\Steam\steamapps\common\DFHack\hack\dfhack-run.exe
@@ -389,16 +389,18 @@ DFHack runtime script directory is an install target:
 <DFHack root>/hack/scripts/fortress-souls/
 ```
 
-Use explicit install/sync scripts:
+Current canonical maintainer utilities:
 
 ```text
-scripts/install-dfhack-scripts.ps1
-scripts/install-dfhack-scripts.sh
+scripts/import-dfhack-scripts.ps1
+scripts/validate-dfhack-samples.ps1
 ```
 
-Do not have the backend automatically mutate the DFHack installation on startup.
+`scripts/import-dfhack-scripts.ps1` copies validated scripts from a local DFHack install back into the repo. `scripts/validate-dfhack-samples.ps1` validates the retained sample JSON under `dfhack/samples/`.
 
-Suggested PowerShell install script shape:
+An explicit repo-to-DFHack install/sync script is still future work. Do not have the backend automatically mutate the DFHack installation on startup.
+
+If a repo-to-DFHack install utility is added later, it should look roughly like:
 
 ```powershell
 param(

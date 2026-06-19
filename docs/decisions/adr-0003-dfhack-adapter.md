@@ -80,9 +80,15 @@ dfhack/scripts/fortress-souls/
 For local development, scripts are installed into DFHack's script path by an explicit install/sync script:
 
 ```text
-scripts/install-dfhack-scripts.ps1
-scripts/install-dfhack-scripts.sh
+scripts/import-dfhack-scripts.ps1
+scripts/validate-dfhack-samples.ps1
 ```
+
+Current repo reality:
+
+- `scripts/import-dfhack-scripts.ps1` copies validated scripts from a local DFHack install back into the repo.
+- `scripts/validate-dfhack-samples.ps1` validates the retained canonical JSON samples under `dfhack/samples/`.
+- A repo-to-DFHack install/sync script is still future work and is not yet checked in.
 
 The Windows install target is expected to be:
 

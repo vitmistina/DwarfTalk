@@ -40,7 +40,8 @@ See:
 ## Research
 
 - `research/dfhack-command-invocation.md` records R-001 manual verification of safe DFHack command invocation.
-- `research/dfhack-field-map.md` records R-002/B-019 field mapping decisions for the validated dwarf list and snapshot scripts.
+- `research/dfhack-field-map.md` records R-002A/B-019 field mapping decisions for the validated dwarf list and snapshot scripts.
+- `research/dfhack-live-state-probes.md` records the deferred R-002 live-state probe findings for health, wounds, location, inventory, roles, and relationships.
 
 ## Runbooks
 
@@ -50,4 +51,6 @@ See:
 
 - Production DFHack scripts live in `dfhack/scripts/fortress-souls/`.
 - Adapter/sample JSON artifacts live in `dfhack/samples/`.
-- Research-only probes and spike-specific notes remain under `research/`.
+- Stable research findings live in `docs/research/`.
+- Maintainer utilities live in `scripts/`.
+- Temporary spike artifacts are deleted once their conclusions and canonical samples have been absorbed.

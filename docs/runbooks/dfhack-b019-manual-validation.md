@@ -14,7 +14,19 @@ fortress-souls/get-dwarf-snapshot
 - Dwarf Fortress is running.
 - DFHack is running.
 - A fortress map is loaded.
-- Scripts are installed under:
+- Validated scripts are stored in the repo under:
+
+```text
+dfhack/scripts/fortress-souls/
+```
+
+- Canonical retained samples are stored in:
+
+```text
+dfhack/samples/
+```
+
+- Runtime scripts are installed under:
 
 ```text
 C:\Program Files (x86)\Steam\steamapps\common\DFHack\hack\scripts\fortress-souls\
@@ -100,4 +112,11 @@ ListCount            : 7
 ValidSnapshotCount   : 7
 ErrorSnapshotCount   : 0
 InvalidSnapshotCount : 0
+```
+
+Maintainer utilities related to this run:
+
+```text
+scripts/import-dfhack-scripts.ps1
+scripts/validate-dfhack-samples.ps1
 ```
