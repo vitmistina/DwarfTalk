@@ -1,0 +1,1438 @@
+{
+  "flags": {
+    "flags1": {
+      "caged": false,
+      "chained": false,
+      "inactive": false,
+      "onGround": false
+    },
+    "flags2": {
+      "resident": false,
+      "visitor": false
+    },
+    "flags3": {
+      "ghostly": false
+    },
+    "isActive": true,
+    "isAlive": true,
+    "isCitizen": true,
+    "isDwarf": true,
+    "isResident": false,
+    "isSane": true
+  },
+  "health": {
+    "body": {
+      "bloodCount": 4380,
+      "infectionLevel": 0,
+      "wounds": {
+        "count": 0,
+        "items": []
+      }
+    },
+    "counters": {
+      "dizziness": 0,
+      "hungerTimer": 1,
+      "nausea": 0,
+      "pain": 0,
+      "sleepinessTimer": 3394,
+      "stunned": 0,
+      "suffocation": 0,
+      "thirstTimer": 1,
+      "unconscious": 0,
+      "winded": 0
+    },
+    "movement": {
+      "slowdownFactor": 1.0,
+      "speed": 0
+    }
+  },
+  "identity": {
+    "age": 22.739288194444,
+    "apparentAge": 22.739288194444,
+    "birthTime": 121920,
+    "birthYear": 77,
+    "caste": 0,
+    "casteId": "FEMALE",
+    "civId": 313,
+    "creatureId": "DWARF",
+    "culturalIdentity": 78,
+    "histFigureId": 10583,
+    "id": "6603",
+    "populationId": 242,
+    "professionId": 67,
+    "professionName": "expedition leader",
+    "professionToken": "ADMINISTRATOR",
+    "race": 572,
+    "rawId": 6603,
+    "readableName": "Olon Lisidlogem \"Clashpaints\", expedition leader",
+    "sex": 0
+  },
+  "inventory": {
+    "count": 8,
+    "includedCount": 8,
+    "items": [
+      {
+        "bodyPartId": 1,
+        "index": 0,
+        "item": {
+          "description": "(giant cave spider silk trousers)",
+          "id": 407,
+          "matIndex": 615,
+          "matType": 19,
+          "subtype": "<itemdef_pantsst: 0x29c230830c0>",
+          "type": 60,
+          "typeToken": "PANTS"
+        },
+        "mode": 2
+      },
+      {
+        "bodyPartId": 0,
+        "index": 1,
+        "item": {
+          "description": "(reindeer leather tunic)",
+          "id": 408,
+          "matIndex": 183,
+          "matType": 38,
+          "subtype": "<itemdef_armorst: 0x29c23084d80>",
+          "type": 25,
+          "typeToken": "ARMOR"
+        },
+        "mode": 2
+      },
+      {
+        "bodyPartId": 9,
+        "index": 2,
+        "item": {
+          "description": "(alpaca wool left glove)",
+          "id": 409,
+          "matIndex": 187,
+          "matType": 24,
+          "subtype": "<itemdef_glovesst: 0x29c0f39bfb0>",
+          "type": 29,
+          "typeToken": "GLOVES"
+        },
+        "mode": 2
+      },
+      {
+        "bodyPartId": 8,
+        "index": 3,
+        "item": {
+          "description": "(alpaca wool right glove)",
+          "id": 410,
+          "matIndex": 187,
+          "matType": 24,
+          "subtype": "<itemdef_glovesst: 0x29c0f39bfb0>",
+          "type": 29,
+          "typeToken": "GLOVES"
+        },
+        "mode": 2
+      },
+      {
+        "bodyPartId": 15,
+        "index": 4,
+        "item": {
+          "description": "(giant cave spider silk sock)",
+          "id": 411,
+          "matIndex": 615,
+          "matType": 19,
+          "subtype": "<itemdef_shoesst: 0x29c0f399290>",
+          "type": 26,
+          "typeToken": "SHOES"
+        },
+        "mode": 2
+      },
+      {
+        "bodyPartId": 15,
+        "index": 5,
+        "item": {
+          "description": "(pig tail shoe)",
+          "id": 412,
+          "matIndex": 174,
+          "matType": 422,
+          "subtype": "<itemdef_shoesst: 0x29c0f398f00>",
+          "type": 26,
+          "typeToken": "SHOES"
+        },
+        "mode": 2
+      },
+      {
+        "bodyPartId": 14,
+        "index": 6,
+        "item": {
+          "description": "(giant cave spider silk sock)",
+          "id": 413,
+          "matIndex": 615,
+          "matType": 19,
+          "subtype": "<itemdef_shoesst: 0x29c0f399290>",
+          "type": 26,
+          "typeToken": "SHOES"
+        },
+        "mode": 2
+      },
+      {
+        "bodyPartId": 14,
+        "index": 7,
+        "item": {
+          "description": "(pig tail shoe)",
+          "id": 414,
+          "matIndex": 174,
+          "matType": 422,
+          "subtype": "<itemdef_shoesst: 0x29c0f398f00>",
+          "type": 26,
+          "typeToken": "SHOES"
+        },
+        "mode": 2
+      }
+    ]
+  },
+  "location": {
+    "idleArea": {
+      "isValid": true,
+      "x": 65,
+      "y": 81,
+      "z": 173
+    },
+    "idleAreaType": -1,
+    "pathDestination": {
+      "isValid": false,
+      "x": -30000,
+      "y": -30000,
+      "z": -30000
+    },
+    "position": {
+      "isValid": true,
+      "x": 65,
+      "y": 81,
+      "z": 173
+    }
+  },
+  "mapLoaded": true,
+  "personality": {
+    "mannerisms": {
+      "count": 2,
+      "items": [
+        {
+          "index": 0,
+          "situation": 5,
+          "situationToken": "WHEN_THINKING",
+          "token": "TONGUE_STICKS_OUT",
+          "type": 61
+        },
+        {
+          "index": 1,
+          "situation": 0,
+          "situationToken": "WHEN_ANGRY",
+          "token": "EYES_LOWERS",
+          "type": 54
+        }
+      ]
+    },
+    "needs": {
+      "count": 21,
+      "items": [
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 0,
+          "index": 0,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 1,
+          "token": "Socialize"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 3,
+          "index": 1,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 2,
+          "token": "StayOccupied"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 4,
+          "index": 2,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 1,
+          "token": "BeCreative"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 5,
+          "index": 3,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 1,
+          "token": "Excitement"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 20,
+          "index": 4,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 1,
+          "token": "AcquireObject"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 1,
+          "index": 5,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 10,
+          "token": "DrinkAlcohol"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 21,
+          "index": 6,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 1,
+          "token": "EatGoodMeal"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 22,
+          "index": 7,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 1,
+          "token": "Fight"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 24,
+          "index": 8,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 2,
+          "token": "Argue"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 25,
+          "index": 9,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 1,
+          "token": "BeExtravagant"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 6,
+          "index": 10,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 1,
+          "token": "LearnSomething"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 27,
+          "index": 11,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 2,
+          "token": "HelpSomebody"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 28,
+          "index": 12,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 1,
+          "token": "ThinkAbstractly"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 12,
+          "index": 13,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 1,
+          "token": "MakeMerry"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 29,
+          "index": 14,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 2,
+          "token": "AdmireArt"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 7,
+          "index": 15,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 2,
+          "token": "BeWithFamily"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 8,
+          "index": 16,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 2,
+          "token": "BeWithFriends"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 14,
+          "index": 17,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 1,
+          "token": "MartialTraining"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 15,
+          "index": 18,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 2,
+          "token": "PracticeSkill"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 16,
+          "index": 19,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 1,
+          "token": "TakeItEasy"
+        },
+        {
+          "deityId": 635,
+          "focusLevel": 0,
+          "id": 2,
+          "index": 20,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 5,
+          "token": "PrayOrMeditate"
+        }
+      ],
+      "notes": {
+        "deeplyUnmetThreshold": "focusLevel below -999 is represented by personality flag has_unmet_needs",
+        "focusLevel": "goes toward 400 when satisfied; below 0 means unmet pressure",
+        "needLevel": "raw severity/decay pressure, not current satisfaction"
+      }
+    },
+    "preferences": {
+      "count": 0,
+      "items": [],
+      "notes": {
+        "warning": "Raw preference var fields are not resolved to material/creature/item names in v0.1."
+      }
+    },
+    "present": true,
+    "state": {
+      "combatHardened": 0,
+      "currentFocus": 1,
+      "likesOutdoors": 2,
+      "longtermStress": 0,
+      "outdoorDislikeCounter": 0,
+      "stress": 0,
+      "temptation": {
+        "anger": 0,
+        "greed": 0,
+        "lust": 0,
+        "power": 0
+      },
+      "timeWithoutDistress": 0,
+      "timeWithoutEustress": 0,
+      "undistractedFocus": 1
+    },
+    "traits": {
+      "count": 50,
+      "items": [
+        {
+          "absDeviationFromNeutral50": 0,
+          "deviationFromNeutral50": 0,
+          "index": 0,
+          "token": "LOVE_PROPENSITY",
+          "value": 50
+        },
+        {
+          "absDeviationFromNeutral50": 2,
+          "deviationFromNeutral50": -2,
+          "index": 1,
+          "token": "HATE_PROPENSITY",
+          "value": 48
+        },
+        {
+          "absDeviationFromNeutral50": 8,
+          "deviationFromNeutral50": 8,
+          "index": 2,
+          "token": "ENVY_PROPENSITY",
+          "value": 58
+        },
+        {
+          "absDeviationFromNeutral50": 2,
+          "deviationFromNeutral50": -2,
+          "index": 3,
+          "token": "CHEER_PROPENSITY",
+          "value": 48
+        },
+        {
+          "absDeviationFromNeutral50": 16,
+          "deviationFromNeutral50": -16,
+          "index": 4,
+          "token": "DEPRESSION_PROPENSITY",
+          "value": 34
+        },
+        {
+          "absDeviationFromNeutral50": 1,
+          "deviationFromNeutral50": -1,
+          "index": 5,
+          "token": "ANGER_PROPENSITY",
+          "value": 49
+        },
+        {
+          "absDeviationFromNeutral50": 8,
+          "deviationFromNeutral50": -8,
+          "index": 6,
+          "token": "ANXIETY_PROPENSITY",
+          "value": 42
+        },
+        {
+          "absDeviationFromNeutral50": 7,
+          "deviationFromNeutral50": -7,
+          "index": 7,
+          "token": "LUST_PROPENSITY",
+          "value": 43
+        },
+        {
+          "absDeviationFromNeutral50": 8,
+          "deviationFromNeutral50": -8,
+          "index": 8,
+          "token": "STRESS_VULNERABILITY",
+          "value": 42
+        },
+        {
+          "absDeviationFromNeutral50": 7,
+          "deviationFromNeutral50": 7,
+          "index": 9,
+          "token": "GREED",
+          "value": 57
+        },
+        {
+          "absDeviationFromNeutral50": 1,
+          "deviationFromNeutral50": -1,
+          "index": 10,
+          "token": "IMMODERATION",
+          "value": 49
+        },
+        {
+          "absDeviationFromNeutral50": 7,
+          "deviationFromNeutral50": -7,
+          "index": 11,
+          "token": "VIOLENT",
+          "value": 43
+        },
+        {
+          "absDeviationFromNeutral50": 6,
+          "deviationFromNeutral50": 6,
+          "index": 12,
+          "token": "PERSEVERANCE",
+          "value": 56
+        },
+        {
+          "absDeviationFromNeutral50": 8,
+          "deviationFromNeutral50": 8,
+          "index": 13,
+          "token": "WASTEFULNESS",
+          "value": 58
+        },
+        {
+          "absDeviationFromNeutral50": 35,
+          "deviationFromNeutral50": -35,
+          "index": 14,
+          "token": "DISCORD",
+          "value": 15
+        },
+        {
+          "absDeviationFromNeutral50": 20,
+          "deviationFromNeutral50": -20,
+          "index": 15,
+          "token": "FRIENDLINESS",
+          "value": 30
+        },
+        {
+          "absDeviationFromNeutral50": 2,
+          "deviationFromNeutral50": -2,
+          "index": 16,
+          "token": "POLITENESS",
+          "value": 48
+        },
+        {
+          "absDeviationFromNeutral50": 3,
+          "deviationFromNeutral50": -3,
+          "index": 17,
+          "token": "DISDAIN_ADVICE",
+          "value": 47
+        },
+        {
+          "absDeviationFromNeutral50": 20,
+          "deviationFromNeutral50": 20,
+          "index": 18,
+          "token": "BRAVERY",
+          "value": 70
+        },
+        {
+          "absDeviationFromNeutral50": 4,
+          "deviationFromNeutral50": -4,
+          "index": 19,
+          "token": "CONFIDENCE",
+          "value": 46
+        },
+        {
+          "absDeviationFromNeutral50": 3,
+          "deviationFromNeutral50": -3,
+          "index": 20,
+          "token": "VANITY",
+          "value": 47
+        },
+        {
+          "absDeviationFromNeutral50": 18,
+          "deviationFromNeutral50": 18,
+          "index": 21,
+          "token": "AMBITION",
+          "value": 68
+        },
+        {
+          "absDeviationFromNeutral50": 0,
+          "deviationFromNeutral50": 0,
+          "index": 22,
+          "token": "GRATITUDE",
+          "value": 50
+        },
+        {
+          "absDeviationFromNeutral50": 4,
+          "deviationFromNeutral50": 4,
+          "index": 23,
+          "token": "IMMODESTY",
+          "value": 54
+        },
+        {
+          "absDeviationFromNeutral50": 3,
+          "deviationFromNeutral50": -3,
+          "index": 24,
+          "token": "HUMOR",
+          "value": 47
+        },
+        {
+          "absDeviationFromNeutral50": 10,
+          "deviationFromNeutral50": -10,
+          "index": 25,
+          "token": "VENGEFUL",
+          "value": 40
+        },
+        {
+          "absDeviationFromNeutral50": 8,
+          "deviationFromNeutral50": -8,
+          "index": 26,
+          "token": "PRIDE",
+          "value": 42
+        },
+        {
+          "absDeviationFromNeutral50": 10,
+          "deviationFromNeutral50": -10,
+          "index": 27,
+          "token": "CRUELTY",
+          "value": 40
+        },
+        {
+          "absDeviationFromNeutral50": 7,
+          "deviationFromNeutral50": 7,
+          "index": 28,
+          "token": "SINGLEMINDED",
+          "value": 57
+        },
+        {
+          "absDeviationFromNeutral50": 7,
+          "deviationFromNeutral50": -7,
+          "index": 29,
+          "token": "HOPEFUL",
+          "value": 43
+        },
+        {
+          "absDeviationFromNeutral50": 9,
+          "deviationFromNeutral50": -9,
+          "index": 30,
+          "token": "CURIOUS",
+          "value": 41
+        },
+        {
+          "absDeviationFromNeutral50": 14,
+          "deviationFromNeutral50": 14,
+          "index": 31,
+          "token": "BASHFUL",
+          "value": 64
+        },
+        {
+          "absDeviationFromNeutral50": 2,
+          "deviationFromNeutral50": -2,
+          "index": 32,
+          "token": "PRIVACY",
+          "value": 48
+        },
+        {
+          "absDeviationFromNeutral50": 3,
+          "deviationFromNeutral50": -3,
+          "index": 33,
+          "token": "PERFECTIONIST",
+          "value": 47
+        },
+        {
+          "absDeviationFromNeutral50": 27,
+          "deviationFromNeutral50": 27,
+          "index": 34,
+          "token": "CLOSEMINDED",
+          "value": 77
+        },
+        {
+          "absDeviationFromNeutral50": 2,
+          "deviationFromNeutral50": 2,
+          "index": 35,
+          "token": "TOLERANT",
+          "value": 52
+        },
+        {
+          "absDeviationFromNeutral50": 8,
+          "deviationFromNeutral50": -8,
+          "index": 36,
+          "token": "EMOTIONALLY_OBSESSIVE",
+          "value": 42
+        },
+        {
+          "absDeviationFromNeutral50": 8,
+          "deviationFromNeutral50": -8,
+          "index": 37,
+          "token": "SWAYED_BY_EMOTIONS",
+          "value": 42
+        },
+        {
+          "absDeviationFromNeutral50": 20,
+          "deviationFromNeutral50": 20,
+          "index": 38,
+          "token": "ALTRUISM",
+          "value": 70
+        },
+        {
+          "absDeviationFromNeutral50": 31,
+          "deviationFromNeutral50": 31,
+          "index": 39,
+          "token": "DUTIFULNESS",
+          "value": 81
+        },
+        {
+          "absDeviationFromNeutral50": 3,
+          "deviationFromNeutral50": 3,
+          "index": 40,
+          "token": "THOUGHTLESSNESS",
+          "value": 53
+        },
+        {
+          "absDeviationFromNeutral50": 10,
+          "deviationFromNeutral50": 10,
+          "index": 41,
+          "token": "ORDERLINESS",
+          "value": 60
+        },
+        {
+          "absDeviationFromNeutral50": 7,
+          "deviationFromNeutral50": -7,
+          "index": 42,
+          "token": "TRUST",
+          "value": 43
+        },
+        {
+          "absDeviationFromNeutral50": 9,
+          "deviationFromNeutral50": -9,
+          "index": 43,
+          "token": "GREGARIOUSNESS",
+          "value": 41
+        },
+        {
+          "absDeviationFromNeutral50": 28,
+          "deviationFromNeutral50": 28,
+          "index": 44,
+          "token": "ASSERTIVENESS",
+          "value": 78
+        },
+        {
+          "absDeviationFromNeutral50": 1,
+          "deviationFromNeutral50": -1,
+          "index": 45,
+          "token": "ACTIVITY_LEVEL",
+          "value": 49
+        },
+        {
+          "absDeviationFromNeutral50": 6,
+          "deviationFromNeutral50": 6,
+          "index": 46,
+          "token": "EXCITEMENT_SEEKING",
+          "value": 56
+        },
+        {
+          "absDeviationFromNeutral50": 4,
+          "deviationFromNeutral50": -4,
+          "index": 47,
+          "token": "IMAGINATION",
+          "value": 46
+        },
+        {
+          "absDeviationFromNeutral50": 6,
+          "deviationFromNeutral50": 6,
+          "index": 48,
+          "token": "ABSTRACT_INCLINED",
+          "value": 56
+        },
+        {
+          "absDeviationFromNeutral50": 6,
+          "deviationFromNeutral50": -6,
+          "index": 49,
+          "token": "ART_INCLINED",
+          "value": 44
+        }
+      ],
+      "notes": {
+        "indexSource": "unit_personality.traits static-array indexed by personality_facet_type",
+        "neutralApproximation": 50
+      }
+    },
+    "values": {
+      "count": 2,
+      "items": [
+        {
+          "index": 0,
+          "strength": -15,
+          "token": "CRAFTSMANSHIP",
+          "type": 20
+        },
+        {
+          "index": 1,
+          "strength": -21,
+          "token": "INDEPENDENCE",
+          "type": 13
+        }
+      ],
+      "notes": {
+        "fields": "type, strength",
+        "sourceStruct": "personality_valuest"
+      }
+    }
+  },
+  "promptCandidates": {
+    "extremeTraits": [
+      {
+        "absDeviationFromNeutral50": 35,
+        "deviationFromNeutral50": -35,
+        "polarity": "low",
+        "token": "DISCORD",
+        "value": 15
+      },
+      {
+        "absDeviationFromNeutral50": 31,
+        "deviationFromNeutral50": 31,
+        "polarity": "high",
+        "token": "DUTIFULNESS",
+        "value": 81
+      },
+      {
+        "absDeviationFromNeutral50": 28,
+        "deviationFromNeutral50": 28,
+        "polarity": "high",
+        "token": "ASSERTIVENESS",
+        "value": 78
+      },
+      {
+        "absDeviationFromNeutral50": 27,
+        "deviationFromNeutral50": 27,
+        "polarity": "high",
+        "token": "CLOSEMINDED",
+        "value": 77
+      },
+      {
+        "absDeviationFromNeutral50": 20,
+        "deviationFromNeutral50": 20,
+        "polarity": "high",
+        "token": "ALTRUISM",
+        "value": 70
+      },
+      {
+        "absDeviationFromNeutral50": 20,
+        "deviationFromNeutral50": 20,
+        "polarity": "high",
+        "token": "BRAVERY",
+        "value": 70
+      },
+      {
+        "absDeviationFromNeutral50": 20,
+        "deviationFromNeutral50": -20,
+        "polarity": "low",
+        "token": "FRIENDLINESS",
+        "value": 30
+      },
+      {
+        "absDeviationFromNeutral50": 18,
+        "deviationFromNeutral50": 18,
+        "polarity": "high",
+        "token": "AMBITION",
+        "value": 68
+      },
+      {
+        "absDeviationFromNeutral50": 16,
+        "deviationFromNeutral50": -16,
+        "polarity": "low",
+        "token": "DEPRESSION_PROPENSITY",
+        "value": 34
+      },
+      {
+        "absDeviationFromNeutral50": 14,
+        "deviationFromNeutral50": 14,
+        "polarity": "high",
+        "token": "BASHFUL",
+        "value": 64
+      },
+      {
+        "absDeviationFromNeutral50": 10,
+        "deviationFromNeutral50": -10,
+        "polarity": "low",
+        "token": "CRUELTY",
+        "value": 40
+      },
+      {
+        "absDeviationFromNeutral50": 10,
+        "deviationFromNeutral50": 10,
+        "polarity": "high",
+        "token": "ORDERLINESS",
+        "value": 60
+      },
+      {
+        "absDeviationFromNeutral50": 10,
+        "deviationFromNeutral50": -10,
+        "polarity": "low",
+        "token": "VENGEFUL",
+        "value": 40
+      }
+    ],
+    "identity": {
+      "casteId": "FEMALE",
+      "creatureId": "DWARF",
+      "displayName": "Olon Lisidlogem \"Clashpaints\", expedition leader",
+      "professionName": "expedition leader"
+    },
+    "inventoryItems": [
+      {
+        "bodyPartId": 1,
+        "description": "(giant cave spider silk trousers)",
+        "mode": 2,
+        "typeToken": "PANTS"
+      },
+      {
+        "bodyPartId": 0,
+        "description": "(reindeer leather tunic)",
+        "mode": 2,
+        "typeToken": "ARMOR"
+      },
+      {
+        "bodyPartId": 9,
+        "description": "(alpaca wool left glove)",
+        "mode": 2,
+        "typeToken": "GLOVES"
+      },
+      {
+        "bodyPartId": 8,
+        "description": "(alpaca wool right glove)",
+        "mode": 2,
+        "typeToken": "GLOVES"
+      },
+      {
+        "bodyPartId": 15,
+        "description": "(giant cave spider silk sock)",
+        "mode": 2,
+        "typeToken": "SHOES"
+      },
+      {
+        "bodyPartId": 15,
+        "description": "(pig tail shoe)",
+        "mode": 2,
+        "typeToken": "SHOES"
+      },
+      {
+        "bodyPartId": 14,
+        "description": "(giant cave spider silk sock)",
+        "mode": 2,
+        "typeToken": "SHOES"
+      },
+      {
+        "bodyPartId": 14,
+        "description": "(pig tail shoe)",
+        "mode": 2,
+        "typeToken": "SHOES"
+      }
+    ],
+    "location": {
+      "idleArea": {
+        "isValid": true,
+        "x": 65,
+        "y": 81,
+        "z": 173
+      },
+      "idleAreaType": -1,
+      "pathDestination": {
+        "isValid": false,
+        "x": -30000,
+        "y": -30000,
+        "z": -30000
+      },
+      "position": {
+        "isValid": true,
+        "x": 65,
+        "y": 81,
+        "z": 173
+      }
+    },
+    "mannerisms": [
+      {
+        "index": 0,
+        "situation": 5,
+        "situationToken": "WHEN_THINKING",
+        "token": "TONGUE_STICKS_OUT",
+        "type": 61
+      },
+      {
+        "index": 1,
+        "situation": 0,
+        "situationToken": "WHEN_ANGRY",
+        "token": "EYES_LOWERS",
+        "type": 54
+      }
+    ],
+    "military": {
+      "patrolCooldown": 1,
+      "squadId": -1,
+      "squadPosition": -1
+    },
+    "noblePositions": {
+      "count": 1,
+      "items": [
+        {
+          "assignmentId": 8,
+          "entityId": 922,
+          "index": 1,
+          "name": "expedition leader",
+          "positionCode": "EXPEDITION_LEADER"
+        }
+      ]
+    },
+    "notableCounters": [
+      {
+        "token": "sleepinessTimer",
+        "value": 3394
+      },
+      {
+        "token": "hungerTimer",
+        "value": 1
+      },
+      {
+        "token": "thirstTimer",
+        "value": 1
+      }
+    ],
+    "notes": {
+      "health": "Nonzero counters and wounds are useful grounding. Zero counters should not be emphasized.",
+      "inventory": "Inventory descriptions are useful grounding but usually low priority unless item is unusual.",
+      "needs": "Need focusLevel is current satisfaction/pressure; needLevel is raw decay/severity pressure.",
+      "traits": "Only extreme traits are prompt candidates. Full raw trait list remains in personality.traits.",
+      "values": "Value strength sign is raw and should be interpreted cautiously."
+    },
+    "relationships": {
+      "count": 0,
+      "items": [],
+      "notes": {
+        "warning": "Only raw relationship ids. Names and relationship semantics not resolved in v0.1."
+      }
+    },
+    "strongNeeds": [
+      {
+        "deityId": -1,
+        "focusLevel": 0,
+        "id": 1,
+        "isDeeplyUnmet": false,
+        "isUnmet": false,
+        "needLevel": 10,
+        "token": "DrinkAlcohol"
+      },
+      {
+        "deityId": 635,
+        "focusLevel": 0,
+        "id": 2,
+        "isDeeplyUnmet": false,
+        "isUnmet": false,
+        "needLevel": 5,
+        "token": "PrayOrMeditate"
+      },
+      {
+        "deityId": -1,
+        "focusLevel": 0,
+        "id": 29,
+        "isDeeplyUnmet": false,
+        "isUnmet": false,
+        "needLevel": 2,
+        "token": "AdmireArt"
+      },
+      {
+        "deityId": -1,
+        "focusLevel": 0,
+        "id": 24,
+        "isDeeplyUnmet": false,
+        "isUnmet": false,
+        "needLevel": 2,
+        "token": "Argue"
+      },
+      {
+        "deityId": -1,
+        "focusLevel": 0,
+        "id": 7,
+        "isDeeplyUnmet": false,
+        "isUnmet": false,
+        "needLevel": 2,
+        "token": "BeWithFamily"
+      },
+      {
+        "deityId": -1,
+        "focusLevel": 0,
+        "id": 8,
+        "isDeeplyUnmet": false,
+        "isUnmet": false,
+        "needLevel": 2,
+        "token": "BeWithFriends"
+      },
+      {
+        "deityId": -1,
+        "focusLevel": 0,
+        "id": 27,
+        "isDeeplyUnmet": false,
+        "isUnmet": false,
+        "needLevel": 2,
+        "token": "HelpSomebody"
+      },
+      {
+        "deityId": -1,
+        "focusLevel": 0,
+        "id": 15,
+        "isDeeplyUnmet": false,
+        "isUnmet": false,
+        "needLevel": 2,
+        "token": "PracticeSkill"
+      },
+      {
+        "deityId": -1,
+        "focusLevel": 0,
+        "id": 3,
+        "isDeeplyUnmet": false,
+        "isUnmet": false,
+        "needLevel": 2,
+        "token": "StayOccupied"
+      }
+    ],
+    "strongValues": [
+      {
+        "absStrength": 21,
+        "polarity": "negative",
+        "strength": -21,
+        "token": "INDEPENDENCE",
+        "type": 13
+      },
+      {
+        "absStrength": 15,
+        "polarity": "negative",
+        "strength": -15,
+        "token": "CRAFTSMANSHIP",
+        "type": 20
+      }
+    ],
+    "topSkills": [
+      {
+        "effective": 3,
+        "experience": 200,
+        "id": 119,
+        "nominal": 3,
+        "rating": 3,
+        "rust": 0,
+        "token": "PLAY_KEYBOARD_INSTRUMENT",
+        "totalExperience": 2000
+      },
+      {
+        "effective": 3,
+        "experience": 200,
+        "id": 92,
+        "nominal": 3,
+        "rating": 3,
+        "rust": 0,
+        "token": "SPEAKING",
+        "totalExperience": 2000
+      },
+      {
+        "effective": 2,
+        "experience": 0,
+        "id": 78,
+        "nominal": 2,
+        "rating": 2,
+        "rust": 0,
+        "token": "CONVERSATION",
+        "totalExperience": 1100
+      },
+      {
+        "effective": 2,
+        "experience": 0,
+        "id": 70,
+        "nominal": 2,
+        "rating": 2,
+        "rust": 0,
+        "token": "PERSUASION",
+        "totalExperience": 1100
+      },
+      {
+        "effective": 2,
+        "experience": 0,
+        "id": 71,
+        "nominal": 2,
+        "rating": 2,
+        "rust": 0,
+        "token": "NEGOTIATION",
+        "totalExperience": 1100
+      },
+      {
+        "effective": 2,
+        "experience": 0,
+        "id": 74,
+        "nominal": 2,
+        "rating": 2,
+        "rust": 0,
+        "token": "ORGANIZATION",
+        "totalExperience": 1100
+      },
+      {
+        "effective": 1,
+        "experience": 500,
+        "id": 90,
+        "nominal": 1,
+        "rating": 1,
+        "rust": 0,
+        "token": "POETRY",
+        "totalExperience": 1000
+      },
+      {
+        "effective": 1,
+        "experience": 0,
+        "id": 117,
+        "nominal": 1,
+        "rating": 1,
+        "rust": 0,
+        "token": "MAKE_MUSIC",
+        "totalExperience": 500
+      },
+      {
+        "effective": 1,
+        "experience": 0,
+        "id": 76,
+        "nominal": 1,
+        "rating": 1,
+        "rust": 0,
+        "token": "LYING",
+        "totalExperience": 500
+      },
+      {
+        "effective": 1,
+        "experience": 0,
+        "id": 77,
+        "nominal": 1,
+        "rating": 1,
+        "rust": 0,
+        "token": "INTIMIDATION",
+        "totalExperience": 500
+      }
+    ],
+    "wounds": {
+      "count": 0,
+      "items": []
+    }
+  },
+  "relationships": {
+    "count": 0,
+    "items": [],
+    "notes": {
+      "warning": "Only raw relationship ids. Names and relationship semantics not resolved in v0.1."
+    }
+  },
+  "requestedUnitId": "6603",
+  "roles": {
+    "military": {
+      "patrolCooldown": 1,
+      "squadId": -1,
+      "squadPosition": -1
+    },
+    "noblePositions": {
+      "count": 1,
+      "items": [
+        {
+          "assignmentId": 8,
+          "entityId": 922,
+          "index": 1,
+          "name": "expedition leader",
+          "positionCode": "EXPEDITION_LEADER"
+        }
+      ]
+    }
+  },
+  "schemaVersion": "fortress-souls-dwarf-snapshot.v0.1",
+  "siteLoaded": true,
+  "skills": {
+    "count": 10,
+    "items": [
+      {
+        "effective": 2,
+        "experience": 0,
+        "id": 70,
+        "nominal": 2,
+        "rating": 2,
+        "rust": 0,
+        "token": "PERSUASION",
+        "totalExperience": 1100
+      },
+      {
+        "effective": 2,
+        "experience": 0,
+        "id": 71,
+        "nominal": 2,
+        "rating": 2,
+        "rust": 0,
+        "token": "NEGOTIATION",
+        "totalExperience": 1100
+      },
+      {
+        "effective": 2,
+        "experience": 0,
+        "id": 74,
+        "nominal": 2,
+        "rating": 2,
+        "rust": 0,
+        "token": "ORGANIZATION",
+        "totalExperience": 1100
+      },
+      {
+        "effective": 1,
+        "experience": 0,
+        "id": 76,
+        "nominal": 1,
+        "rating": 1,
+        "rust": 0,
+        "token": "LYING",
+        "totalExperience": 500
+      },
+      {
+        "effective": 1,
+        "experience": 0,
+        "id": 77,
+        "nominal": 1,
+        "rating": 1,
+        "rust": 0,
+        "token": "INTIMIDATION",
+        "totalExperience": 500
+      },
+      {
+        "effective": 2,
+        "experience": 0,
+        "id": 78,
+        "nominal": 2,
+        "rating": 2,
+        "rust": 0,
+        "token": "CONVERSATION",
+        "totalExperience": 1100
+      },
+      {
+        "effective": 1,
+        "experience": 500,
+        "id": 90,
+        "nominal": 1,
+        "rating": 1,
+        "rust": 0,
+        "token": "POETRY",
+        "totalExperience": 1000
+      },
+      {
+        "effective": 3,
+        "experience": 200,
+        "id": 92,
+        "nominal": 3,
+        "rating": 3,
+        "rust": 0,
+        "token": "SPEAKING",
+        "totalExperience": 2000
+      },
+      {
+        "effective": 1,
+        "experience": 0,
+        "id": 117,
+        "nominal": 1,
+        "rating": 1,
+        "rust": 0,
+        "token": "MAKE_MUSIC",
+        "totalExperience": 500
+      },
+      {
+        "effective": 3,
+        "experience": 200,
+        "id": 119,
+        "nominal": 3,
+        "rating": 3,
+        "rust": 0,
+        "token": "PLAY_KEYBOARD_INSTRUMENT",
+        "totalExperience": 2000
+      }
+    ]
+  },
+  "soulPresent": true,
+  "stress": {
+    "category": 3,
+    "categoryScale": "0-most-stressed-6-least-stressed",
+    "longterm": 0,
+    "raw": 0
+  },
+  "tickCount": 421730625,
+  "work": [],
+  "worldLoaded": true
+}

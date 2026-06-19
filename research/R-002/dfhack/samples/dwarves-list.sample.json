@@ -1,0 +1,216 @@
+{
+  "count": 7,
+  "items": [
+    {
+      "caste": 0,
+      "casteId": "FEMALE",
+      "creatureId": "DWARF",
+      "currentJobType": "PickupEquipment",
+      "displayName": "Melbil Keskalmeden \"Shottribe\", Miner",
+      "flags": {
+        "isActive": true,
+        "isAlive": true,
+        "isCitizen": true,
+        "isResident": false,
+        "isSane": true
+      },
+      "histFigureId": 10589,
+      "id": "6597",
+      "position": {
+        "isValid": true,
+        "x": 70,
+        "y": 85,
+        "z": 173
+      },
+      "professionId": 0,
+      "professionName": "Miner",
+      "professionToken": "MINER",
+      "race": 572,
+      "rawId": 6597,
+      "soulPresent": true,
+      "stressCategory": 3,
+      "stressCategoryScale": "0-most-stressed-6-least-stressed"
+    },
+    {
+      "caste": 0,
+      "casteId": "FEMALE",
+      "creatureId": "DWARF",
+      "displayName": "Rakust Tekkudthedak \"Pickclans\", Planter",
+      "flags": {
+        "isActive": true,
+        "isAlive": true,
+        "isCitizen": true,
+        "isResident": false,
+        "isSane": true
+      },
+      "histFigureId": 10588,
+      "id": "6598",
+      "position": {
+        "isValid": true,
+        "x": 72,
+        "y": 90,
+        "z": 173
+      },
+      "professionId": 50,
+      "professionName": "Planter",
+      "professionToken": "PLANTER",
+      "race": 572,
+      "rawId": 6598,
+      "soulPresent": true,
+      "stressCategory": 3,
+      "stressCategoryScale": "0-most-stressed-6-least-stressed"
+    },
+    {
+      "caste": 1,
+      "casteId": "MALE",
+      "creatureId": "DWARF",
+      "currentJobType": "PickupEquipment",
+      "displayName": "îton Oltarkurik \"Gildthorn\", Woodworker",
+      "flags": {
+        "isActive": true,
+        "isAlive": true,
+        "isCitizen": true,
+        "isResident": false,
+        "isSane": true
+      },
+      "histFigureId": 10587,
+      "id": "6599",
+      "position": {
+        "isValid": true,
+        "x": 70,
+        "y": 88,
+        "z": 173
+      },
+      "professionId": 1,
+      "professionName": "Woodworker",
+      "professionToken": "WOODWORKER",
+      "race": 572,
+      "rawId": 6599,
+      "soulPresent": true,
+      "stressCategory": 3,
+      "stressCategoryScale": "0-most-stressed-6-least-stressed"
+    },
+    {
+      "caste": 0,
+      "casteId": "FEMALE",
+      "creatureId": "DWARF",
+      "displayName": "Edzul Nimarlogem \"Pathpaints\", Stonecrafter",
+      "flags": {
+        "isActive": true,
+        "isAlive": true,
+        "isCitizen": true,
+        "isResident": false,
+        "isSane": true
+      },
+      "histFigureId": 10586,
+      "id": "6600",
+      "position": {
+        "isValid": true,
+        "x": 70,
+        "y": 85,
+        "z": 173
+      },
+      "professionId": 27,
+      "professionName": "Stonecrafter",
+      "professionToken": "STONECRAFTER",
+      "race": 572,
+      "rawId": 6600,
+      "soulPresent": true,
+      "stressCategory": 3,
+      "stressCategoryScale": "0-most-stressed-6-least-stressed"
+    },
+    {
+      "caste": 1,
+      "casteId": "MALE",
+      "creatureId": "DWARF",
+      "currentJobType": "Fish",
+      "displayName": "Kadôl Thocitoddom \"Spikescloisters\", Fisherdwarf",
+      "flags": {
+        "isActive": true,
+        "isAlive": true,
+        "isCitizen": true,
+        "isResident": false,
+        "isSane": true
+      },
+      "histFigureId": 10585,
+      "id": "6601",
+      "position": {
+        "isValid": true,
+        "x": 67,
+        "y": 87,
+        "z": 173
+      },
+      "professionId": 38,
+      "professionName": "Fisherdwarf",
+      "professionToken": "FISHERMAN",
+      "race": 572,
+      "rawId": 6601,
+      "soulPresent": true,
+      "stressCategory": 3,
+      "stressCategoryScale": "0-most-stressed-6-least-stressed"
+    },
+    {
+      "caste": 1,
+      "casteId": "MALE",
+      "creatureId": "DWARF",
+      "displayName": "Olon Regokil \"Glovetest\", Mason",
+      "flags": {
+        "isActive": true,
+        "isAlive": true,
+        "isCitizen": true,
+        "isResident": false,
+        "isSane": true
+      },
+      "histFigureId": 10584,
+      "id": "6602",
+      "position": {
+        "isValid": true,
+        "x": 72,
+        "y": 89,
+        "z": 173
+      },
+      "professionId": 9,
+      "professionName": "Mason",
+      "professionToken": "MASON",
+      "race": 572,
+      "rawId": 6602,
+      "soulPresent": true,
+      "stressCategory": 3,
+      "stressCategoryScale": "0-most-stressed-6-least-stressed"
+    },
+    {
+      "caste": 0,
+      "casteId": "FEMALE",
+      "creatureId": "DWARF",
+      "displayName": "Olon Lisidlogem \"Clashpaints\", expedition leader",
+      "flags": {
+        "isActive": true,
+        "isAlive": true,
+        "isCitizen": true,
+        "isResident": false,
+        "isSane": true
+      },
+      "histFigureId": 10583,
+      "id": "6603",
+      "position": {
+        "isValid": true,
+        "x": 65,
+        "y": 81,
+        "z": 173
+      },
+      "professionId": 67,
+      "professionName": "expedition leader",
+      "professionToken": "ADMINISTRATOR",
+      "race": 572,
+      "rawId": 6603,
+      "soulPresent": true,
+      "stressCategory": 3,
+      "stressCategoryScale": "0-most-stressed-6-least-stressed"
+    }
+  ],
+  "mapLoaded": true,
+  "schemaVersion": "fortress-souls-dwarf-list.v0.1",
+  "siteLoaded": true,
+  "tickCount": 421730218,
+  "worldLoaded": true
+}

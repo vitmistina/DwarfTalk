@@ -1,0 +1,8 @@
+id,name,profession,job,skills,traits,values,needs,mannerisms,inventory,wounds,nobles,x,y,z
+6597,"Melbil Keskalmeden ""Shottribe"", Miner",Miner,PickupEquipment,7,50,2,21,0,8,0,0,70,85,173
+6598,"Rakust Tekkudthedak ""Pickclans"", Planter",Planter,,6,50,3,22,0,8,0,0,72,90,173
+6599,"îton Oltarkurik ""Gildthorn"", Woodworker",Woodworker,PickupEquipment,8,50,3,22,0,8,0,0,70,88,173
+6600,"Edzul Nimarlogem ""Pathpaints"", Stonecrafter",Stonecrafter,,6,50,2,22,1,8,0,0,70,85,173
+6601,"Kadôl Thocitoddom ""Spikescloisters"", Fisherdwarf",Fisherdwarf,Fish,6,50,3,19,1,8,0,0,67,87,173
+6602,"Olon Regokil ""Glovetest"", Mason",Mason,,8,50,2,23,0,8,0,0,72,89,173
+6603,"Olon Lisidlogem ""Clashpaints"", expedition leader",expedition leader,,10,50,2,21,2,8,0,1,65,81,173

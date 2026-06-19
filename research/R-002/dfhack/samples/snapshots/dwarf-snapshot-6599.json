@@ -1,0 +1,1400 @@
+{
+  "flags": {
+    "flags1": {
+      "caged": false,
+      "chained": false,
+      "inactive": false,
+      "onGround": false
+    },
+    "flags2": {
+      "resident": false,
+      "visitor": false
+    },
+    "flags3": {
+      "ghostly": false
+    },
+    "isActive": true,
+    "isAlive": true,
+    "isCitizen": true,
+    "isDwarf": true,
+    "isResident": false,
+    "isSane": true
+  },
+  "health": {
+    "body": {
+      "bloodCount": 5820,
+      "infectionLevel": 0,
+      "wounds": {
+        "count": 0,
+        "items": []
+      }
+    },
+    "counters": {
+      "dizziness": 0,
+      "hungerTimer": 1,
+      "nausea": 0,
+      "pain": 0,
+      "sleepinessTimer": 4295,
+      "stunned": 0,
+      "suffocation": 0,
+      "thirstTimer": 1,
+      "unconscious": 0,
+      "winded": 0
+    },
+    "movement": {
+      "slowdownFactor": 1.0,
+      "speed": 0
+    }
+  },
+  "identity": {
+    "age": 27.598256448413,
+    "apparentAge": 27.598256448413,
+    "birthTime": 178784,
+    "birthYear": 72,
+    "caste": 1,
+    "casteId": "MALE",
+    "civId": 313,
+    "creatureId": "DWARF",
+    "culturalIdentity": 338,
+    "histFigureId": 10587,
+    "id": "6599",
+    "populationId": 242,
+    "professionId": 1,
+    "professionName": "Woodworker",
+    "professionToken": "WOODWORKER",
+    "race": 572,
+    "rawId": 6599,
+    "readableName": "îton Oltarkurik \"Gildthorn\", Woodworker",
+    "sex": 1
+  },
+  "inventory": {
+    "count": 8,
+    "includedCount": 8,
+    "items": [
+      {
+        "bodyPartId": 1,
+        "index": 0,
+        "item": {
+          "description": "(llama wool trousers)",
+          "id": 375,
+          "matIndex": 186,
+          "matType": 24,
+          "subtype": "<itemdef_pantsst: 0x29c230830c0>",
+          "type": 60,
+          "typeToken": "PANTS"
+        },
+        "mode": 2
+      },
+      {
+        "bodyPartId": 0,
+        "index": 1,
+        "item": {
+          "description": "(pig tail dress)",
+          "id": 376,
+          "matIndex": 174,
+          "matType": 422,
+          "subtype": "<itemdef_armorst: 0x29c23085340>",
+          "type": 25,
+          "typeToken": "ARMOR"
+        },
+        "mode": 2
+      },
+      {
+        "bodyPartId": 9,
+        "index": 2,
+        "item": {
+          "description": "(alpaca wool left glove)",
+          "id": 377,
+          "matIndex": 187,
+          "matType": 24,
+          "subtype": "<itemdef_glovesst: 0x29c0f39bfb0>",
+          "type": 29,
+          "typeToken": "GLOVES"
+        },
+        "mode": 2
+      },
+      {
+        "bodyPartId": 8,
+        "index": 3,
+        "item": {
+          "description": "(alpaca wool right glove)",
+          "id": 378,
+          "matIndex": 187,
+          "matType": 24,
+          "subtype": "<itemdef_glovesst: 0x29c0f39bfb0>",
+          "type": 29,
+          "typeToken": "GLOVES"
+        },
+        "mode": 2
+      },
+      {
+        "bodyPartId": 15,
+        "index": 4,
+        "item": {
+          "description": "(cave spider silk sock)",
+          "id": 379,
+          "matIndex": 616,
+          "matType": 37,
+          "subtype": "<itemdef_shoesst: 0x29c0f399290>",
+          "type": 26,
+          "typeToken": "SHOES"
+        },
+        "mode": 2
+      },
+      {
+        "bodyPartId": 15,
+        "index": 5,
+        "item": {
+          "description": "(llama leather shoe)",
+          "id": 380,
+          "matIndex": 186,
+          "matType": 38,
+          "subtype": "<itemdef_shoesst: 0x29c0f398f00>",
+          "type": 26,
+          "typeToken": "SHOES"
+        },
+        "mode": 2
+      },
+      {
+        "bodyPartId": 14,
+        "index": 6,
+        "item": {
+          "description": "(cave spider silk sock)",
+          "id": 381,
+          "matIndex": 616,
+          "matType": 37,
+          "subtype": "<itemdef_shoesst: 0x29c0f399290>",
+          "type": 26,
+          "typeToken": "SHOES"
+        },
+        "mode": 2
+      },
+      {
+        "bodyPartId": 14,
+        "index": 7,
+        "item": {
+          "description": "(llama leather shoe)",
+          "id": 382,
+          "matIndex": 186,
+          "matType": 38,
+          "subtype": "<itemdef_shoesst: 0x29c0f398f00>",
+          "type": 26,
+          "typeToken": "SHOES"
+        },
+        "mode": 2
+      }
+    ]
+  },
+  "location": {
+    "idleArea": {
+      "isValid": true,
+      "x": 70,
+      "y": 88,
+      "z": 173
+    },
+    "idleAreaType": -1,
+    "pathDestination": {
+      "isValid": true,
+      "x": 71,
+      "y": 87,
+      "z": 173
+    },
+    "position": {
+      "isValid": true,
+      "x": 70,
+      "y": 88,
+      "z": 173
+    }
+  },
+  "mapLoaded": true,
+  "personality": {
+    "mannerisms": {
+      "count": 0,
+      "items": []
+    },
+    "needs": {
+      "count": 22,
+      "items": [
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 0,
+          "index": 0,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 1,
+          "token": "Socialize"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 3,
+          "index": 1,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 2,
+          "token": "StayOccupied"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 4,
+          "index": 2,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 1,
+          "token": "BeCreative"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 5,
+          "index": 3,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 1,
+          "token": "Excitement"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 20,
+          "index": 4,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 1,
+          "token": "AcquireObject"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 1,
+          "index": 5,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 10,
+          "token": "DrinkAlcohol"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 21,
+          "index": 6,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 1,
+          "token": "EatGoodMeal"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 22,
+          "index": 7,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 1,
+          "token": "Fight"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 23,
+          "index": 8,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 1,
+          "token": "CauseTrouble"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 24,
+          "index": 9,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 1,
+          "token": "Argue"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 25,
+          "index": 10,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 1,
+          "token": "BeExtravagant"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 6,
+          "index": 11,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 1,
+          "token": "LearnSomething"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 27,
+          "index": 12,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 5,
+          "token": "HelpSomebody"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 28,
+          "index": 13,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 1,
+          "token": "ThinkAbstractly"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 12,
+          "index": 14,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 1,
+          "token": "MakeMerry"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 29,
+          "index": 15,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 2,
+          "token": "AdmireArt"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 13,
+          "index": 16,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 2,
+          "token": "CraftObject"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 7,
+          "index": 17,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 2,
+          "token": "BeWithFamily"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 8,
+          "index": 18,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 2,
+          "token": "BeWithFriends"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 14,
+          "index": 19,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 1,
+          "token": "MartialTraining"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 15,
+          "index": 20,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 2,
+          "token": "PracticeSkill"
+        },
+        {
+          "deityId": -1,
+          "focusLevel": 0,
+          "id": 16,
+          "index": 21,
+          "isDeeplyUnmet": false,
+          "isUnmet": false,
+          "needLevel": 1,
+          "token": "TakeItEasy"
+        }
+      ],
+      "notes": {
+        "deeplyUnmetThreshold": "focusLevel below -999 is represented by personality flag has_unmet_needs",
+        "focusLevel": "goes toward 400 when satisfied; below 0 means unmet pressure",
+        "needLevel": "raw severity/decay pressure, not current satisfaction"
+      }
+    },
+    "preferences": {
+      "count": 0,
+      "items": [],
+      "notes": {
+        "warning": "Raw preference var fields are not resolved to material/creature/item names in v0.1."
+      }
+    },
+    "present": true,
+    "state": {
+      "combatHardened": 0,
+      "currentFocus": 1,
+      "likesOutdoors": 2,
+      "longtermStress": 0,
+      "outdoorDislikeCounter": 0,
+      "stress": 0,
+      "temptation": {
+        "anger": 0,
+        "greed": 0,
+        "lust": 0,
+        "power": 0
+      },
+      "timeWithoutDistress": 100,
+      "timeWithoutEustress": 100,
+      "undistractedFocus": 1
+    },
+    "traits": {
+      "count": 50,
+      "items": [
+        {
+          "absDeviationFromNeutral50": 3,
+          "deviationFromNeutral50": 3,
+          "index": 0,
+          "token": "LOVE_PROPENSITY",
+          "value": 53
+        },
+        {
+          "absDeviationFromNeutral50": 19,
+          "deviationFromNeutral50": 19,
+          "index": 1,
+          "token": "HATE_PROPENSITY",
+          "value": 69
+        },
+        {
+          "absDeviationFromNeutral50": 1,
+          "deviationFromNeutral50": 1,
+          "index": 2,
+          "token": "ENVY_PROPENSITY",
+          "value": 51
+        },
+        {
+          "absDeviationFromNeutral50": 9,
+          "deviationFromNeutral50": -9,
+          "index": 3,
+          "token": "CHEER_PROPENSITY",
+          "value": 41
+        },
+        {
+          "absDeviationFromNeutral50": 45,
+          "deviationFromNeutral50": 45,
+          "index": 4,
+          "token": "DEPRESSION_PROPENSITY",
+          "value": 95
+        },
+        {
+          "absDeviationFromNeutral50": 15,
+          "deviationFromNeutral50": 15,
+          "index": 5,
+          "token": "ANGER_PROPENSITY",
+          "value": 65
+        },
+        {
+          "absDeviationFromNeutral50": 3,
+          "deviationFromNeutral50": 3,
+          "index": 6,
+          "token": "ANXIETY_PROPENSITY",
+          "value": 53
+        },
+        {
+          "absDeviationFromNeutral50": 4,
+          "deviationFromNeutral50": -4,
+          "index": 7,
+          "token": "LUST_PROPENSITY",
+          "value": 46
+        },
+        {
+          "absDeviationFromNeutral50": 12,
+          "deviationFromNeutral50": -12,
+          "index": 8,
+          "token": "STRESS_VULNERABILITY",
+          "value": 38
+        },
+        {
+          "absDeviationFromNeutral50": 9,
+          "deviationFromNeutral50": 9,
+          "index": 9,
+          "token": "GREED",
+          "value": 59
+        },
+        {
+          "absDeviationFromNeutral50": 8,
+          "deviationFromNeutral50": 8,
+          "index": 10,
+          "token": "IMMODERATION",
+          "value": 58
+        },
+        {
+          "absDeviationFromNeutral50": 6,
+          "deviationFromNeutral50": 6,
+          "index": 11,
+          "token": "VIOLENT",
+          "value": 56
+        },
+        {
+          "absDeviationFromNeutral50": 9,
+          "deviationFromNeutral50": -9,
+          "index": 12,
+          "token": "PERSEVERANCE",
+          "value": 41
+        },
+        {
+          "absDeviationFromNeutral50": 2,
+          "deviationFromNeutral50": -2,
+          "index": 13,
+          "token": "WASTEFULNESS",
+          "value": 48
+        },
+        {
+          "absDeviationFromNeutral50": 8,
+          "deviationFromNeutral50": -8,
+          "index": 14,
+          "token": "DISCORD",
+          "value": 42
+        },
+        {
+          "absDeviationFromNeutral50": 4,
+          "deviationFromNeutral50": 4,
+          "index": 15,
+          "token": "FRIENDLINESS",
+          "value": 54
+        },
+        {
+          "absDeviationFromNeutral50": 8,
+          "deviationFromNeutral50": -8,
+          "index": 16,
+          "token": "POLITENESS",
+          "value": 42
+        },
+        {
+          "absDeviationFromNeutral50": 9,
+          "deviationFromNeutral50": -9,
+          "index": 17,
+          "token": "DISDAIN_ADVICE",
+          "value": 41
+        },
+        {
+          "absDeviationFromNeutral50": 2,
+          "deviationFromNeutral50": -2,
+          "index": 18,
+          "token": "BRAVERY",
+          "value": 48
+        },
+        {
+          "absDeviationFromNeutral50": 38,
+          "deviationFromNeutral50": 38,
+          "index": 19,
+          "token": "CONFIDENCE",
+          "value": 88
+        },
+        {
+          "absDeviationFromNeutral50": 5,
+          "deviationFromNeutral50": -5,
+          "index": 20,
+          "token": "VANITY",
+          "value": 45
+        },
+        {
+          "absDeviationFromNeutral50": 3,
+          "deviationFromNeutral50": 3,
+          "index": 21,
+          "token": "AMBITION",
+          "value": 53
+        },
+        {
+          "absDeviationFromNeutral50": 19,
+          "deviationFromNeutral50": 19,
+          "index": 22,
+          "token": "GRATITUDE",
+          "value": 69
+        },
+        {
+          "absDeviationFromNeutral50": 4,
+          "deviationFromNeutral50": 4,
+          "index": 23,
+          "token": "IMMODESTY",
+          "value": 54
+        },
+        {
+          "absDeviationFromNeutral50": 8,
+          "deviationFromNeutral50": 8,
+          "index": 24,
+          "token": "HUMOR",
+          "value": 58
+        },
+        {
+          "absDeviationFromNeutral50": 19,
+          "deviationFromNeutral50": -19,
+          "index": 25,
+          "token": "VENGEFUL",
+          "value": 31
+        },
+        {
+          "absDeviationFromNeutral50": 7,
+          "deviationFromNeutral50": -7,
+          "index": 26,
+          "token": "PRIDE",
+          "value": 43
+        },
+        {
+          "absDeviationFromNeutral50": 5,
+          "deviationFromNeutral50": 5,
+          "index": 27,
+          "token": "CRUELTY",
+          "value": 55
+        },
+        {
+          "absDeviationFromNeutral50": 5,
+          "deviationFromNeutral50": 5,
+          "index": 28,
+          "token": "SINGLEMINDED",
+          "value": 55
+        },
+        {
+          "absDeviationFromNeutral50": 2,
+          "deviationFromNeutral50": 2,
+          "index": 29,
+          "token": "HOPEFUL",
+          "value": 52
+        },
+        {
+          "absDeviationFromNeutral50": 2,
+          "deviationFromNeutral50": 2,
+          "index": 30,
+          "token": "CURIOUS",
+          "value": 52
+        },
+        {
+          "absDeviationFromNeutral50": 7,
+          "deviationFromNeutral50": -7,
+          "index": 31,
+          "token": "BASHFUL",
+          "value": 43
+        },
+        {
+          "absDeviationFromNeutral50": 1,
+          "deviationFromNeutral50": -1,
+          "index": 32,
+          "token": "PRIVACY",
+          "value": 49
+        },
+        {
+          "absDeviationFromNeutral50": 10,
+          "deviationFromNeutral50": -10,
+          "index": 33,
+          "token": "PERFECTIONIST",
+          "value": 40
+        },
+        {
+          "absDeviationFromNeutral50": 13,
+          "deviationFromNeutral50": -13,
+          "index": 34,
+          "token": "CLOSEMINDED",
+          "value": 37
+        },
+        {
+          "absDeviationFromNeutral50": 24,
+          "deviationFromNeutral50": 24,
+          "index": 35,
+          "token": "TOLERANT",
+          "value": 74
+        },
+        {
+          "absDeviationFromNeutral50": 3,
+          "deviationFromNeutral50": -3,
+          "index": 36,
+          "token": "EMOTIONALLY_OBSESSIVE",
+          "value": 47
+        },
+        {
+          "absDeviationFromNeutral50": 6,
+          "deviationFromNeutral50": -6,
+          "index": 37,
+          "token": "SWAYED_BY_EMOTIONS",
+          "value": 44
+        },
+        {
+          "absDeviationFromNeutral50": 26,
+          "deviationFromNeutral50": 26,
+          "index": 38,
+          "token": "ALTRUISM",
+          "value": 76
+        },
+        {
+          "absDeviationFromNeutral50": 3,
+          "deviationFromNeutral50": -3,
+          "index": 39,
+          "token": "DUTIFULNESS",
+          "value": 47
+        },
+        {
+          "absDeviationFromNeutral50": 5,
+          "deviationFromNeutral50": 5,
+          "index": 40,
+          "token": "THOUGHTLESSNESS",
+          "value": 55
+        },
+        {
+          "absDeviationFromNeutral50": 3,
+          "deviationFromNeutral50": 3,
+          "index": 41,
+          "token": "ORDERLINESS",
+          "value": 53
+        },
+        {
+          "absDeviationFromNeutral50": 7,
+          "deviationFromNeutral50": 7,
+          "index": 42,
+          "token": "TRUST",
+          "value": 57
+        },
+        {
+          "absDeviationFromNeutral50": 4,
+          "deviationFromNeutral50": -4,
+          "index": 43,
+          "token": "GREGARIOUSNESS",
+          "value": 46
+        },
+        {
+          "absDeviationFromNeutral50": 18,
+          "deviationFromNeutral50": 18,
+          "index": 44,
+          "token": "ASSERTIVENESS",
+          "value": 68
+        },
+        {
+          "absDeviationFromNeutral50": 10,
+          "deviationFromNeutral50": 10,
+          "index": 45,
+          "token": "ACTIVITY_LEVEL",
+          "value": 60
+        },
+        {
+          "absDeviationFromNeutral50": 6,
+          "deviationFromNeutral50": -6,
+          "index": 46,
+          "token": "EXCITEMENT_SEEKING",
+          "value": 44
+        },
+        {
+          "absDeviationFromNeutral50": 17,
+          "deviationFromNeutral50": -17,
+          "index": 47,
+          "token": "IMAGINATION",
+          "value": 33
+        },
+        {
+          "absDeviationFromNeutral50": 7,
+          "deviationFromNeutral50": -7,
+          "index": 48,
+          "token": "ABSTRACT_INCLINED",
+          "value": 43
+        },
+        {
+          "absDeviationFromNeutral50": 7,
+          "deviationFromNeutral50": -7,
+          "index": 49,
+          "token": "ART_INCLINED",
+          "value": 43
+        }
+      ],
+      "notes": {
+        "indexSource": "unit_personality.traits static-array indexed by personality_facet_type",
+        "neutralApproximation": 50
+      }
+    },
+    "values": {
+      "count": 3,
+      "items": [
+        {
+          "index": 0,
+          "strength": 4,
+          "token": "INTROSPECTION",
+          "type": 15
+        },
+        {
+          "index": 1,
+          "strength": 20,
+          "token": "LOYALTY",
+          "type": 1
+        },
+        {
+          "index": 2,
+          "strength": 34,
+          "token": "CRAFTSMANSHIP",
+          "type": 20
+        }
+      ],
+      "notes": {
+        "fields": "type, strength",
+        "sourceStruct": "personality_valuest"
+      }
+    }
+  },
+  "promptCandidates": {
+    "currentJob": {
+      "completionTimer": -1,
+      "id": 1,
+      "itemCount": 1,
+      "position": {
+        "isValid": true,
+        "x": 71,
+        "y": 87,
+        "z": 173
+      },
+      "token": "PickupEquipment",
+      "type": 51
+    },
+    "extremeTraits": [
+      {
+        "absDeviationFromNeutral50": 45,
+        "deviationFromNeutral50": 45,
+        "polarity": "high",
+        "token": "DEPRESSION_PROPENSITY",
+        "value": 95
+      },
+      {
+        "absDeviationFromNeutral50": 38,
+        "deviationFromNeutral50": 38,
+        "polarity": "high",
+        "token": "CONFIDENCE",
+        "value": 88
+      },
+      {
+        "absDeviationFromNeutral50": 26,
+        "deviationFromNeutral50": 26,
+        "polarity": "high",
+        "token": "ALTRUISM",
+        "value": 76
+      },
+      {
+        "absDeviationFromNeutral50": 24,
+        "deviationFromNeutral50": 24,
+        "polarity": "high",
+        "token": "TOLERANT",
+        "value": 74
+      },
+      {
+        "absDeviationFromNeutral50": 19,
+        "deviationFromNeutral50": 19,
+        "polarity": "high",
+        "token": "GRATITUDE",
+        "value": 69
+      },
+      {
+        "absDeviationFromNeutral50": 19,
+        "deviationFromNeutral50": 19,
+        "polarity": "high",
+        "token": "HATE_PROPENSITY",
+        "value": 69
+      },
+      {
+        "absDeviationFromNeutral50": 19,
+        "deviationFromNeutral50": -19,
+        "polarity": "low",
+        "token": "VENGEFUL",
+        "value": 31
+      },
+      {
+        "absDeviationFromNeutral50": 18,
+        "deviationFromNeutral50": 18,
+        "polarity": "high",
+        "token": "ASSERTIVENESS",
+        "value": 68
+      },
+      {
+        "absDeviationFromNeutral50": 17,
+        "deviationFromNeutral50": -17,
+        "polarity": "low",
+        "token": "IMAGINATION",
+        "value": 33
+      },
+      {
+        "absDeviationFromNeutral50": 15,
+        "deviationFromNeutral50": 15,
+        "polarity": "high",
+        "token": "ANGER_PROPENSITY",
+        "value": 65
+      },
+      {
+        "absDeviationFromNeutral50": 13,
+        "deviationFromNeutral50": -13,
+        "polarity": "low",
+        "token": "CLOSEMINDED",
+        "value": 37
+      },
+      {
+        "absDeviationFromNeutral50": 12,
+        "deviationFromNeutral50": -12,
+        "polarity": "low",
+        "token": "STRESS_VULNERABILITY",
+        "value": 38
+      },
+      {
+        "absDeviationFromNeutral50": 10,
+        "deviationFromNeutral50": 10,
+        "polarity": "high",
+        "token": "ACTIVITY_LEVEL",
+        "value": 60
+      },
+      {
+        "absDeviationFromNeutral50": 10,
+        "deviationFromNeutral50": -10,
+        "polarity": "low",
+        "token": "PERFECTIONIST",
+        "value": 40
+      }
+    ],
+    "identity": {
+      "casteId": "MALE",
+      "creatureId": "DWARF",
+      "displayName": "îton Oltarkurik \"Gildthorn\", Woodworker",
+      "professionName": "Woodworker"
+    },
+    "inventoryItems": [
+      {
+        "bodyPartId": 1,
+        "description": "(llama wool trousers)",
+        "mode": 2,
+        "typeToken": "PANTS"
+      },
+      {
+        "bodyPartId": 0,
+        "description": "(pig tail dress)",
+        "mode": 2,
+        "typeToken": "ARMOR"
+      },
+      {
+        "bodyPartId": 9,
+        "description": "(alpaca wool left glove)",
+        "mode": 2,
+        "typeToken": "GLOVES"
+      },
+      {
+        "bodyPartId": 8,
+        "description": "(alpaca wool right glove)",
+        "mode": 2,
+        "typeToken": "GLOVES"
+      },
+      {
+        "bodyPartId": 15,
+        "description": "(cave spider silk sock)",
+        "mode": 2,
+        "typeToken": "SHOES"
+      },
+      {
+        "bodyPartId": 15,
+        "description": "(llama leather shoe)",
+        "mode": 2,
+        "typeToken": "SHOES"
+      },
+      {
+        "bodyPartId": 14,
+        "description": "(cave spider silk sock)",
+        "mode": 2,
+        "typeToken": "SHOES"
+      },
+      {
+        "bodyPartId": 14,
+        "description": "(llama leather shoe)",
+        "mode": 2,
+        "typeToken": "SHOES"
+      }
+    ],
+    "location": {
+      "idleArea": {
+        "isValid": true,
+        "x": 70,
+        "y": 88,
+        "z": 173
+      },
+      "idleAreaType": -1,
+      "pathDestination": {
+        "isValid": true,
+        "x": 71,
+        "y": 87,
+        "z": 173
+      },
+      "position": {
+        "isValid": true,
+        "x": 70,
+        "y": 88,
+        "z": 173
+      }
+    },
+    "mannerisms": [],
+    "military": {
+      "patrolCooldown": 1,
+      "squadId": -1,
+      "squadPosition": -1
+    },
+    "noblePositions": {
+      "count": 0,
+      "items": []
+    },
+    "notableCounters": [
+      {
+        "token": "sleepinessTimer",
+        "value": 4295
+      },
+      {
+        "token": "hungerTimer",
+        "value": 1
+      },
+      {
+        "token": "thirstTimer",
+        "value": 1
+      }
+    ],
+    "notes": {
+      "health": "Nonzero counters and wounds are useful grounding. Zero counters should not be emphasized.",
+      "inventory": "Inventory descriptions are useful grounding but usually low priority unless item is unusual.",
+      "needs": "Need focusLevel is current satisfaction/pressure; needLevel is raw decay/severity pressure.",
+      "traits": "Only extreme traits are prompt candidates. Full raw trait list remains in personality.traits.",
+      "values": "Value strength sign is raw and should be interpreted cautiously."
+    },
+    "relationships": {
+      "count": 0,
+      "items": [],
+      "notes": {
+        "warning": "Only raw relationship ids. Names and relationship semantics not resolved in v0.1."
+      }
+    },
+    "strongNeeds": [
+      {
+        "deityId": -1,
+        "focusLevel": 0,
+        "id": 1,
+        "isDeeplyUnmet": false,
+        "isUnmet": false,
+        "needLevel": 10,
+        "token": "DrinkAlcohol"
+      },
+      {
+        "deityId": -1,
+        "focusLevel": 0,
+        "id": 27,
+        "isDeeplyUnmet": false,
+        "isUnmet": false,
+        "needLevel": 5,
+        "token": "HelpSomebody"
+      },
+      {
+        "deityId": -1,
+        "focusLevel": 0,
+        "id": 29,
+        "isDeeplyUnmet": false,
+        "isUnmet": false,
+        "needLevel": 2,
+        "token": "AdmireArt"
+      },
+      {
+        "deityId": -1,
+        "focusLevel": 0,
+        "id": 7,
+        "isDeeplyUnmet": false,
+        "isUnmet": false,
+        "needLevel": 2,
+        "token": "BeWithFamily"
+      },
+      {
+        "deityId": -1,
+        "focusLevel": 0,
+        "id": 8,
+        "isDeeplyUnmet": false,
+        "isUnmet": false,
+        "needLevel": 2,
+        "token": "BeWithFriends"
+      },
+      {
+        "deityId": -1,
+        "focusLevel": 0,
+        "id": 13,
+        "isDeeplyUnmet": false,
+        "isUnmet": false,
+        "needLevel": 2,
+        "token": "CraftObject"
+      },
+      {
+        "deityId": -1,
+        "focusLevel": 0,
+        "id": 15,
+        "isDeeplyUnmet": false,
+        "isUnmet": false,
+        "needLevel": 2,
+        "token": "PracticeSkill"
+      },
+      {
+        "deityId": -1,
+        "focusLevel": 0,
+        "id": 3,
+        "isDeeplyUnmet": false,
+        "isUnmet": false,
+        "needLevel": 2,
+        "token": "StayOccupied"
+      }
+    ],
+    "strongValues": [
+      {
+        "absStrength": 34,
+        "polarity": "positive",
+        "strength": 34,
+        "token": "CRAFTSMANSHIP",
+        "type": 20
+      },
+      {
+        "absStrength": 20,
+        "polarity": "positive",
+        "strength": 20,
+        "token": "LOYALTY",
+        "type": 1
+      },
+      {
+        "absStrength": 4,
+        "polarity": "positive",
+        "strength": 4,
+        "token": "INTROSPECTION",
+        "type": 15
+      }
+    ],
+    "topSkills": [
+      {
+        "effective": 5,
+        "experience": 0,
+        "id": 2,
+        "nominal": 5,
+        "rating": 5,
+        "rust": 0,
+        "token": "CARPENTRY",
+        "totalExperience": 3500
+      },
+      {
+        "effective": 3,
+        "experience": 200,
+        "id": 92,
+        "nominal": 3,
+        "rating": 3,
+        "rust": 0,
+        "token": "SPEAKING",
+        "totalExperience": 2000
+      },
+      {
+        "effective": 3,
+        "experience": 0,
+        "id": 1,
+        "nominal": 3,
+        "rating": 3,
+        "rust": 0,
+        "token": "WOODCUTTING",
+        "totalExperience": 1800
+      },
+      {
+        "effective": 2,
+        "experience": 400,
+        "id": 90,
+        "nominal": 2,
+        "rating": 2,
+        "rust": 0,
+        "token": "POETRY",
+        "totalExperience": 1500
+      },
+      {
+        "effective": 2,
+        "experience": 400,
+        "id": 117,
+        "nominal": 2,
+        "rating": 2,
+        "rust": 0,
+        "token": "MAKE_MUSIC",
+        "totalExperience": 1500
+      },
+      {
+        "effective": 1,
+        "experience": 500,
+        "id": 116,
+        "nominal": 1,
+        "rating": 1,
+        "rust": 0,
+        "token": "DANCE",
+        "totalExperience": 1000
+      },
+      {
+        "effective": 1,
+        "experience": 0,
+        "id": 48,
+        "nominal": 1,
+        "rating": 1,
+        "rust": 0,
+        "token": "BOWYER",
+        "totalExperience": 500
+      },
+      {
+        "effective": 1,
+        "experience": 0,
+        "id": 63,
+        "nominal": 1,
+        "rating": 1,
+        "rust": 0,
+        "token": "WOOD_BURNING",
+        "totalExperience": 500
+      }
+    ],
+    "wounds": {
+      "count": 0,
+      "items": []
+    }
+  },
+  "relationships": {
+    "count": 0,
+    "items": [],
+    "notes": {
+      "warning": "Only raw relationship ids. Names and relationship semantics not resolved in v0.1."
+    }
+  },
+  "requestedUnitId": "6599",
+  "roles": {
+    "military": {
+      "patrolCooldown": 1,
+      "squadId": -1,
+      "squadPosition": -1
+    },
+    "noblePositions": {
+      "count": 0,
+      "items": []
+    }
+  },
+  "schemaVersion": "fortress-souls-dwarf-snapshot.v0.1",
+  "siteLoaded": true,
+  "skills": {
+    "count": 8,
+    "items": [
+      {
+        "effective": 3,
+        "experience": 0,
+        "id": 1,
+        "nominal": 3,
+        "rating": 3,
+        "rust": 0,
+        "token": "WOODCUTTING",
+        "totalExperience": 1800
+      },
+      {
+        "effective": 5,
+        "experience": 0,
+        "id": 2,
+        "nominal": 5,
+        "rating": 5,
+        "rust": 0,
+        "token": "CARPENTRY",
+        "totalExperience": 3500
+      },
+      {
+        "effective": 1,
+        "experience": 0,
+        "id": 48,
+        "nominal": 1,
+        "rating": 1,
+        "rust": 0,
+        "token": "BOWYER",
+        "totalExperience": 500
+      },
+      {
+        "effective": 1,
+        "experience": 0,
+        "id": 63,
+        "nominal": 1,
+        "rating": 1,
+        "rust": 0,
+        "token": "WOOD_BURNING",
+        "totalExperience": 500
+      },
+      {
+        "effective": 2,
+        "experience": 400,
+        "id": 90,
+        "nominal": 2,
+        "rating": 2,
+        "rust": 0,
+        "token": "POETRY",
+        "totalExperience": 1500
+      },
+      {
+        "effective": 3,
+        "experience": 200,
+        "id": 92,
+        "nominal": 3,
+        "rating": 3,
+        "rust": 0,
+        "token": "SPEAKING",
+        "totalExperience": 2000
+      },
+      {
+        "effective": 1,
+        "experience": 500,
+        "id": 116,
+        "nominal": 1,
+        "rating": 1,
+        "rust": 0,
+        "token": "DANCE",
+        "totalExperience": 1000
+      },
+      {
+        "effective": 2,
+        "experience": 400,
+        "id": 117,
+        "nominal": 2,
+        "rating": 2,
+        "rust": 0,
+        "token": "MAKE_MUSIC",
+        "totalExperience": 1500
+      }
+    ]
+  },
+  "soulPresent": true,
+  "stress": {
+    "category": 3,
+    "categoryScale": "0-most-stressed-6-least-stressed",
+    "longterm": 0,
+    "raw": 0
+  },
+  "tickCount": 421730390,
+  "work": {
+    "currentJob": {
+      "completionTimer": -1,
+      "id": 1,
+      "itemCount": 1,
+      "position": {
+        "isValid": true,
+        "x": 71,
+        "y": 87,
+        "z": 173
+      },
+      "token": "PickupEquipment",
+      "type": 51
+    }
+  },
+  "worldLoaded": true
+}
