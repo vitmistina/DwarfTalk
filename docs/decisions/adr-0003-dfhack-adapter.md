@@ -3,7 +3,7 @@
 **Status:** Accepted  
 **Date:** 2026-06-18  
 **Decision owner:** Fortress Souls project  
-**Related research:** `docs/research/dfhack-command-invocation.md`  
+**Related research:** `docs/research/dfhack-command-invocation.md`, `docs/research/dfhack-field-map.md`
 **Related backlog items:** `B-018`, `B-019`, `B-020`, `B-021`
 
 ---
@@ -61,6 +61,8 @@ POST /api/dfhack/execute
 The backend must not pass arbitrary filesystem script paths to `dfhack-run`.
 
 The backend must not allow the LLM to call DFHack.
+
+Scripts in the v0.1 allowlist must be read-only and must emit JSON-safe primitives only. They must not emit raw DFHack userdata or other values that depend on Lua object identity or memory layout.
 
 ---
 
@@ -211,6 +213,29 @@ R-001 verified the following:
 [OK] TCP 127.0.0.1:5000 is true when DFHack is started.
 [OK] dfhack-run can be invoked by full path from outside the DFHack folder.
 ```
+
+---
+
+## B-019 validation update
+
+B-019 validated the first `list-dwarves` and `get-dwarf-snapshot` script pair against a live fortress. The validation run produced:
+
+```text
+ListCount            : 7
+ValidSnapshotCount   : 7
+ErrorSnapshotCount   : 0
+InvalidSnapshotCount : 0
+```
+
+This is sufficient evidence for v0.1 to proceed with the JSON-file adapter and live process adapter implementation behind the strict command allowlist described above.
+
+The B-019 field-map research also tightened the script/data safety boundary:
+
+- the script layer remains read-only,
+- output is a curated DTO rather than raw DF memory,
+- raw full snapshots are for debugging and future mapping,
+- `promptCandidates` is the preferred model-facing seam,
+- stdout remains untrusted until JSON parsing succeeds.
 
 ---
 
