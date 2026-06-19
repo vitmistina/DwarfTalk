@@ -5,6 +5,37 @@ This folder contains project-level documentation that should be stable across re
 ## Decisions
 
 - `decisions/adr-0003-dfhack-adapter.md` records the accepted v0.1 DFHack adapter invocation strategy.
+- `decisions/adr-0005-llm-provider-strategy.md` records the accepted v0.1 LLM provider strategy.
+
+## LLM provider strategy
+
+v0.1 uses `FakeChatProvider` by default.
+
+The first real provider target is OpenRouter through `OpenAiCompatibleChatProvider`.
+
+Default configured model:
+
+```text
+deepseek/deepseek-v3.2
+```
+
+v0.1 intentionally supports only one configured model.
+
+Not included in v0.1:
+
+- model picker,
+- streaming,
+- tool calling,
+- memory,
+- agent runtime,
+- provider marketplace,
+- game mutation.
+
+See:
+
+- `research/llm-provider-options.md`
+- `runbooks/provider-configuration.md`
+- `decisions/adr-0005-llm-provider-strategy.md`
 
 ## Research
 
