@@ -1,0 +1,156 @@
+{
+  "schemaVersion": "fortress-souls-dwarf-snapshot.v0.1",
+  "dwarfId": "4103",
+  "source": {
+    "adapter": "Fake",
+    "worldLoaded": true,
+    "siteLoaded": true,
+    "mapLoaded": true,
+    "soulPresent": true
+  },
+  "identity": {
+    "displayName": "Domas Inkgranite",
+    "profession": "Bookkeeper",
+    "professionToken": "BOOKKEEPER",
+    "creatureId": "DWARF",
+    "casteId": "MALE"
+  },
+  "work": {
+    "currentJob": "UpdateStockpileRecords"
+  },
+  "stress": {
+    "raw": 28000,
+    "longterm": 22000,
+    "category": 2,
+    "scale": "Elevated"
+  },
+  "skills": [
+    {
+      "token": "Organizer",
+      "rating": 10,
+      "effective": 10,
+      "nominal": 10,
+      "experience": 5200,
+      "totalExperience": 16200,
+      "rust": 0
+    },
+    {
+      "token": "Appraisal",
+      "rating": 6,
+      "effective": 6,
+      "nominal": 6,
+      "experience": 1400,
+      "totalExperience": 6400,
+      "rust": 0
+    },
+    {
+      "token": "JudgeOfIntent",
+      "rating": 4,
+      "effective": 4,
+      "nominal": 4,
+      "experience": 650,
+      "totalExperience": 2650,
+      "rust": 0
+    }
+  ],
+  "personality": {
+    "present": true,
+    "traits": [
+      {
+        "token": "ORDERLINESS",
+        "value": 79,
+        "deviationFromNeutral50": 29,
+        "absDeviationFromNeutral50": 29
+      },
+      {
+        "token": "ANXIETY_PROPENSITY",
+        "value": 63,
+        "deviationFromNeutral50": 13,
+        "absDeviationFromNeutral50": 13
+      }
+    ],
+    "values": [
+      {
+        "token": "LAW",
+        "type": 6,
+        "strength": 68
+      },
+      {
+        "token": "KNOWLEDGE",
+        "type": 4,
+        "strength": 62
+      }
+    ],
+    "needs": [
+      {
+        "token": "AcquireObject",
+        "id": 5,
+        "deityId": -1,
+        "focusLevel": -1200,
+        "needLevel": 4,
+        "isUnmet": true,
+        "isDeeplyUnmet": true
+      },
+      {
+        "token": "Excitement",
+        "id": 6,
+        "deityId": -1,
+        "focusLevel": 2200,
+        "needLevel": 2,
+        "isUnmet": false,
+        "isDeeplyUnmet": false
+      }
+    ],
+    "mannerisms": [
+      {
+        "token": "STRAIGHTENS_SCROLLS",
+        "situationToken": "THINKING"
+      }
+    ]
+  },
+  "promptCandidates": {
+    "topSkills": [
+      {
+        "token": "Organizer",
+        "rating": 10,
+        "effective": 10,
+        "nominal": 10,
+        "experience": 5200,
+        "totalExperience": 16200,
+        "rust": 0
+      }
+    ],
+    "extremeTraits": [
+      {
+        "token": "ORDERLINESS",
+        "value": 79,
+        "deviationFromNeutral50": 29,
+        "absDeviationFromNeutral50": 29
+      }
+    ],
+    "strongValues": [
+      {
+        "token": "LAW",
+        "type": 6,
+        "strength": 68
+      }
+    ],
+    "strongNeeds": [
+      {
+        "token": "AcquireObject",
+        "id": 5,
+        "deityId": -1,
+        "focusLevel": -1200,
+        "needLevel": 4,
+        "isUnmet": true,
+        "isDeeplyUnmet": true
+      }
+    ],
+    "mannerisms": [
+      {
+        "token": "STRAIGHTENS_SCROLLS",
+        "situationToken": "THINKING"
+      }
+    ]
+  }
+}

@@ -1,0 +1,165 @@
+{
+  "schemaVersion": "fortress-souls-dwarf-snapshot.v0.1",
+  "dwarfId": "4101",
+  "source": {
+    "adapter": "Fake",
+    "worldLoaded": true,
+    "siteLoaded": true,
+    "mapLoaded": true,
+    "soulPresent": true
+  },
+  "identity": {
+    "displayName": "Iden Torrentshade",
+    "profession": "Miner",
+    "professionToken": "MINER",
+    "creatureId": "DWARF",
+    "casteId": "MALE"
+  },
+  "work": {
+    "currentJob": "DigChannel"
+  },
+  "stress": {
+    "raw": 12000,
+    "longterm": 9000,
+    "category": 1,
+    "scale": "Low"
+  },
+  "skills": [
+    {
+      "token": "Mining",
+      "rating": 9,
+      "effective": 9,
+      "nominal": 9,
+      "experience": 4000,
+      "totalExperience": 14000,
+      "rust": 0
+    },
+    {
+      "token": "Stonecutting",
+      "rating": 6,
+      "effective": 6,
+      "nominal": 6,
+      "experience": 1500,
+      "totalExperience": 6500,
+      "rust": 0
+    },
+    {
+      "token": "Masonry",
+      "rating": 4,
+      "effective": 4,
+      "nominal": 4,
+      "experience": 500,
+      "totalExperience": 2500,
+      "rust": 0
+    }
+  ],
+  "personality": {
+    "present": true,
+    "traits": [
+      {
+        "token": "PERSEVERANCE",
+        "value": 72,
+        "deviationFromNeutral50": 22,
+        "absDeviationFromNeutral50": 22
+      },
+      {
+        "token": "DUTIFULNESS",
+        "value": 64,
+        "deviationFromNeutral50": 14,
+        "absDeviationFromNeutral50": 14
+      }
+    ],
+    "values": [
+      {
+        "token": "CRAFTSMANSHIP",
+        "type": 3,
+        "strength": 66
+      },
+      {
+        "token": "HARD_WORK",
+        "type": 8,
+        "strength": 59
+      }
+    ],
+    "needs": [
+      {
+        "token": "DrinkAlcohol",
+        "id": 1,
+        "deityId": -1,
+        "focusLevel": -1000,
+        "needLevel": 5,
+        "isUnmet": true,
+        "isDeeplyUnmet": true
+      },
+      {
+        "token": "BeCreative",
+        "id": 2,
+        "deityId": -1,
+        "focusLevel": 2500,
+        "needLevel": 2,
+        "isUnmet": false,
+        "isDeeplyUnmet": false
+      }
+    ],
+    "mannerisms": [
+      {
+        "token": "TAPS_FOOT",
+        "situationToken": "THINKING"
+      }
+    ]
+  },
+  "promptCandidates": {
+    "topSkills": [
+      {
+        "token": "Mining",
+        "rating": 9,
+        "effective": 9,
+        "nominal": 9,
+        "experience": 4000,
+        "totalExperience": 14000,
+        "rust": 0
+      },
+      {
+        "token": "Stonecutting",
+        "rating": 6,
+        "effective": 6,
+        "nominal": 6,
+        "experience": 1500,
+        "totalExperience": 6500,
+        "rust": 0
+      }
+    ],
+    "extremeTraits": [
+      {
+        "token": "PERSEVERANCE",
+        "value": 72,
+        "deviationFromNeutral50": 22,
+        "absDeviationFromNeutral50": 22
+      }
+    ],
+    "strongValues": [
+      {
+        "token": "CRAFTSMANSHIP",
+        "type": 3,
+        "strength": 66
+      }
+    ],
+    "strongNeeds": [
+      {
+        "token": "DrinkAlcohol",
+        "id": 1,
+        "deityId": -1,
+        "focusLevel": -1000,
+        "needLevel": 5,
+        "isUnmet": true,
+        "isDeeplyUnmet": true
+      }
+    ],
+    "mannerisms": [
+      {
+        "token": "TAPS_FOOT",
+        "situationToken": "THINKING"
+      }
+    ]
+  }
+}

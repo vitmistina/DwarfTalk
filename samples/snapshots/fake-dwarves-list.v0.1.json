@@ -1,0 +1,32 @@
+{
+  "items": [
+    {
+      "id": "4101",
+      "displayName": "Iden Torrentshade",
+      "profession": "Miner",
+      "currentJob": "DigChannel",
+      "stressLevel": "Low"
+    },
+    {
+      "id": "4102",
+      "displayName": "Nil Stonereed",
+      "profession": "Farmer",
+      "currentJob": "HarvestPlants",
+      "stressLevel": "Calm"
+    },
+    {
+      "id": "4103",
+      "displayName": "Domas Inkgranite",
+      "profession": "Bookkeeper",
+      "currentJob": "UpdateStockpileRecords",
+      "stressLevel": "Elevated"
+    }
+  ],
+  "source": {
+    "adapter": "Fake",
+    "schemaVersion": "fortress-souls-dwarf-list.v0.1",
+    "worldLoaded": true,
+    "siteLoaded": true,
+    "mapLoaded": true
+  }
+}

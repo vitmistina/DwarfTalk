@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FortressSouls.Domain\FortressSouls.Domain.csproj" />
+    <ProjectReference Include="..\FortressSouls.Observability\FortressSouls.Observability.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

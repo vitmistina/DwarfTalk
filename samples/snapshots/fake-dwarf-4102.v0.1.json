@@ -1,0 +1,156 @@
+{
+  "schemaVersion": "fortress-souls-dwarf-snapshot.v0.1",
+  "dwarfId": "4102",
+  "source": {
+    "adapter": "Fake",
+    "worldLoaded": true,
+    "siteLoaded": true,
+    "mapLoaded": true,
+    "soulPresent": true
+  },
+  "identity": {
+    "displayName": "Nil Stonereed",
+    "profession": "Farmer",
+    "professionToken": "FARMER",
+    "creatureId": "DWARF",
+    "casteId": "FEMALE"
+  },
+  "work": {
+    "currentJob": "HarvestPlants"
+  },
+  "stress": {
+    "raw": 4500,
+    "longterm": 3000,
+    "category": 0,
+    "scale": "Calm"
+  },
+  "skills": [
+    {
+      "token": "Growing",
+      "rating": 8,
+      "effective": 8,
+      "nominal": 8,
+      "experience": 3600,
+      "totalExperience": 12600,
+      "rust": 0
+    },
+    {
+      "token": "Brewing",
+      "rating": 5,
+      "effective": 5,
+      "nominal": 5,
+      "experience": 1100,
+      "totalExperience": 5100,
+      "rust": 0
+    },
+    {
+      "token": "Cooking",
+      "rating": 3,
+      "effective": 3,
+      "nominal": 3,
+      "experience": 500,
+      "totalExperience": 1500,
+      "rust": 0
+    }
+  ],
+  "personality": {
+    "present": true,
+    "traits": [
+      {
+        "token": "CHEER_PROPENSITY",
+        "value": 74,
+        "deviationFromNeutral50": 24,
+        "absDeviationFromNeutral50": 24
+      },
+      {
+        "token": "FRIENDLINESS",
+        "value": 67,
+        "deviationFromNeutral50": 17,
+        "absDeviationFromNeutral50": 17
+      }
+    ],
+    "values": [
+      {
+        "token": "NATURE",
+        "type": 14,
+        "strength": 71
+      },
+      {
+        "token": "FAMILY",
+        "type": 10,
+        "strength": 58
+      }
+    ],
+    "needs": [
+      {
+        "token": "PrayOrMeditate",
+        "id": 3,
+        "deityId": 24,
+        "focusLevel": 1000,
+        "needLevel": 2,
+        "isUnmet": false,
+        "isDeeplyUnmet": false
+      },
+      {
+        "token": "BeWithFamily",
+        "id": 4,
+        "deityId": -1,
+        "focusLevel": -250,
+        "needLevel": 3,
+        "isUnmet": true,
+        "isDeeplyUnmet": false
+      }
+    ],
+    "mannerisms": [
+      {
+        "token": "HUMS",
+        "situationToken": "WORKING"
+      }
+    ]
+  },
+  "promptCandidates": {
+    "topSkills": [
+      {
+        "token": "Growing",
+        "rating": 8,
+        "effective": 8,
+        "nominal": 8,
+        "experience": 3600,
+        "totalExperience": 12600,
+        "rust": 0
+      }
+    ],
+    "extremeTraits": [
+      {
+        "token": "CHEER_PROPENSITY",
+        "value": 74,
+        "deviationFromNeutral50": 24,
+        "absDeviationFromNeutral50": 24
+      }
+    ],
+    "strongValues": [
+      {
+        "token": "NATURE",
+        "type": 14,
+        "strength": 71
+      }
+    ],
+    "strongNeeds": [
+      {
+        "token": "BeWithFamily",
+        "id": 4,
+        "deityId": -1,
+        "focusLevel": -250,
+        "needLevel": 3,
+        "isUnmet": true,
+        "isDeeplyUnmet": false
+      }
+    ],
+    "mannerisms": [
+      {
+        "token": "HUMS",
+        "situationToken": "WORKING"
+      }
+    ]
+  }
+}
