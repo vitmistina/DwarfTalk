@@ -99,6 +99,8 @@ Do not require a full Aspire AppHost for B-005.
 
 Allow B-006 to add Aspire AppHost or ServiceDefaults later if it simplifies one-command local startup. AppHost is orchestration convenience, not an architectural declaration that the system is microservices.
 
+Explicitly reject a microservice split for observability in v0.1. Telemetry infrastructure may exist as a local developer aid, but Fortress Souls still ships as one backend application plus its local UI.
+
 ## Implementation direction for B-005
 
 Create a dedicated observability module/project if the backend skeleton supports it:
@@ -231,3 +233,11 @@ This ADR does not decide:
 - OpenTelemetry Collector deployment,
 - long-term retention of telemetry,
 - prompt/response capture strategy beyond v0.1 redaction rules.
+
+## Unresolved questions
+
+The following remain open and should be resolved only when later backlog items need them:
+
+- whether B-006 should add Aspire AppHost and ServiceDefaults or keep standalone startup scripts,
+- whether browser-side telemetry is useful in v0.1 beyond basic developer diagnostics,
+- whether any additional bounded metrics are needed after the first end-to-end chat slice exists.
