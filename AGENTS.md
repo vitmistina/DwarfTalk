@@ -92,16 +92,16 @@ Always load:
 
 Load only when relevant:
 
-| Work area | Additional context |
-| --- | --- |
-| Backend or API | `.agents/instructions/backend.instructions.md` |
-| Frontend | `.agents/instructions/frontend.instructions.md` |
-| Testing | `.agents/instructions/testing.instructions.md` |
-| DFHack | `.agents/instructions/dfhack.instructions.md`, `docs/research/`, `docs/runbooks/dfhack-setup.md`, `.agents/skills/dfhack-adapter-safety/SKILL.md` |
-| Prompting | `.agents/instructions/prompting.instructions.md`, prompt contract, `.agents/skills/prompt-contracts/SKILL.md` |
-| Observability | `.agents/instructions/observability.instructions.md`, observability contract, `.agents/skills/observability-first/SKILL.md` |
-| Module boundaries | Architecture docs and `.agents/skills/modular-monolith-boundaries/SKILL.md` |
-| Repeated workflow | The matching file in `.agents/prompts/` |
+| Work area         | Additional context                                                                                                                                |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Backend or API    | `.agents/instructions/backend.instructions.md`                                                                                                    |
+| Frontend          | `.agents/instructions/frontend.instructions.md`                                                                                                   |
+| Testing           | `.agents/instructions/testing.instructions.md`                                                                                                    |
+| DFHack            | `.agents/instructions/dfhack.instructions.md`, `docs/research/`, `docs/runbooks/dfhack-setup.md`, `.agents/skills/dfhack-adapter-safety/SKILL.md` |
+| Prompting         | `.agents/instructions/prompting.instructions.md`, prompt contract, `.agents/skills/prompt-contracts/SKILL.md`                                     |
+| Observability     | `.agents/instructions/observability.instructions.md`, observability contract, `.agents/skills/observability-first/SKILL.md`                       |
+| Module boundaries | Architecture docs and `.agents/skills/modular-monolith-boundaries/SKILL.md`                                                                       |
+| Repeated workflow | The matching file in `.agents/prompts/`                                                                                                           |
 
 Do not load every agent primitive by default. Progressive disclosure is part of
 the design: broad permanent rules here, specific rules close to their work.
@@ -244,14 +244,14 @@ boundaries, not mirror private methods or freeze incidental implementation.
 
 Choose the lowest test level that proves the risk:
 
-| Test type | Use for | Must avoid |
-| --- | --- | --- |
-| Unit | Domain rules, normalization, prompt assembly, redaction, pure mapping | Filesystem, network, clock, random state, provider SDKs |
-| Contract/component | Adapter mappings, schemas, provider request/response translation, frontend feature behavior | Live third-party services |
-| Integration | ASP.NET pipeline, dependency injection, serialization, module wiring, process adapter against a controlled fake | Tests that merely repeat unit coverage |
-| Architecture | Project references, forbidden dependencies, module cycles, safety invariants | Subjective style preferences |
-| End-to-end | A few critical user journeys in fake mode | Exhaustive permutations or live provider assertions |
-| Manual smoke | Live DFHack integration and explicitly documented provider checks | Undocumented acceptance evidence |
+| Test type          | Use for                                                                                                         | Must avoid                                              |
+| ------------------ | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| Unit               | Domain rules, normalization, prompt assembly, redaction, pure mapping                                           | Filesystem, network, clock, random state, provider SDKs |
+| Contract/component | Adapter mappings, schemas, provider request/response translation, frontend feature behavior                     | Live third-party services                               |
+| Integration        | ASP.NET pipeline, dependency injection, serialization, module wiring, process adapter against a controlled fake | Tests that merely repeat unit coverage                  |
+| Architecture       | Project references, forbidden dependencies, module cycles, safety invariants                                    | Subjective style preferences                            |
+| End-to-end         | A few critical user journeys in fake mode                                                                       | Exhaustive permutations or live provider assertions     |
+| Manual smoke       | Live DFHack integration and explicitly documented provider checks                                               | Undocumented acceptance evidence                        |
 
 Test quality rules:
 
@@ -308,12 +308,12 @@ requires a code-local reason.
 Prefer repository scripts because local and CI verification should use the same
 entry points. Use the PowerShell counterpart on Windows.
 
-| Intent | Preferred entry point |
-| --- | --- |
-| Start local development | `./scripts/dev.sh` |
-| Format | `./scripts/format.sh` |
-| Run tests | `./scripts/test.sh` |
-| Run all merge-blocking checks | `./scripts/check.sh` |
+| Intent                        | Preferred entry point |
+| ----------------------------- | --------------------- |
+| Start local development       | `./scripts/dev.sh`    |
+| Format                        | `./scripts/format.sh` |
+| Run tests                     | `./scripts/test.sh`   |
+| Run all merge-blocking checks | `./scripts/check.sh`  |
 
 If a listed script does not exist yet, use the commands documented in the
 nearest README or runbook. Do not create unrelated tooling merely to satisfy
@@ -421,6 +421,7 @@ End every implementation task with:
 2. Changed files.
 3. Validation commands and results.
 4. Known limitations, unverified assumptions, and manual checks still needed.
+5. Marking the backlog item as DONE to make sure handover works correctly
 
 Never substitute "looks correct" for evidence.
 

@@ -16,3 +16,5 @@ Load the backlog item plus `.agents/instructions/frontend.instructions.md` and t
 - Add focused behavior tests and run frontend checks.
 
 Deliver: user-visible change, files, validation, and limitations.
+
+Be lazy, ponytail it.

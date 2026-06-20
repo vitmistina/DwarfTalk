@@ -16,3 +16,5 @@ Load the backlog item and `.agents/instructions/backend.instructions.md`; add te
 - Add focused tests and run relevant backend checks.
 
 Deliver: changed behavior, files, validation, and limitations.
+
+Be lazy, ponytail it.
