@@ -46,31 +46,50 @@ Optional:
 
 ## Supported local path
 
-1. Restore frontend dependencies once in a fresh workspace:
+1. Optional: create a local root config when you want to override the tracked defaults.
 
    ```powershell
-   cd .\src\frontend
-   npm install
-   cd ..\..
+   Copy-Item .\fortress-souls.config.example.jsonc .\fortress-souls.config.jsonc
    ```
 
-   `src/frontend/package-lock.json` is committed, but local packages are not
-   vendored. Run this one-time restore before the first `dev`, `format`,
-   `test`, or `check` command in a fresh workspace.
+   `fortress-souls.config.example.jsonc` is the tracked source of commented
+   non-secret defaults. The ignored `fortress-souls.config.jsonc` is the local
+   single-pane override for adapter mode, ports, OTLP endpoint, DFHack path,
+   and other non-secret runtime choices.
 
-2. Start the supported fake-mode stack:
+2. Optional: create `.env` from `.env.example` when you need secrets.
+
+   ```powershell
+   Copy-Item .\.env.example .\.env
+   ```
+
+   Keep `.env` for credentials such as `FortressSouls__Llm__ApiKey`.
+
+3. Start the supported stack:
 
    ```powershell
    .\scripts\dev.ps1
    ```
 
-   Fake mode is the default supported development path.
+   `dev` creates `fortress-souls.config.jsonc` from the tracked example when it
+   is missing, then loads that local file plus `.env`. It also installs
+   frontend dependencies automatically when `src/frontend/node_modules` is
+   missing.
 
-3. Run the full repository checks:
+   If the default local ports are already in use, edit
+   `fortress-souls.config.jsonc` and change `backend.port` and/or
+   `frontend.port`, then rerun `dev`.
+
+   Fake mode remains the default supported development path.
+
+4. Run the full repository checks:
 
    ```powershell
    .\scripts\check.ps1
    ```
+
+   `check` still expects frontend dependencies to exist. Running `dev` once in
+   a fresh workspace satisfies that requirement.
 
 When the backend returns a safe failure, relevant UI error states surface
 `X-Correlation-ID`. Use that ID to inspect safe logs and traces; do not paste
@@ -81,6 +100,8 @@ secrets, prompt text, or model responses into reports.
 - Real provider mode is documented in `docs/runbooks/provider-configuration.md`.
 - Optional live DFHack manual validation is documented in `docs/runbooks/dfhack-b019-manual-validation.md`.
 - Fake mode remains the default supported path for day-to-day development.
+- Mixed local runs are supported through root config plus `.env`, for example:
+  `Fake + OpenAiCompatible`, `JsonFile + Fake`, and `DfHackProcess + OpenAiCompatible`.
 
 ## Canonical commands
 

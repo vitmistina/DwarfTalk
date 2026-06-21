@@ -35,6 +35,7 @@ function Invoke-NativeCommand {
 
 Invoke-NativeCommand -Label "backend build" -FilePath "dotnet" -Arguments @("build", $BackendSolution)
 Invoke-NativeCommand -Label "backend test" -FilePath "dotnet" -Arguments @("test", $BackendSolution, "--no-build")
+Invoke-NativeCommand -Label "local dev config test" -FilePath "node" -Arguments @("--test", ".\scripts\dev-config.test.mjs")
 Invoke-NativeCommand -Label "frontend typecheck" -FilePath "npm" -Arguments @("run", "typecheck") -WorkingDirectory $FrontendDir
 Invoke-NativeCommand -Label "frontend test" -FilePath "npm" -Arguments @("test", "--", "--run") -WorkingDirectory $FrontendDir
 Invoke-NativeCommand -Label "frontend build" -FilePath "npm" -Arguments @("run", "build") -WorkingDirectory $FrontendDir

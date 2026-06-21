@@ -13,6 +13,7 @@ run_step() {
 
 run_step "backend build" dotnet build "$backend_solution"
 run_step "backend test" dotnet test "$backend_solution" --no-build
+run_step "local dev config test" node --test "$repo_root/scripts/dev-config.test.mjs"
 (
   cd "$frontend_dir"
   run_step "frontend typecheck" npm run typecheck

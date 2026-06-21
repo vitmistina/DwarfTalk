@@ -6,10 +6,19 @@ Product spec reference: `docs/specs/fortress-souls-v0.1.spec.md` section 9
 
 ## Version identifiers
 
-- Prompt template version: `fortress-souls-prompt-template.v0.1`
-- Static interpretation guide version: `fortress-souls-interpretation-guide.v0.1`
+- Prompt template version: `fortress-souls-prompt-template.v0.2`
+- Static interpretation guide version: `fortress-souls-interpretation-guide.v0.2`
 
 The assembler MUST emit the template version in prompt text and diagnostics.
+
+## System instruction contract
+
+The system instruction MUST:
+
+1. Require first-person speech as the selected dwarf.
+2. Frame the player as a real but unexplained interlocutor rather than an automatic god, overseer, or friend.
+3. Ground the voice in supplied work, personality, needs, values, and mannerisms without reciting raw trait labels by default.
+4. Forbid invented events, hidden knowledge, and generic assistant behavior.
 
 ## Approved inputs
 

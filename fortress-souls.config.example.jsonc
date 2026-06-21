@@ -1,0 +1,50 @@
+{
+  // Backend dev HTTP port.
+  "backend": {
+    "port": 5230
+  },
+
+  // Frontend Vite dev server port.
+  "frontend": {
+    "port": 5173
+  },
+
+  // Empty string disables OTLP export and keeps console fallback only.
+  "observability": {
+    "otlpEndpoint": "http://localhost:4317"
+  },
+
+  "dwarfFortress": {
+    // Supported adapter types: Fake | JsonFile | DfHackProcess
+    "adapterType": "Fake",
+
+    // Used when adapterType is JsonFile.
+    "jsonFile": {
+      "dwarfListPath": "samples/snapshots/fake-dwarves-list.v0.1.json",
+      "dwarfSnapshotPath": "samples/snapshots/fake-dwarf-4101.v0.1.json"
+    },
+
+    // Used when adapterType is DfHackProcess.
+    "dfHack": {
+      // Point this to your local dfhack-run executable.
+      "runPath": "C:/Program Files (x86)/Steam/steamapps/common/DFHack/hack/dfhack-run.exe",
+
+      // Leave empty to derive the working directory from runPath.
+      "workingDirectory": "",
+
+      // v0.1 stays loopback-only.
+      "host": "127.0.0.1",
+      "port": 5000
+    }
+  },
+
+  "llm": {
+    // Supported provider types: Fake | OpenAiCompatible
+    "providerType": "Fake",
+    "endpoint": "https://openrouter.ai/api/v1",
+    "model": "deepseek/deepseek-v3.2",
+    "maxOutputTokens": 500,
+    "temperature": 0.85,
+    "timeoutSeconds": 45
+  }
+}

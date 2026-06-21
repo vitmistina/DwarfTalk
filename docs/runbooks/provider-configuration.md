@@ -16,25 +16,40 @@ Endpoint = https://openrouter.ai/api/v1
 Model = deepseek/deepseek-v3.2
 ```
 
-## Environment variables
+## Root config plus .env
 
-PowerShell:
+Keep the non-secret provider settings in `fortress-souls.config.jsonc` and the
+API key in `.env`.
+
+In `fortress-souls.config.jsonc`:
+
+```jsonc
+{
+  "llm": {
+    "providerType": "OpenAiCompatible",
+    "endpoint": "https://openrouter.ai/api/v1",
+    "model": "deepseek/deepseek-v3.2",
+    "maxOutputTokens": 500,
+    "temperature": 0.85,
+    "timeoutSeconds": 45,
+  },
+}
+```
+
+In `.env`:
 
 ```powershell
-$env:FortressSouls__Llm__ProviderType = "OpenAiCompatible"
-$env:FortressSouls__Llm__Endpoint = "https://openrouter.ai/api/v1"
-$env:FortressSouls__Llm__Model = "deepseek/deepseek-v3.2"
-$env:FortressSouls__Llm__ApiKey = ""
-$env:FortressSouls__Llm__MaxOutputTokens = "500"
-$env:FortressSouls__Llm__Temperature = "0.85"
-$env:FortressSouls__Llm__TimeoutSeconds = "45"
+FortressSouls__Llm__ApiKey=
 ```
 
 For fake mode:
 
 ```powershell
-$env:FortressSouls__Llm__ProviderType = "Fake"
+// llm.providerType = "Fake"
 ```
+
+`scripts/dev.*` reads the root config plus `.env` and projects them into the
+existing application environment-variable seams.
 
 ## Manual OpenRouter smoke test
 

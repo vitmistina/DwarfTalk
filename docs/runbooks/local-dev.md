@@ -30,7 +30,9 @@ cd ..\..
 ```
 
 `src/frontend/package-lock.json` is committed, but local packages are not
-vendored.
+vendored. `scripts/dev.*` now installs the frontend dependencies automatically
+when `src/frontend/node_modules` is missing. Run the manual restore only when
+you want to execute `format`, `test`, or `check` before the first `dev` run.
 
 If local script execution is blocked, run the commands with
 `powershell -ExecutionPolicy Bypass -File ...` for the current session.
@@ -44,8 +46,8 @@ Optional:
 
 ## Default local endpoints
 
-- Backend HTTP base: `http://localhost:5230`
-- Backend HTTPS base through the `https` launch profile: `https://localhost:7215`
+- Frontend dev base from the tracked config defaults: `http://127.0.0.1:5173`
+- Backend HTTP base from the tracked config defaults: `http://127.0.0.1:5230`
 - Health: `GET /api/health`
 - Provider status: `GET /api/provider/status`
 - Dwarf adapter status: `GET /api/dwarves/adapter-status`
@@ -56,25 +58,89 @@ Optional:
 - Prompt preview: `GET /api/chat/sessions/{sessionId}/prompt-preview`
   in development only
 
-## Environment defaults
+The backend and frontend ports above come from
+`fortress-souls.config.example.jsonc`. If you change the ports in your local
+root config, the derived URLs change with them.
 
-For local fake mode:
+## Root configuration files
 
-```powershell
-$env:FortressSouls__DwarfFortress__AdapterType = "Fake"
-$env:FortressSouls__Llm__ProviderType = "Fake"
+Supported local startup now uses three root files:
+
+- `fortress-souls.config.example.jsonc`: tracked commented defaults for
+  non-secret local runtime settings.
+- `fortress-souls.config.jsonc`: ignored local single-pane override for
+  non-secret settings such as adapter mode, ports, OTLP endpoint, JSON-file
+  paths, and DFHack pathing.
+- `.env.example` and `.env`: tracked example plus ignored local secrets.
+
+`scripts/dev.*` creates `fortress-souls.config.jsonc` from the tracked example
+when the local file is missing, then loads that local file and merges allowed
+secret keys from `.env`.
+
+Use the root config for:
+
+- backend and frontend dev ports,
+- provider type, endpoint, model, and token/temperature/timeout defaults,
+- adapter type,
+- JSON-file sample paths,
+- DFHack `runPath`, optional `workingDirectory`, host, and port,
+- local OTLP endpoint.
+
+If the default local ports are already occupied, edit `backend.port` and
+`frontend.port` in `fortress-souls.config.jsonc` and rerun `scripts/dev.*`.
+
+Use `.env` for:
+
+- `FortressSouls__Llm__ApiKey`,
+- any future OTLP auth headers or similar secret overrides.
+
+## Mode recipes
+
+### Fake plus Fake
+
+No local files are required. The tracked example config already defaults to:
+
+- `dwarfFortress.adapterType = Fake`
+- `llm.providerType = Fake`
+
+### Fake plus OpenAiCompatible
+
+In `fortress-souls.config.jsonc`:
+
+```jsonc
+{
+  "llm": {
+    "providerType": "OpenAiCompatible",
+  },
+}
 ```
 
-For local JSON-file mode with one fixed snapshot:
+In `.env`:
 
 ```powershell
-$env:FortressSouls__DwarfFortress__AdapterType = "JsonFile"
-$env:FortressSouls__DwarfFortress__JsonFile__DwarfListPath = "C:\path\to\matching-single-dwarf-list.json"
-$env:FortressSouls__DwarfFortress__JsonFile__DwarfSnapshotPath = "C:\path\to\matching-dwarf-snapshot.json"
-$env:FortressSouls__Llm__ProviderType = "Fake"
+FortressSouls__Llm__ApiKey=
 ```
 
-`DwarfSnapshotPath` points to one specific snapshot file. The adapter checks
+### JsonFile plus Fake
+
+In `fortress-souls.config.jsonc`:
+
+```jsonc
+{
+  "dwarfFortress": {
+    "adapterType": "JsonFile",
+    "jsonFile": {
+      "dwarfListPath": "samples/snapshots/fake-dwarves-list.v0.1.json",
+      "dwarfSnapshotPath": "samples/snapshots/fake-dwarf-4101.v0.1.json",
+    },
+  },
+  "llm": {
+    "providerType": "Fake",
+  },
+}
+```
+
+`dwarfSnapshotPath` points to one specific snapshot file. The adapter checks
 that the browser-selected dwarf ID matches both `requestedUnitId` and
 `identity.id` inside that file.
 
@@ -83,16 +149,28 @@ contains only that same dwarf. For predictable browser behavior, either keep
 the JSON-file list to the single dwarf represented by the snapshot file or use
 `Fake` or `DfHackProcess` mode when you want to switch between multiple dwarves.
 
-For local DFHack mode:
+### DfHackProcess plus Fake
 
-```powershell
-$env:FortressSouls__DwarfFortress__AdapterType = "DfHackProcess"
-$env:FortressSouls__DfHack__RunPath = "C:\Program Files (x86)\Steam\steamapps\common\DFHack\hack\dfhack-run.exe"
-$env:FortressSouls__DfHack__WorkingDirectory = "C:\Program Files (x86)\Steam\steamapps\common\DFHack\hack"
-$env:FortressSouls__DfHack__Host = "127.0.0.1"
-$env:FortressSouls__DfHack__Port = "5000"
-$env:FortressSouls__Llm__ProviderType = "Fake"
+In `fortress-souls.config.jsonc`:
+
+```jsonc
+{
+  "dwarfFortress": {
+    "adapterType": "DfHackProcess",
+    "dfHack": {
+      "runPath": "C:/Program Files (x86)/Steam/steamapps/common/DFHack/hack/dfhack-run.exe",
+      "workingDirectory": "",
+      "host": "127.0.0.1",
+      "port": 5000,
+    },
+  },
+  "llm": {
+    "providerType": "Fake",
+  },
+}
 ```
+
+Leave `workingDirectory` empty to derive it from `runPath`.
 
 This optional mode assumes the validated repo scripts under
 `dfhack/scripts/fortress-souls/` have already been manually copied into the
@@ -100,18 +178,16 @@ DFHack runtime scripts path. Use the manual preparation flow in
 `docs/runbooks/dfhack-b019-manual-validation.md`; `scripts/import-dfhack-scripts.ps1`
 is a maintainer sync-back helper, not the setup step.
 
-For local telemetry to Aspire Dashboard when starting the API outside the
-canonical launch profiles:
+### DfHackProcess plus OpenAiCompatible
 
-```powershell
-$env:OTEL_EXPORTER_OTLP_ENDPOINT = "http://localhost:4317"
-$env:OTEL_EXPORTER_OTLP_PROTOCOL = "grpc"
-$env:OTEL_SERVICE_NAME = "FortressSouls.Api"
-```
+Combine the DFHack config above with:
 
-The canonical `http` and `https` launch profiles already set these values, so
-`scripts/dev.*` and `dotnet run --launch-profile http` do not need manual OTEL
-exports. Telemetry export must never be required for the app to start.
+- `llm.providerType = OpenAiCompatible` in root config,
+- `FortressSouls__Llm__ApiKey` in `.env`.
+
+Set `observability.otlpEndpoint` in the root config when you want Aspire
+Dashboard traces and metrics. Set it to an empty string to stay on console
+fallback only. Telemetry export must never be required for the app to start.
 
 ## Start Aspire Dashboard
 
@@ -180,8 +256,10 @@ On POSIX shells, use:
 Run `npm install` once in `src/frontend` before the first `dev`, `format`,
 `test`, or `check` command in a fresh workspace.
 
-`dev` starts the backend and frontend together. The frontend dev server proxies
-`/api` to the backend on `http://127.0.0.1:5230`.
+`dev` starts the backend and frontend together. It projects the root config
+plus `.env` into the existing environment-variable seams, prints a safe summary
+of the active adapter/provider/observability mode, and installs frontend
+dependencies automatically when needed.
 
 Focused fake-mode browser smoke test:
 
@@ -199,20 +277,26 @@ with readiness polling:
 
 ## Start backend directly
 
-From the repository root:
+Use direct backend startup only for troubleshooting. The supported local path
+is still `scripts/dev.*`, because that is what projects the root config into
+the backend's existing environment-variable contract.
+
+Default fake-mode troubleshooting example from the repository root:
 
 ```powershell
-dotnet run --launch-profile http --project .\src\backend\FortressSouls.Api\FortressSouls.Api.csproj
+$env:ASPNETCORE_ENVIRONMENT = "Development"
+dotnet run --no-launch-profile --project .\src\backend\FortressSouls.Api\FortressSouls.Api.csproj --urls http://127.0.0.1:5230
 ```
 
-The `http` launch profile serves the API on `http://localhost:5230`.
+If you bypass `scripts/dev.*` for a non-default mode, export the equivalent
+environment values yourself first.
 
 Useful local checks:
 
 ```text
-GET http://localhost:5230/api/health
-GET http://localhost:5230/api/provider/status
-GET http://localhost:5230/api/dwarves/adapter-status
+GET http://127.0.0.1:5230/api/health
+GET http://127.0.0.1:5230/api/provider/status
+GET http://127.0.0.1:5230/api/dwarves/adapter-status
 ```
 
 Prompt preview remains development-only:
@@ -230,8 +314,13 @@ From the repository root:
 ```powershell
 cd .\src\frontend
 npm install
-npm run dev -- --host 127.0.0.1 --strictPort
+$env:FORTRESS_SOULS_FRONTEND_PORT = "5173"
+$env:FORTRESS_SOULS_API_PROXY_TARGET = "http://127.0.0.1:5230"
+npm run dev -- --host 127.0.0.1 --port 5173 --strictPort
 ```
+
+When the backend port differs from the tracked defaults, update
+`FORTRESS_SOULS_API_PROXY_TARGET` to match.
 
 The frontend is no longer a placeholder shell. It renders:
 
