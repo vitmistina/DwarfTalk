@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "fortress-souls-stock-summary-research.v0.1",
+  "provenance": {
+    "kind": "synthetic",
+    "purpose": "Offline contract and arithmetic validation; not captured from Dwarf Fortress."
+  },
+  "gameTime": {"year": 250, "tick": 12345},
+  "source": "df.global.world.items.other.IN_PLAY",
+  "definitions": {
+    "total": "Synthetic total.",
+    "usable": "Synthetic usable.",
+    "excluded": "Synthetic excluded.",
+    "category": "Synthetic category rule."
+  },
+  "limits": {"maxItemsScanned": 200000},
+  "exclusionPriority": ["rotten", "dumped", "forbidden", "construction", "trader"],
+  "totals": {"itemObjects": 25, "quantity": 100, "usableItemObjects": 20, "usableQuantity": 80, "excludedItemObjects": 5, "excludedQuantity": 20, "categorizedQuantity": 70, "uncategorizedQuantity": 10},
+  "excludedByReason": {
+    "rotten": {"itemObjects": 1, "quantity": 4},
+    "dumped": {"itemObjects": 1, "quantity": 3},
+    "forbidden": {"itemObjects": 1, "quantity": 5},
+    "construction": {"itemObjects": 1, "quantity": 2},
+    "trader": {"itemObjects": 1, "quantity": 6}
+  },
+  "categories": {
+    "preparedFood": {"exact": 10}, "drinks": {"exact": 20}, "seeds": {"exact": 4}, "meat": {"exact": 3},
+    "fish": {"exact": 2}, "rawFish": {"exact": 1}, "plants": {"exact": 4}, "plantGrowths": {"exact": 1},
+    "wood": {"exact": 5}, "fuel": {"exact": 2}, "cloth": {"exact": 2}, "leather": {"exact": 2},
+    "weapons": {"exact": 1}, "ammunition": {"exact": 4}, "armour": {"exact": 1}, "tools": {"exact": 1},
+    "metalBars": {"exact": 3}, "stone": {"exact": 2}, "furniture": {"exact": 1}, "finishedGoods": {"exact": 1}
+  },
+  "context": {"containedItemObjects": 3, "ownedItemObjects": 2, "squadEquipmentItemObjects": 1},
+  "bookkeeping": {"precision": 2, "directGameEstimateVerified": false, "note": "Synthetic metadata only; approximation intentionally omitted."},
+  "warnings": [],
+  "unsupported": ["Synthetic sample only."]
+}

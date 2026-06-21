@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "fortress-souls-spatial-vision-research.v0.1",
+  "provenance": {
+    "kind": "synthetic",
+    "purpose": "Offline contract and invariant validation; not captured from Dwarf Fortress."
+  },
+  "query": {"mode": "area", "x": 10, "y": 20, "z": 5, "width": 3, "height": 2},
+  "bounds": {"x1": 10, "y1": 20, "z": 5, "x2": 12, "y2": 21, "width": 3, "height": 2},
+  "limits": {"maxWidth": 25, "maxHeight": 25, "maxRadius": 12, "maxItemsScanned": 200000, "maxItemsPerCell": 40, "maxFlowsPerCell": 20},
+  "gameTime": {"year": 250, "tick": 12345},
+  "scan": {"itemsScanned": 42},
+  "cells": [
+    {"x": 10, "y": 20, "z": 5, "hidden": true, "visible": false, "terrain": {"tiletype": "StoneWall", "shape": "WALL", "material": "STONE", "special": "NORMAL", "variant": "VAR_1"}, "walkable": 0, "liquid": {"depth": 0}, "geologicalMaterial": {"status": "unknown", "reason": "Synthetic unresolved case."}, "zones": [], "units": [], "items": [], "flows": [], "symbol": "?"},
+    {"x": 11, "y": 20, "z": 5, "hidden": false, "visible": true, "terrain": {"tiletype": "StoneFloor1", "shape": "FLOOR", "material": "STONE", "special": "NORMAL", "variant": "VAR_1"}, "walkable": 4, "liquid": {"depth": 0}, "geologicalMaterial": {"token": "INORGANIC:GRANITE", "type": 0, "index": 1}, "zones": [], "units": [{"id": 7, "name": "Synthetic dwarf", "invader": false, "danger": false, "greatDanger": false}], "items": [], "flows": [], "symbol": "u"},
+    {"x": 12, "y": 20, "z": 5, "hidden": false, "visible": true, "terrain": {"tiletype": "StoneFloor1", "shape": "FLOOR", "material": "STONE", "special": "NORMAL", "variant": "VAR_1"}, "walkable": 4, "liquid": {"type": "WATER", "depth": 4}, "geologicalMaterial": {"status": "unknown", "reason": "Synthetic unresolved case."}, "zones": [], "units": [], "items": [], "flows": [], "symbol": "~"},
+    {"x": 10, "y": 21, "z": 5, "hidden": false, "visible": true, "terrain": {"tiletype": "StoneWall", "shape": "WALL", "material": "STONE", "special": "NORMAL", "variant": "VAR_1"}, "walkable": 0, "liquid": {"depth": 0}, "geologicalMaterial": {"status": "unknown", "reason": "Synthetic unresolved case."}, "zones": [], "units": [], "items": [], "flows": [], "symbol": "#"},
+    {"x": 11, "y": 21, "z": 5, "hidden": false, "visible": true, "terrain": {"tiletype": "StoneFloor1", "shape": "FLOOR", "material": "STONE", "special": "NORMAL", "variant": "VAR_1"}, "walkable": 4, "liquid": {"depth": 0}, "geologicalMaterial": {"status": "unknown", "reason": "Synthetic unresolved case."}, "zones": [], "units": [], "items": [], "flows": [], "symbol": "."},
+    {"x": 12, "y": 21, "z": 5, "hidden": false, "visible": true, "terrain": {"tiletype": "StoneFloor1", "shape": "FLOOR", "material": "STONE", "special": "NORMAL", "variant": "VAR_1"}, "walkable": 4, "liquid": {"depth": 0}, "geologicalMaterial": {"status": "unknown", "reason": "Synthetic unresolved case."}, "zones": [], "units": [], "items": [{"id": 9, "description": "synthetic granite mug", "type": "TOOL", "stackSize": 1, "contained": false}], "flows": [], "symbol": "*"}
+  ],
+  "grid": ["?u~", "#.*"],
+  "legend": [
+    {"symbol": "#", "meaning": "wall or fortification"},
+    {"symbol": "*", "meaning": "item"},
+    {"symbol": ".", "meaning": "floor"},
+    {"symbol": "?", "meaning": "hidden or unclassified tile"},
+    {"symbol": "u", "meaning": "other unit"},
+    {"symbol": "~", "meaning": "water"}
+  ],
+  "symbolPrecedence": ["hidden", "great danger", "danger", "invader", "unit", "magma", "water", "fire", "building or zone", "construction", "item", "plant", "other flow", "terrain"],
+  "unsupported": ["Synthetic sample only."],
+  "warnings": []
+}
