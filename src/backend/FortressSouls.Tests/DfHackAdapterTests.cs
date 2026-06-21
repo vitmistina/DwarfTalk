@@ -28,6 +28,23 @@ public sealed class DfHackAdapterTests
     }
 
     [Fact]
+    public async Task DfHackAdapter_PreservesOemEncodedDwarfNames()
+    {
+        var statusTracker = new DfHackAdapterStatusTracker(enabled: true);
+        var adapter = new DfHackDwarfFortressAdapter(
+            CreateRunner("oem_name"),
+            CreateOptions(),
+            statusTracker);
+
+        var list = await adapter.ListDwarvesAsync(CancellationToken.None);
+        var snapshot = await adapter.GetDwarfSnapshotAsync(DwarfId.Parse("6601"), CancellationToken.None);
+
+        Assert.Contains(list.Items, dwarf => dwarf.DisplayName.Contains("Kadôl Thocitoddom", StringComparison.Ordinal));
+        Assert.Contains(list.Items, dwarf => dwarf.DisplayName.Contains("îton Oltarkurik", StringComparison.Ordinal));
+        Assert.Equal("Kadôl Thocitoddom \"Spikescloisters\", Fisherdwarf", snapshot.Identity.ReadableName);
+    }
+
+    [Fact]
     public async Task DfHackAdapter_ClassifiesInvalidJsonSchemaAndMappingFailures()
     {
         var statusTracker = new DfHackAdapterStatusTracker(enabled: true);

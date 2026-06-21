@@ -1,6 +1,10 @@
 namespace FortressSouls.Tests;
 
 using FortressSouls.DwarfFortress;
+using System.Diagnostics;
+using System.Globalization;
+using System.Reflection;
+using System.Text;
 
 [Collection("DfHackProcessSerial")]
 public sealed class DfHackProcessRunnerTests
@@ -90,6 +94,37 @@ public sealed class DfHackProcessRunnerTests
         Assert.True(diagnose.IsSuccess);
     }
 
+    [Fact]
+    public async Task DfHackProcessRunner_PreservesDfHackOutputEncodingForDwarfNames()
+    {
+        var runner = CreateRunner(mode: "oem_name");
+
+        var result = await runner.RunCommandAsync(DfHackCommand.ListDwarves, [], CancellationToken.None);
+
+        Assert.True(result.IsSuccess);
+        Assert.Contains("Kadôl Thocitoddom", result.Stdout, StringComparison.Ordinal);
+        Assert.Contains("îton Oltarkurik", result.Stdout, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void DfHackProcessRunner_ConfiguresExpectedRedirectedOutputEncoding()
+    {
+        var runner = CreateRunner(mode: "success");
+        var createStartInfo = typeof(DfHackProcessRunner).GetMethod(
+            "CreateStartInfo",
+            BindingFlags.Instance | BindingFlags.NonPublic);
+
+        Assert.NotNull(createStartInfo);
+
+        var startInfo = Assert.IsType<ProcessStartInfo>(createStartInfo!.Invoke(
+            runner,
+            [DfHackCommand.ListDwarves, Array.Empty<string>()]));
+
+        var expectedEncoding = GetExpectedDfHackOutputEncoding();
+        Assert.Equal(expectedEncoding.WebName, startInfo.StandardOutputEncoding?.WebName);
+        Assert.Equal(expectedEncoding.WebName, startInfo.StandardErrorEncoding?.WebName);
+    }
+
     private static DfHackProcessRunner CreateRunner(
         string mode,
         StubPreflight? preflight = null,
@@ -128,6 +163,17 @@ public sealed class DfHackProcessRunnerTests
         var testDirectory = Path.GetDirectoryName(sourceFilePath)
             ?? throw new InvalidOperationException("Unable to determine the test source directory.");
         return Path.GetFullPath(Path.Combine(testDirectory, "..", "..", ".."));
+    }
+
+    private static Encoding GetExpectedDfHackOutputEncoding()
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            return Encoding.GetEncoding(CultureInfo.CurrentCulture.TextInfo.OEMCodePage);
+        }
+
+        return new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
     }
 
     private sealed class StubPreflight(bool isReachable) : IDfHackTcpPreflight

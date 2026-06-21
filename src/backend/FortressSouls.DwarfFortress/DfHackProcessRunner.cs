@@ -2,6 +2,7 @@ namespace FortressSouls.DwarfFortress;
 
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Text;
 
 public sealed class DfHackProcessRunner(
@@ -158,6 +159,7 @@ public sealed class DfHackProcessRunner(
 
     private ProcessStartInfo CreateStartInfo(DfHackCommand command, IReadOnlyList<string> arguments)
     {
+        var outputEncoding = GetRedirectedStreamEncoding();
         var startInfo = new ProcessStartInfo
         {
             FileName = _options.RunPath,
@@ -165,6 +167,8 @@ public sealed class DfHackProcessRunner(
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             RedirectStandardInput = false,
+            StandardOutputEncoding = outputEncoding,
+            StandardErrorEncoding = outputEncoding,
             UseShellExecute = false,
             CreateNoWindow = true
         };
@@ -176,6 +180,17 @@ public sealed class DfHackProcessRunner(
         }
 
         return startInfo;
+    }
+
+    private static Encoding GetRedirectedStreamEncoding()
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            return Encoding.GetEncoding(CultureInfo.CurrentCulture.TextInfo.OEMCodePage);
+        }
+
+        return new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
     }
 
     private static async Task<BoundedReadResult> ReadBoundedAsync(StreamReader reader, int limitBytes, CancellationToken cancellationToken)
