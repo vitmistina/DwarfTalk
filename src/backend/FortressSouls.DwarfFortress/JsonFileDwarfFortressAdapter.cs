@@ -12,31 +12,7 @@ public sealed class JsonFileDwarfFortressAdapter : IDwarfFortressAdapter
     {
         ArgumentNullException.ThrowIfNull(options);
 
-        if (string.IsNullOrWhiteSpace(options.DwarfListPath))
-        {
-            throw new ArgumentException("A configured dwarf list path is required.", nameof(options));
-        }
-
-        if (string.IsNullOrWhiteSpace(options.DwarfSnapshotPath))
-        {
-            throw new ArgumentException("A configured dwarf snapshot path is required.", nameof(options));
-        }
-
-        if (options.MaxListFileBytes <= 0
-            || options.MaxSnapshotFileBytes <= 0
-            || options.MaxJsonDepth <= 0
-            || options.MaxStringLength <= 0
-            || options.MaxListItems <= 0
-            || options.MaxSkills <= 0
-            || options.MaxTraits <= 0
-            || options.MaxValues <= 0
-            || options.MaxNeeds <= 0
-            || options.MaxMannerisms <= 0)
-        {
-            throw new ArgumentException("JSON-file adapter limits must be positive.", nameof(options));
-        }
-
-        _options = options;
+        _options = options.Validate();
     }
 
     public async Task<DwarfListResult> ListDwarvesAsync(CancellationToken cancellationToken)

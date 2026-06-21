@@ -3,7 +3,6 @@ namespace FortressSouls.Observability;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 
@@ -22,20 +21,33 @@ public static class ObservabilityServiceCollectionExtensions
             .AddSingleton(FortressSoulsTelemetry.ActivitySource)
             .AddSingleton(FortressSoulsTelemetry.Meter);
 
-        // Add OpenTelemetry with OTLP exporter if configured
-        if (ObservabilityConfiguration.TryGetOtlpEndpoint(
-                configuration,
-                out var endpoint))
-        {
-            services.AddOpenTelemetry()
-                .WithTracing(builder => builder
+        var useOtlpExporter = ObservabilityConfiguration.TryGetOtlpEndpoint(configuration, out var otlpEndpoint);
+
+        services.AddOpenTelemetry()
+            .WithTracing(builder =>
+            {
+                builder
                     .AddSource(FortressSoulsTelemetry.ActivitySourceName)
                     .AddAspNetCoreInstrumentation()
-                    .AddOtlpExporter(options => options.Endpoint = endpoint))
-                .WithMetrics(builder => builder
+                    .AddConsoleExporter();
+
+                if (useOtlpExporter)
+                {
+                    builder.AddOtlpExporter(options => options.Endpoint = otlpEndpoint!);
+                }
+            })
+            .WithMetrics(builder =>
+            {
+                builder
                     .AddMeter(FortressSoulsTelemetry.MeterName)
-                    .AddOtlpExporter(options => options.Endpoint = endpoint));
-        }
+                    .AddAspNetCoreInstrumentation()
+                    .AddConsoleExporter();
+
+                if (useOtlpExporter)
+                {
+                    builder.AddOtlpExporter(options => options.Endpoint = otlpEndpoint!);
+                }
+            });
 
         return services;
     }

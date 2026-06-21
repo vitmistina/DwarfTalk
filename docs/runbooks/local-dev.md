@@ -39,6 +39,40 @@ $env:FortressSouls__DwarfFortress__AdapterType = "Fake"
 $env:FortressSouls__Llm__ProviderType = "Fake"
 ```
 
+The dwarf adapter is selected explicitly through
+`FortressSouls__DwarfFortress__AdapterType`. When it is omitted, the app falls
+back to the legacy `FortressSouls__DfHack__Enabled` switch for older local
+configurations.
+
+For local JSON-file mode with one fixed snapshot:
+
+```powershell
+$env:FortressSouls__DwarfFortress__AdapterType = "JsonFile"
+$env:FortressSouls__DwarfFortress__JsonFile__DwarfListPath = "C:\path\to\matching-single-dwarf-list.json"
+$env:FortressSouls__DwarfFortress__JsonFile__DwarfSnapshotPath = "C:\path\to\matching-dwarf-snapshot.json"
+$env:FortressSouls__Llm__ProviderType = "Fake"
+```
+
+`DwarfSnapshotPath` points to one specific snapshot file. The adapter checks that
+the browser-selected dwarf ID matches both `requestedUnitId` and `identity.id`
+inside that file.
+
+Do not pair a multi-dwarf list with one fixed snapshot file unless the list
+contains only that same dwarf. For predictable browser behavior, either keep
+the JSON-file list to the single dwarf represented by the snapshot file or use
+`Fake`/`DfHackProcess` mode when you want to switch between multiple dwarves.
+
+For local DFHack mode:
+
+```powershell
+$env:FortressSouls__DwarfFortress__AdapterType = "DfHackProcess"
+$env:FortressSouls__DfHack__RunPath = "C:\Program Files (x86)\Steam\steamapps\common\DFHack\hack\dfhack-run.exe"
+$env:FortressSouls__DfHack__WorkingDirectory = "C:\Program Files (x86)\Steam\steamapps\common\DFHack\hack"
+$env:FortressSouls__DfHack__Host = "127.0.0.1"
+$env:FortressSouls__DfHack__Port = "5000"
+$env:FortressSouls__Llm__ProviderType = "Fake"
+```
+
 For local telemetry to Aspire Dashboard when starting the API outside the
 canonical launch profile:
 
@@ -152,10 +186,14 @@ Expected response shape:
 {
   "status": "ok",
   "version": "0.1.0",
-  "adapter": "NotConfigured",
-  "provider": "NotConfigured"
+  "adapter": "Fake",
+  "provider": "Fake",
+  "observability": "OtlpConfigured"
 }
 ```
+
+If you start the API without the `http` or `https` launch profile and do not set
+OTLP environment variables, `observability` falls back to `ConsoleFallback`.
 
 ## Start frontend directly
 

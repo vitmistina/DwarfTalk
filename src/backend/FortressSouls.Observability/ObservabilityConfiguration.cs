@@ -1,6 +1,7 @@
 namespace FortressSouls.Observability;
 
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using Microsoft.Extensions.Configuration;
 
 public static class ObservabilityConfiguration
@@ -21,12 +22,38 @@ public static class ObservabilityConfiguration
             return false;
         }
 
-        if (Uri.TryCreate(rawEndpoint, UriKind.Absolute, out endpoint))
+        if (Uri.TryCreate(rawEndpoint, UriKind.Absolute, out var configuredEndpoint)
+            && IsAcceptedLocalOtlpEndpoint(configuredEndpoint))
         {
+            endpoint = configuredEndpoint;
             return true;
         }
 
         endpoint = null;
         return false;
+    }
+
+    private static bool IsAcceptedLocalOtlpEndpoint(Uri endpoint)
+    {
+        if (!string.Equals(endpoint.Scheme, Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(endpoint.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        return IsLoopbackHost(endpoint.DnsSafeHost)
+            && string.IsNullOrEmpty(endpoint.UserInfo)
+            && string.IsNullOrEmpty(endpoint.Query)
+            && string.IsNullOrEmpty(endpoint.Fragment);
+    }
+
+    private static bool IsLoopbackHost(string host)
+    {
+        if (string.Equals(host, "localhost", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        return IPAddress.TryParse(host, out var address) && IPAddress.IsLoopback(address);
     }
 }

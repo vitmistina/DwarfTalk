@@ -4,3 +4,8 @@ namespace FortressSouls.Tests;
 public sealed class DfHackTestCollection
 {
 }
+
+[CollectionDefinition("ConsoleOutputSerial", DisableParallelization = true)]
+public sealed class ConsoleOutputTestCollection
+{
+}

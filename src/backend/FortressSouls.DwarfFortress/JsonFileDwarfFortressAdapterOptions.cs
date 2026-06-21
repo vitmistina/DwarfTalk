@@ -25,4 +25,33 @@ public sealed class JsonFileDwarfFortressAdapterOptions
     public int MaxNeeds { get; set; } = 256;
 
     public int MaxMannerisms { get; set; } = 64;
+
+    public JsonFileDwarfFortressAdapterOptions Validate()
+    {
+        if (string.IsNullOrWhiteSpace(DwarfListPath))
+        {
+            throw new ArgumentException("A configured dwarf list path is required.", nameof(DwarfListPath));
+        }
+
+        if (string.IsNullOrWhiteSpace(DwarfSnapshotPath))
+        {
+            throw new ArgumentException("A configured dwarf snapshot path is required.", nameof(DwarfSnapshotPath));
+        }
+
+        if (MaxListFileBytes <= 0
+            || MaxSnapshotFileBytes <= 0
+            || MaxJsonDepth <= 0
+            || MaxStringLength <= 0
+            || MaxListItems <= 0
+            || MaxSkills <= 0
+            || MaxTraits <= 0
+            || MaxValues <= 0
+            || MaxNeeds <= 0
+            || MaxMannerisms <= 0)
+        {
+            throw new ArgumentException("JSON-file adapter limits must be positive.");
+        }
+
+        return this;
+    }
 }
