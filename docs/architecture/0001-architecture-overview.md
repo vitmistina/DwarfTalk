@@ -35,10 +35,51 @@ prompt context, and one configured provider generates the dwarf's prose reply.
 - Fake mode is the default supported development path; real provider and live
   DFHack modes remain optional and separately documented.
 
+## Proposed v0.2 Direction
+
+v0.2 is currently a draft, not implemented architecture. The proposed change
+introduces an application-owned dwarf-agent turn above provider transport:
+
+```text
+Chat API
+  -> Chat/Application session orchestration
+    -> IDwarfAgent
+      -> bounded tool-loop adapter
+        -> configured model transport
+        -> closed perception tool registry
+          -> application-owned read-only queries
+            -> Fake or allowlisted DwarfFortress adapter
+```
+
+The application continues to own selected-dwarf identity, sessions, prompt and
+history policy, tool authorization, execution budgets, stable failures,
+receipts, and telemetry. A library may sequence provider messages and dispatch
+approved functions, but its agent, function, session, and provider DTOs remain
+inside the adapter boundary.
+
+Perception observations are ephemeral to one turn. Session history stores only
+the player message and final dwarf response. v0.2 adds no persistent memory,
+background runtime, multi-agent workflow, or game mutation.
+
+The proposed tools are closed application capabilities: nearby revealed map,
+exact stock summary, eligible dwarf list, and guarded dwarf detail. They are
+not DFHack commands. Live implementations still use fixed allowlisted commands,
+structured arguments, validation, timeout, cancellation, and output limits.
+
+See:
+
+- `docs/specs/fortress-souls-v0.2.spec.md`
+- `docs/specs/perception-tools-v0.2.md`
+- `docs/specs/prompt-contract-v0.2.md`
+- `docs/backlog/v0.2-backlog.md`
+- `docs/decisions/adr-0007-agent-runtime-and-tool-loop.md`
+
 ## Constraints
 
 - Keep game mutation impossible by construction.
-- Do not add generic DFHack execution or model tool surfaces.
+- Do not add generic DFHack execution or open-ended model tool surfaces.
+- Any model-callable capability must be a typed, bounded, application-owned,
+  read-only tool accepted by the active version specification.
 - Keep prompt/response content and secrets out of default telemetry.
 - If the architecture direction changes, update this document and the relevant
   ADRs in the same change set.

@@ -130,4 +130,8 @@ POSIX:
 - [DFHack manual validation runbook](docs/runbooks/dfhack-b019-manual-validation.md)
 - [Architecture overview](docs/architecture/0001-architecture-overview.md)
 - [v0.1 product spec](docs/specs/fortress-souls-v0.1.spec.md)
+- [Draft v0.2 product spec](docs/specs/fortress-souls-v0.2.spec.md)
+- [Draft v0.2 prompt contract](docs/specs/prompt-contract-v0.2.md)
+- [Draft v0.2 backlog](docs/backlog/v0.2-backlog.md)
+- [Proposed v0.2 agent runtime ADR](docs/decisions/adr-0007-agent-runtime-and-tool-loop.md)
 - [Documentation index](docs/README.md)
