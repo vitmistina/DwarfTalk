@@ -13,9 +13,12 @@ current fortress data during a chat turn. The model may request one of four
 read-only perception capabilities:
 
 - look at the selected dwarf's nearby surroundings,
-- inspect a curated fortress stock summary,
+- inspect an exact, curated fortress stock summary,
 - list eligible dwarves,
 - inspect a curated detail view for an eligible dwarf.
+
+The stock capability is exact-only in v0.2. Approximate or bookkeeping-style
+values remain out of contract until separately verified.
 
 The release remains a local, read-only companion. The application owns tool
 availability, arguments, authorization, execution, budgets, validation, and
@@ -81,9 +84,10 @@ state never cross dwarf identities.
 ### 5.2 Read-only by construction
 
 Every tool maps to a named application query. The live adapter maps those
-queries to a closed DFHack command allowlist with structured arguments. No
-generic execute surface exists at the API, application, provider, agent, or
-adapter layer.
+queries to a closed DFHack command allowlist with structured arguments. New
+v0.2 perception tools add individually approved allowlist entries; they do not
+redefine the accepted v0.1 command set from ADR-0003. No generic execute
+surface exists at the API, application, provider, agent, or adapter layer.
 
 ### 5.3 Ephemeral perception
 
@@ -104,9 +108,10 @@ tool policy.
 
 ### 5.5 Hidden information
 
-`look_around` must not reveal hidden-map semantics. A hidden cell may be
-reported only as hidden or unknown; terrain, material, units, items, buildings,
-flows, and other concealed details are omitted.
+`look_around` must not reveal hidden-map semantics. A hidden cell may expose
+only relative position plus `visibility = hidden`; terrain, material, units,
+items, buildings, zones, constructions, flows, names, and other concealed
+details are omitted.
 
 The query reports a bounded, revealed local map around the selected dwarf. It
 does not prove physical line-of-sight, hearing, attention, or what the dwarf

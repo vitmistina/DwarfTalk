@@ -22,15 +22,15 @@ Authoritative draft documents:
 - `backlog/v0.2-backlog.md`
 - `decisions/adr-0007-agent-runtime-and-tool-loop.md`
 
-ADR-0007 remains Proposed until R2-001 verifies current Microsoft package
-guidance and executable provider behavior.
+ADR-0007 remains proposed until the missing live OpenAI-compatible tool-call
+proof for R2-001 is captured and reviewed.
 
 ## Decisions
 
 - `decisions/adr-0003-dfhack-adapter.md` records the accepted v0.1 DFHack adapter invocation strategy.
 - `decisions/adr-0006-coding-model-routing-and-mini-specs.md` records the mini-spec lifecycle and model-routing policy.
 - `decisions/adr-0005-llm-provider-strategy.md` records the accepted v0.1 LLM provider strategy.
-- `decisions/adr-0007-agent-runtime-and-tool-loop.md` records the proposed v0.2 tool-loop decision and evidence gate.
+- `decisions/adr-0007-agent-runtime-and-tool-loop.md` records the proposed v0.2 tool-loop direction, gathered evidence, and remaining live-proof blocker.
 
 ## LLM provider strategy
 

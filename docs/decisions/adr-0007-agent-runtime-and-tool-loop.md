@@ -5,6 +5,9 @@ Date: 2026-06-21
 Related: ADR-0002, ADR-0003, ADR-0005  
 Decision gate: `R2-001` in `docs/backlog/v0.2-backlog.md`
 
+This ADR remains proposed until the missing live OpenAI-compatible tool-call
+proof in `R2-001` is captured and reviewed.
+
 ## Context
 
 v0.2 introduces bounded, read-only perception tools inside a selected dwarf's
@@ -26,10 +29,31 @@ behavior belongs above it. v0.2 needs to extend that architecture without
 allowing framework types or provider tool-call DTOs to become product
 contracts.
 
-At drafting time, external official documentation lookup was unavailable with
-HTTP 403. Claims about current package versions, support status, migration
-guidance, and exact APIs must be verified and recorded by R2-001 before this ADR
-is accepted.
+R2-001 verified the current official Microsoft support and package state on
+2026-06-21:
+
+- `Microsoft.Extensions.AI` official Learn pages exist for the library,
+  `IChatClient`, and `UseFunctionInvocation`, and explicitly document automatic
+  function tool invocation on the `IChatClient` pipeline.
+- Official NuGet feeds report current stable packages
+  `Microsoft.Extensions.AI` `10.7.0`,
+  `Microsoft.Extensions.AI.Abstractions` `10.7.0`, and
+  `Microsoft.Extensions.AI.OpenAI` `10.7.0`.
+- Microsoft Agent Framework official Learn pages exist for overview, agent
+  types, hosting, and migration. They describe Agent Framework as the direct
+  successor to Semantic Kernel and AutoGen, built around agents, sessions,
+  middleware, memory, and workflows, and state that any inference service that
+  provides `Microsoft.Extensions.AI.IChatClient` can be used to build agents.
+- Official NuGet feeds report current stable
+  `Microsoft.Agents.AI.Abstractions` `1.10.0`, while
+  `Microsoft.Agents.AI.Hosting` remains preview-only at
+  `1.10.0-preview.260610.1`.
+- Official migration guidance exists at
+  `https://learn.microsoft.com/en-us/agent-framework/migration-guide/from-semantic-kernel/`
+  and
+  `https://learn.microsoft.com/en-us/semantic-kernel/support/migration/agent-framework-rc-migration-guide`.
+- Official NuGet feeds report current stable `Microsoft.SemanticKernel`
+  `1.77.0`.
 
 ## Decision Drivers
 
@@ -117,22 +141,37 @@ Risks:
 - easy to mix provider DTOs with application policy,
 - duplicates supported library behavior without adding product value.
 
-## Proposed Decision
+## Proposed direction
 
-Subject to R2-001, use the smallest supported
-`Microsoft.Extensions.AI` function-invocation layer for the v0.2 tool loop.
+Use the smallest supported `Microsoft.Extensions.AI` path for the v0.2 tool
+loop and keep the tool-loop abstraction application-owned.
 
-Do not adopt Microsoft Agent Framework for v0.2 unless the spike demonstrates
-that the smaller layer cannot enforce the required budgets, cancellation,
-failure mapping, fake testing, and OpenAI-compatible transport behavior without
-substantial custom orchestration.
+For the R2-001 spike, Fortress Souls adds an application-owned probe seam above
+provider transport and implements it in the LLM adapter with:
 
-Do not adopt Semantic Kernel for new v0.2 agent work if current official
-guidance confirms Agent Framework as its successor for agent capabilities.
+- `Microsoft.Extensions.AI` `10.7.0`,
+- application-owned contracts and stable errors in `FortressSouls.Application`,
+- an internal OpenAI-compatible `IChatClient` bridge inside `FortressSouls.Llm`,
+- `AIFunctionFactory` for typed tool contracts inside the adapter boundary.
 
-Do not implement a custom provider-protocol loop unless both Microsoft options
-fail a documented requirement. A custom fallback must remain behind the same
-application-owned boundary and requires focused protocol contract tests.
+Do not expand or replace `IChatProvider`. ADR-0005 remains intact: the existing
+plain-text provider seam stays responsible only for v0.1 chat transport.
+
+Do not adopt Microsoft Agent Framework for v0.2. The spike showed that Agent
+Framework would still depend on the same `IChatClient` transport bridge for the
+configured OpenAI-compatible endpoint while adding agent, session, middleware,
+memory, and workflow surface that Fortress Souls does not need for the bounded
+v0.2 loop. The current hosting package remaining preview-only increases that
+risk.
+
+Do not adopt Semantic Kernel for new v0.2 agent work. Official Microsoft
+migration guidance now points new agent capability investment toward Agent
+Framework, which would create avoidable migration churn for Fortress Souls.
+
+Do not implement a custom provider-protocol loop unless a later accepted item
+proves that the Microsoft.Extensions.AI path cannot satisfy a documented
+runtime requirement. Any such fallback must remain behind the same
+application-owned boundary.
 
 ## Application Boundary
 
@@ -151,6 +190,10 @@ The adapter implementing this contract may use Microsoft abstractions. Domain,
 API, Prompting, DwarfFortress, and frontend code must not reference Microsoft
 agent, chat-client, function, session, or provider DTOs.
 
+R2-001 proves this boundary with a smaller executable seam,
+`IToolLoopProbe`, rather than routing the existing chat API through an
+unfinished v0.2 runtime.
+
 Fortress Souls, not the library, owns:
 
 - selected-dwarf identity and tool authorization,
@@ -167,26 +210,79 @@ Fortress Souls, not the library, owns:
 The framework may perform provider message sequencing and function dispatch
 only within those constraints.
 
-## R2-001 Acceptance Evidence
+## R2-001 Evidence
 
-The spike must record package versions, official support status, source links,
-and executable results for:
+Official source links verified on 2026-06-21:
+
+- `https://learn.microsoft.com/en-us/dotnet/ai/microsoft-extensions-ai`
+- `https://learn.microsoft.com/en-us/dotnet/ai/ichatclient`
+- `https://learn.microsoft.com/en-us/dotnet/api/microsoft.extensions.ai.functioninvokingchatclientbuilderextensions.usefunctioninvocation`
+- `https://learn.microsoft.com/en-us/agent-framework/overview/`
+- `https://learn.microsoft.com/en-us/agent-framework/agents/`
+- `https://learn.microsoft.com/en-us/agent-framework/get-started/hosting`
+- `https://learn.microsoft.com/en-us/agent-framework/migration-guide/from-semantic-kernel/`
+- `https://learn.microsoft.com/en-us/semantic-kernel/support/migration/agent-framework-rc-migration-guide`
+
+Executable repository evidence:
 
 1. One structured tool call and final response through the configured
-   OpenAI-compatible endpoint.
+   OpenAI-compatible protocol shape.
+   Result: proven with a deterministic stub of the exact
+   `/chat/completions` request and response exchange in
+   `OpenAiCompatibleToolLoopChatClientTests`. Live OpenRouter proof is still
+   blocked locally because no `.env` file and no loaded
+   `FortressSouls__Llm__ApiKey` were present in this environment.
 2. A deterministic fake client requiring no network.
+   Result: proven in `ToolLoopProbeTests.RunAsync_ExecutesOneToolCall_AndReturnsFinalAssistantMessage`.
 3. Unknown tool rejection before application execution.
+   Result: proven in `ToolLoopProbeTests.RunAsync_RejectsUnknownToolBeforeApplicationExecution`.
 4. Malformed and out-of-range argument handling.
+   Result: proven in
+   `ToolLoopProbeTests.RunAsync_RejectsMalformedToolArgumentsBeforeApplicationExecution`
+   and
+   `ToolLoopProbeTests.RunAsync_RejectsOutOfRangeToolArgumentsWithoutRetry`.
 5. Maximum-round and maximum-call enforcement.
+   Result: proven in `ToolLoopProbeTests.RunAsync_EnforcesRoundLimit` and
+   `ToolLoopProbeTests.RunAsync_EnforcesToolCallLimit`.
 6. Per-result and cumulative output-size enforcement.
-7. Caller cancellation, tool timeout, and whole-turn timeout.
+   Result: proven in `ToolLoopProbeTests.RunAsync_EnforcesPerResultBudget` and
+   `ToolLoopProbeTests.RunAsync_EnforcesTotalResultBudget`.
+7. Caller cancellation, tool timeout, whole-turn timeout, and provider timeout.
+   Result: proven in `ToolLoopProbeTests.RunAsync_HonorsCallerCancellation`,
+   `ToolLoopProbeTests.RunAsync_EnforcesToolTimeout`, and
+   `ToolLoopProbeTests.RunAsync_EnforcesTurnTimeout`, plus
+   `OpenAiCompatibleToolLoopChatClientTests.RunAsync_MapsProviderTimeoutToStableProbeTimeoutAndTelemetryCategory`.
 8. No implicit retry after provider or tool failure.
+   Result: proven for provider failure by
+   `OpenAiCompatibleToolLoopChatClientTests.RunAsync_MapsOpenAiCompatibleTransportFailureToStableErrorWithoutRetry`,
+   which asserts a single outbound request, and for tool failure by
+   `ToolLoopProbeTests.RunAsync_RejectsOutOfRangeToolArgumentsWithoutRetry`,
+   which asserts one tool execution and no follow-up model request.
 9. Content-free telemetry and stable error mapping.
+   Result: proven in `ToolLoopProbeTests.RunAsync_EmitsContentFreeTelemetry`
+   and the same transport-failure test above.
 10. No Microsoft framework types outside the adapter composition boundary.
+    Result: proven in `ArchitectureTests.NonAdapterAssemblies_DoNotReferenceMicrosoftAgentOrChatPackages`.
 
-The spike compares implementation size and behavioral gaps for the smallest
-Microsoft.Extensions.AI path and Agent Framework. It does not build councils,
-memory, workflows, or production tools.
+Implementation-size and behavior comparison:
+
+- Smallest `Microsoft.Extensions.AI` path: one new adapter package,
+  application-owned contracts, deterministic fake tests, and no framework DTO
+  leakage outside `FortressSouls.Llm`. The automatic function-invocation layer
+  is useful, but Fortress Souls still needs an application-owned wrapper for
+  whole-turn timeout, cumulative byte budgets, safe receipts, and stable error
+  taxonomy.
+- Microsoft Agent Framework: still requires the same `IChatClient` model bridge
+  for our provider, adds broader agent/session/workflow concepts, and currently
+  leaves the hosting package in preview.
+- Semantic Kernel: broader surface than the slice requires and official
+  migration guidance now exists toward Agent Framework for agent capabilities.
+
+Repository blocker:
+
+- R2-001 is not fully complete in this environment because the required live
+  OpenAI-compatible tool-call proof could not run safely. The exact blocker is
+  the absence of both `.env` and a loaded provider API key.
 
 ## Consequences if Accepted
 
@@ -200,7 +296,8 @@ Positive:
 
 Negative:
 
-- the current provider implementation will need adaptation,
+- the current provider implementation needed a parallel `IChatClient` bridge
+  for the spike,
 - the application still owns a small policy wrapper around library invocation,
 - tool behavior must be tested against the real configured endpoint because
   OpenAI compatibility is incomplete in practice.
@@ -217,4 +314,3 @@ Reconsider Agent Framework only when accepted scope requires at least one of:
 
 Any such change requires a superseding ADR. It must not silently move product
 policy, persistent memory, or DFHack access into the framework.
-

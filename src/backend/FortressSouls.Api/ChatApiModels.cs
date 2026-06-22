@@ -14,11 +14,14 @@ public sealed record ChatDiagnosticsResponse(
     int DurationMs,
     string PromptId);
 
+public sealed record ChatToolReceiptResponse(string Tool, string Outcome);
+
 public sealed record SendChatMessageResponse(
     string SessionId,
     string DwarfId,
     ChatAssistantMessageResponse AssistantMessage,
-    ChatDiagnosticsResponse Diagnostics);
+    ChatDiagnosticsResponse Diagnostics,
+    IReadOnlyList<ChatToolReceiptResponse> ToolReceipts);
 
 public sealed record PromptPreviewResponse(
     string SessionId,

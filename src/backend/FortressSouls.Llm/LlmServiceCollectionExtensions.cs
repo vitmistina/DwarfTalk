@@ -37,4 +37,35 @@ public static class LlmServiceCollectionExtensions
         services.AddSingleton<IChatProvider>(sp => sp.GetRequiredService<OpenAiCompatibleChatProvider>());
         return services;
     }
+
+    public static IServiceCollection AddFortressSoulsFakePerceptionAgent(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        services.AddScoped<Microsoft.Extensions.AI.IChatClient, FakeToolLoopChatClient>();
+        services.AddScoped<IAgentToolRegistry>(sp =>
+        {
+            var queryService = sp.GetRequiredService<DwarfQueryService>();
+            var toolService = new FakePerceptionToolService(queryService, FakePerceptionFixtureSet.Default);
+            var enabledToolNames = new HashSet<string>(StringComparer.Ordinal)
+            {
+                FakePerceptionToolService.LookAroundToolName,
+                FakePerceptionToolService.ListDwarvesToolName,
+                FakePerceptionToolService.InspectDwarfToolName
+            };
+
+            var registrations = toolService
+                .CreateRegistrations()
+                .Where(tool => enabledToolNames.Contains(tool.Definition.Name))
+                .ToArray();
+
+            return new ClosedAgentToolRegistry(registrations);
+        });
+        services.AddScoped<IDwarfAgent>(sp => new MicrosoftExtensionsAiDwarfAgent(
+            sp.GetRequiredService<Microsoft.Extensions.AI.IChatClient>(),
+            sp.GetRequiredService<IAgentToolRegistry>(),
+            sp.GetRequiredService<LlmProviderOptions>()));
+
+        return services;
+    }
 }

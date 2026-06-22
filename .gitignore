@@ -3,3 +3,4 @@
 src/frontend/playwright-report/
 src/frontend/test-results/
 .tmp/
+.artifacts/

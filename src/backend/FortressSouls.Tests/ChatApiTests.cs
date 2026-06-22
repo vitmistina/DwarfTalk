@@ -4,14 +4,18 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
 using FortressSouls.Api;
 using FortressSouls.Application;
 using FortressSouls.Domain;
+using FortressSouls.Llm;
 using FortressSouls.Prompting;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using AiChatRole = Microsoft.Extensions.AI.ChatRole;
 
 public sealed class ChatApiTests
 {
@@ -38,6 +42,7 @@ public sealed class ChatApiTests
         Assert.False(string.IsNullOrWhiteSpace(sent.AssistantMessage.Text));
         Assert.Equal("Fake", sent.Diagnostics.Provider);
         Assert.Equal("fake-dwarf", sent.Diagnostics.Model);
+        Assert.Empty(sent.ToolReceipts);
 
         var previewResponse = await client.GetAsync($"/api/chat/sessions/{created.SessionId}/prompt-preview");
         Assert.Equal(HttpStatusCode.OK, previewResponse.StatusCode);
@@ -47,6 +52,336 @@ public sealed class ChatApiTests
         Assert.Equal("4101", preview.DwarfId);
         Assert.Contains("PLAYER_MESSAGE_JSON:", preview.PromptText, StringComparison.Ordinal);
         Assert.Contains("How goes the mine?", preview.PromptText, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task PerceptionQuestion_UsesFakeAgentTurnAndReturnsSafeLookAroundReceipt()
+    {
+        using var factory = CreateFactory("Development");
+        using var client = factory.CreateClient();
+
+        var created = await (await client.PostAsJsonAsync("/api/chat/sessions", new CreateChatSessionRequest("4101")))
+            .Content.ReadFromJsonAsync<CreateChatSessionResponse>();
+
+        var sendResponse = await client.PostAsJsonAsync(
+            $"/api/chat/sessions/{created!.SessionId}/messages",
+            new SendChatMessageRequest("What do you see around you right now?"));
+        Assert.Equal(HttpStatusCode.OK, sendResponse.StatusCode);
+
+        using var sent = JsonDocument.Parse(await sendResponse.Content.ReadAsStreamAsync());
+        var root = sent.RootElement;
+        Assert.Equal(created.SessionId, root.GetProperty("sessionId").GetString());
+        Assert.Equal("4101", root.GetProperty("dwarfId").GetString());
+
+        var assistantText = root.GetProperty("assistantMessage").GetProperty("text").GetString();
+        Assert.False(string.IsNullOrWhiteSpace(assistantText));
+        Assert.Contains("wall", assistantText!, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("3 visible units", assistantText, StringComparison.Ordinal);
+        Assert.DoesNotContain("dwarf-shaped", assistantText, StringComparison.OrdinalIgnoreCase);
+
+        var receipts = root.GetProperty("toolReceipts").EnumerateArray().ToArray();
+        var receipt = Assert.Single(receipts);
+        Assert.Equal("look_around", receipt.GetProperty("tool").GetString());
+        Assert.Equal("success", receipt.GetProperty("outcome").GetString());
+
+        var preview = await (await client.GetAsync($"/api/chat/sessions/{created.SessionId}/prompt-preview"))
+            .Content.ReadFromJsonAsync<PromptPreviewResponse>();
+
+        Assert.NotNull(preview);
+        Assert.Contains("ENABLED_TOOLS: look_around", preview!.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain("call-1", preview.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain("\"cells\"", preview.PromptText, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task LongPerceptionQuestionWithinAcceptedEnvelope_StillUsesPerceptionPath()
+    {
+        using var factory = CreateFactory("Development");
+        using var client = factory.CreateClient();
+
+        var created = await (await client.PostAsJsonAsync("/api/chat/sessions", new CreateChatSessionRequest("4101")))
+            .Content.ReadFromJsonAsync<CreateChatSessionResponse>();
+
+        var longQuestion = string.Concat(Enumerable.Repeat(
+            "What do you see around you right now near the workshops and stockpiles? ",
+            8));
+        Assert.True(longQuestion.Length > 500);
+        Assert.True(longQuestion.Length <= 1_200);
+
+        var sendResponse = await client.PostAsJsonAsync(
+            $"/api/chat/sessions/{created!.SessionId}/messages",
+            new SendChatMessageRequest(longQuestion));
+        Assert.Equal(HttpStatusCode.OK, sendResponse.StatusCode);
+
+        var sent = await sendResponse.Content.ReadFromJsonAsync<SendChatMessageResponse>();
+        Assert.NotNull(sent);
+        Assert.False(string.IsNullOrWhiteSpace(sent!.AssistantMessage.Text));
+        Assert.Collection(
+            sent.ToolReceipts,
+            receipt =>
+            {
+                Assert.Equal("look_around", receipt.Tool);
+                Assert.Equal("success", receipt.Outcome);
+            });
+    }
+
+    [Fact]
+    public async Task ExplicitLookAroundRequest_UsesFakeAgentTurnWithoutAroundYouPhrase()
+    {
+        using var factory = CreateFactory("Development");
+        using var client = factory.CreateClient();
+
+        var created = await (await client.PostAsJsonAsync("/api/chat/sessions", new CreateChatSessionRequest("4101")))
+            .Content.ReadFromJsonAsync<CreateChatSessionResponse>();
+
+        var sendResponse = await client.PostAsJsonAsync(
+            $"/api/chat/sessions/{created!.SessionId}/messages",
+            new SendChatMessageRequest("Look around and tell me what you see."));
+        Assert.Equal(HttpStatusCode.OK, sendResponse.StatusCode);
+
+        var sent = await sendResponse.Content.ReadFromJsonAsync<SendChatMessageResponse>();
+        Assert.NotNull(sent);
+        Assert.Collection(
+            sent!.ToolReceipts,
+            receipt =>
+            {
+                Assert.Equal("look_around", receipt.Tool);
+                Assert.Equal("success", receipt.Outcome);
+            });
+
+        var preview = await (await client.GetAsync($"/api/chat/sessions/{created.SessionId}/prompt-preview"))
+            .Content.ReadFromJsonAsync<PromptPreviewResponse>();
+
+        Assert.NotNull(preview);
+        Assert.Contains("ENABLED_TOOLS: look_around", preview!.PromptText, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task OtherDwarfQuestion_UsesListAndInspectToolsAndReturnsSafeAdditiveReceipts()
+    {
+        using var factory = CreateFactory("Development");
+        using var client = factory.CreateClient();
+
+        var created = await (await client.PostAsJsonAsync("/api/chat/sessions", new CreateChatSessionRequest("4101")))
+            .Content.ReadFromJsonAsync<CreateChatSessionResponse>();
+
+        var sendResponse = await client.PostAsJsonAsync(
+            $"/api/chat/sessions/{created!.SessionId}/messages",
+            new SendChatMessageRequest("Tell me about another dwarf in the fortress."));
+        Assert.Equal(HttpStatusCode.OK, sendResponse.StatusCode);
+
+        using var sent = JsonDocument.Parse(await sendResponse.Content.ReadAsStreamAsync());
+        var root = sent.RootElement;
+
+        var assistantText = root.GetProperty("assistantMessage").GetProperty("text").GetString();
+        Assert.False(string.IsNullOrWhiteSpace(assistantText));
+        Assert.Contains("Nil Stonereed", assistantText!, StringComparison.Ordinal);
+        Assert.Contains("HarvestPlants", assistantText, StringComparison.Ordinal);
+
+        var receipts = root.GetProperty("toolReceipts").EnumerateArray().ToArray();
+        Assert.Equal(2, receipts.Length);
+        Assert.Equal(["tool", "outcome"], receipts[0].EnumerateObject().Select(property => property.Name).ToArray());
+        Assert.Equal(["tool", "outcome"], receipts[1].EnumerateObject().Select(property => property.Name).ToArray());
+        Assert.Equal("list_dwarves", receipts[0].GetProperty("tool").GetString());
+        Assert.Equal("success", receipts[0].GetProperty("outcome").GetString());
+        Assert.Equal("inspect_dwarf", receipts[1].GetProperty("tool").GetString());
+        Assert.Equal("success", receipts[1].GetProperty("outcome").GetString());
+
+        var preview = await (await client.GetAsync($"/api/chat/sessions/{created.SessionId}/prompt-preview"))
+            .Content.ReadFromJsonAsync<PromptPreviewResponse>();
+
+        Assert.NotNull(preview);
+        Assert.Contains("ENABLED_TOOLS: inspect_dwarf, list_dwarves", preview!.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain("look_around", preview.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain("call-1", preview.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain("\"dwarves\"", preview.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain("\"dwarfId\":\"4102\"", preview.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain("\"currentJobType\":\"HarvestPlants\"", preview.PromptText, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task NearbyReferenceWithoutLookAroundIntent_StaysOnPlainChatPath()
+    {
+        using var factory = CreateFactory("Development");
+        using var client = factory.CreateClient();
+
+        var created = await (await client.PostAsJsonAsync("/api/chat/sessions", new CreateChatSessionRequest("4101")))
+            .Content.ReadFromJsonAsync<CreateChatSessionResponse>();
+
+        var sendResponse = await client.PostAsJsonAsync(
+            $"/api/chat/sessions/{created!.SessionId}/messages",
+            new SendChatMessageRequest("Are the ore bins nearby?"));
+        Assert.Equal(HttpStatusCode.OK, sendResponse.StatusCode);
+
+        var sent = await sendResponse.Content.ReadFromJsonAsync<SendChatMessageResponse>();
+        Assert.NotNull(sent);
+        Assert.Empty(sent!.ToolReceipts);
+
+        var preview = await (await client.GetAsync($"/api/chat/sessions/{created.SessionId}/prompt-preview"))
+            .Content.ReadFromJsonAsync<PromptPreviewResponse>();
+
+        Assert.NotNull(preview);
+        Assert.DoesNotContain("ENABLED_TOOLS: look_around", preview!.PromptText, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task SuccessfulDwarfInspectionTurn_PersistsOnlyPlayerAndFinalAssistantMessages()
+    {
+        using var factory = CreateFactory("Development");
+        using var client = factory.CreateClient();
+
+        var created = await (await client.PostAsJsonAsync("/api/chat/sessions", new CreateChatSessionRequest("4101")))
+            .Content.ReadFromJsonAsync<CreateChatSessionResponse>();
+
+        var inspectionResponse = await client.PostAsJsonAsync(
+            $"/api/chat/sessions/{created!.SessionId}/messages",
+            new SendChatMessageRequest("Tell me about another dwarf in the fortress."));
+        Assert.Equal(HttpStatusCode.OK, inspectionResponse.StatusCode);
+
+        var followUpResponse = await client.PostAsJsonAsync(
+            $"/api/chat/sessions/{created.SessionId}/messages",
+            new SendChatMessageRequest("How goes the mine?"));
+        Assert.Equal(HttpStatusCode.OK, followUpResponse.StatusCode);
+
+        var preview = await (await client.GetAsync($"/api/chat/sessions/{created.SessionId}/prompt-preview"))
+            .Content.ReadFromJsonAsync<PromptPreviewResponse>();
+
+        Assert.NotNull(preview);
+        Assert.Contains("Tell me about another dwarf in the fortress.", preview!.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain("list_dwarves", preview.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain("inspect_dwarf", preview.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain("call-1", preview.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain("\"dwarves\"", preview.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain("\"dwarfId\":\"4102\"", preview.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain("\"currentJobType\":\"HarvestPlants\"", preview.PromptText, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task SuccessfulPerceptionTurn_PersistsOnlyPlayerAndFinalAssistantMessages()
+    {
+        using var factory = CreateFactory("Development");
+        using var client = factory.CreateClient();
+
+        var created = await (await client.PostAsJsonAsync("/api/chat/sessions", new CreateChatSessionRequest("4101")))
+            .Content.ReadFromJsonAsync<CreateChatSessionResponse>();
+
+        var perceptionResponse = await client.PostAsJsonAsync(
+            $"/api/chat/sessions/{created!.SessionId}/messages",
+            new SendChatMessageRequest("What do you see around you right now?"));
+        Assert.Equal(HttpStatusCode.OK, perceptionResponse.StatusCode);
+
+        var followUpResponse = await client.PostAsJsonAsync(
+            $"/api/chat/sessions/{created.SessionId}/messages",
+            new SendChatMessageRequest("How goes the mine?"));
+        Assert.Equal(HttpStatusCode.OK, followUpResponse.StatusCode);
+
+        var preview = await (await client.GetAsync($"/api/chat/sessions/{created.SessionId}/prompt-preview"))
+            .Content.ReadFromJsonAsync<PromptPreviewResponse>();
+
+        Assert.NotNull(preview);
+        Assert.Contains("What do you see around you right now?", preview!.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain("look_around", preview.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain("call-1", preview.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain("\"cells\"", preview.PromptText, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task PerceptionTurn_UsesBoundedPromptHistoryWithoutReplayingRawConversationToProvider()
+    {
+        var chatClient = new CapturingToolLoopChatClient();
+        using var factory = CreateFactory(
+            "Development",
+            provider: new CountingChatProvider(),
+            chatClient: chatClient);
+        using var client = factory.CreateClient();
+
+        var created = await (await client.PostAsJsonAsync("/api/chat/sessions", new CreateChatSessionRequest("4101")))
+            .Content.ReadFromJsonAsync<CreateChatSessionResponse>();
+
+        for (var turn = 1; turn <= 7; turn++)
+        {
+            var historyResponse = await client.PostAsJsonAsync(
+                $"/api/chat/sessions/{created!.SessionId}/messages",
+                new SendChatMessageRequest($"history-{turn:D2}"));
+            Assert.Equal(HttpStatusCode.OK, historyResponse.StatusCode);
+        }
+
+        var perceptionResponse = await client.PostAsJsonAsync(
+            $"/api/chat/sessions/{created!.SessionId}/messages",
+            new SendChatMessageRequest("What do you see around you right now?"));
+        Assert.Equal(HttpStatusCode.OK, perceptionResponse.StatusCode);
+
+        Assert.Equal(2, chatClient.RequestCount);
+
+        var initialMessages = chatClient.RequestMessages[0];
+        var userMessage = Assert.Single(initialMessages);
+        Assert.Equal(AiChatRole.User, userMessage.Role);
+        Assert.Equal("What do you see around you right now?", userMessage.Text);
+
+        var initialInstructions = chatClient.RequestOptions[0]?.Instructions;
+        Assert.False(string.IsNullOrWhiteSpace(initialInstructions));
+        Assert.DoesNotContain("history-01", initialInstructions, StringComparison.Ordinal);
+        Assert.Contains("history-02", initialInstructions, StringComparison.Ordinal);
+        Assert.Contains("history-07", initialInstructions, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task FailedPerceptionTurn_DoesNotAppendPartialHistory()
+    {
+        using var factory = CreateFactory("Development", agent: new InvalidDataAgent());
+        using var client = factory.CreateClient();
+
+        var created = await (await client.PostAsJsonAsync("/api/chat/sessions", new CreateChatSessionRequest("4101")))
+            .Content.ReadFromJsonAsync<CreateChatSessionResponse>();
+
+        var failedResponse = await client.PostAsJsonAsync(
+            $"/api/chat/sessions/{created!.SessionId}/messages",
+            new SendChatMessageRequest("What do you see around you right now?"));
+        Assert.Equal(HttpStatusCode.BadGateway, failedResponse.StatusCode);
+
+        var successResponse = await client.PostAsJsonAsync(
+            $"/api/chat/sessions/{created.SessionId}/messages",
+            new SendChatMessageRequest("good-message"));
+        Assert.Equal(HttpStatusCode.OK, successResponse.StatusCode);
+
+        var preview = await (await client.GetAsync($"/api/chat/sessions/{created.SessionId}/prompt-preview"))
+            .Content.ReadFromJsonAsync<PromptPreviewResponse>();
+
+        Assert.NotNull(preview);
+        Assert.DoesNotContain("What do you see around you right now?", preview!.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain("look_around", preview.PromptText, StringComparison.Ordinal);
+        Assert.Contains("good-message", preview.PromptText, StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData("4102")]
+    [InlineData("not-a-dwarf")]
+    public async Task FailedDwarfInspectionTurn_DoesNotAppendPartialHistory(string attemptedDwarfId)
+    {
+        using var factory = CreateFactory("Development", chatClient: new InspectDwarfOnlyChatClient(attemptedDwarfId));
+        using var client = factory.CreateClient();
+
+        var created = await (await client.PostAsJsonAsync("/api/chat/sessions", new CreateChatSessionRequest("4101")))
+            .Content.ReadFromJsonAsync<CreateChatSessionResponse>();
+
+        var failedResponse = await client.PostAsJsonAsync(
+            $"/api/chat/sessions/{created!.SessionId}/messages",
+            new SendChatMessageRequest("Tell me about another dwarf in the fortress."));
+        Assert.Equal(HttpStatusCode.BadGateway, failedResponse.StatusCode);
+
+        var successResponse = await client.PostAsJsonAsync(
+            $"/api/chat/sessions/{created.SessionId}/messages",
+            new SendChatMessageRequest("good-message"));
+        Assert.Equal(HttpStatusCode.OK, successResponse.StatusCode);
+
+        var preview = await (await client.GetAsync($"/api/chat/sessions/{created.SessionId}/prompt-preview"))
+            .Content.ReadFromJsonAsync<PromptPreviewResponse>();
+
+        Assert.NotNull(preview);
+        Assert.DoesNotContain("Tell me about another dwarf in the fortress.", preview!.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain("inspect_dwarf", preview.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain("call-1", preview.PromptText, StringComparison.Ordinal);
+        Assert.Contains("good-message", preview.PromptText, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -294,7 +629,9 @@ public sealed class ChatApiTests
     private static WebApplicationFactory<Program> CreateFactory(
         string environmentName,
         IChatProvider? provider = null,
-        ChatSessionOptions? options = null) =>
+        ChatSessionOptions? options = null,
+        IDwarfAgent? agent = null,
+        IChatClient? chatClient = null) =>
         new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>
             {
@@ -311,6 +648,18 @@ public sealed class ChatApiTests
                     {
                         services.RemoveAll<ChatSessionOptions>();
                         services.AddSingleton(options);
+                    }
+
+                    if (agent is not null)
+                    {
+                        services.RemoveAll<IDwarfAgent>();
+                        services.AddSingleton(agent);
+                    }
+
+                    if (chatClient is not null)
+                    {
+                        services.RemoveAll<IChatClient>();
+                        services.AddSingleton(chatClient);
                     }
                 });
             });
@@ -362,6 +711,102 @@ public sealed class ChatApiTests
 
             return Task.FromResult(new ChatProviderResponse("recovered-response", "Fake", "fake-dwarf", TimeSpan.FromMilliseconds(25)));
         }
+    }
+
+    private sealed class CountingChatProvider : IChatProvider
+    {
+        private int _callCount;
+
+        public Task<ChatProviderResponse> SendAsync(ChatProviderRequest request, CancellationToken cancellationToken)
+        {
+            var call = Interlocked.Increment(ref _callCount);
+            return Task.FromResult(new ChatProviderResponse($"reply-{call:D2}", "Fake", "fake-dwarf", TimeSpan.FromMilliseconds(10)));
+        }
+    }
+
+    private sealed class CapturingToolLoopChatClient : IChatClient
+    {
+        private readonly Queue<ChatResponse> _responses = new(
+        [
+            new ChatResponse(new ChatMessage(
+                AiChatRole.Assistant,
+                [new FunctionCallContent(
+                    "call-1",
+                    FakePerceptionToolService.LookAroundToolName,
+                    new Dictionary<string, object?>
+                    {
+                        ["radius"] = 1
+                    })])),
+            new ChatResponse(new ChatMessage(AiChatRole.Assistant, "I can see wall nearby."))
+        ]);
+
+        public int RequestCount => RequestMessages.Count;
+
+        public List<IReadOnlyList<ChatMessage>> RequestMessages { get; } = [];
+
+        public List<ChatOptions?> RequestOptions { get; } = [];
+
+        public Task<ChatResponse> GetResponseAsync(
+            IEnumerable<ChatMessage> messages,
+            ChatOptions? options = null,
+            CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            RequestMessages.Add(messages.ToArray());
+            RequestOptions.Add(options);
+            return Task.FromResult(_responses.Dequeue());
+        }
+
+        public object? GetService(Type serviceType, object? serviceKey = null) => null;
+
+        public void Dispose()
+        {
+        }
+
+        public IAsyncEnumerable<ChatResponseUpdate> GetStreamingResponseAsync(
+            IEnumerable<ChatMessage> messages,
+            ChatOptions? options = null,
+            CancellationToken cancellationToken = default) =>
+            throw new NotSupportedException();
+    }
+
+    private sealed class InspectDwarfOnlyChatClient(string dwarfId) : IChatClient
+    {
+        public Task<ChatResponse> GetResponseAsync(
+            IEnumerable<ChatMessage> messages,
+            ChatOptions? options = null,
+            CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            return Task.FromResult(new ChatResponse(new ChatMessage(
+                AiChatRole.Assistant,
+                [new FunctionCallContent(
+                    "call-1",
+                    FakePerceptionToolService.InspectDwarfToolName,
+                    new Dictionary<string, object?>
+                    {
+                        ["dwarfId"] = dwarfId
+                    })])));
+        }
+
+        public object? GetService(Type serviceType, object? serviceKey = null) => null;
+
+        public void Dispose()
+        {
+        }
+
+        public IAsyncEnumerable<ChatResponseUpdate> GetStreamingResponseAsync(
+            IEnumerable<ChatMessage> messages,
+            ChatOptions? options = null,
+            CancellationToken cancellationToken = default) =>
+            throw new NotSupportedException();
+    }
+
+    private sealed class InvalidDataAgent : IDwarfAgent
+    {
+        public Task<AgentTurnResult> RunTurnAsync(AgentTurnRequest request, CancellationToken cancellationToken) =>
+            throw new AgentTurnException(AgentTurnErrorCode.InvalidData, "Simulated malformed tool payload.");
     }
 
     private sealed record ApiErrorResponse(string ErrorCode, string Message);

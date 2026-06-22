@@ -31,7 +31,8 @@ public sealed record ChatSendMessageResult(
     string SessionId,
     string DwarfId,
     string AssistantMessage,
-    ChatTurnDiagnostics Diagnostics);
+    ChatTurnDiagnostics Diagnostics,
+    IReadOnlyList<AgentToolReceipt> ToolReceipts);
 
 public sealed record ChatPromptPreviewResult(
     string SessionId,

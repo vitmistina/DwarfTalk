@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Globalization;
 using System.Runtime.CompilerServices;
+using FortressSouls.Application;
 using FortressSouls.Domain;
 using FortressSouls.DwarfFortress;
 using FortressSouls.Observability;
@@ -30,6 +31,96 @@ public sealed class PromptAssemblerTests
         Assert.Equal(PromptContract.TemplateVersion, result.Diagnostics.TemplateVersion);
         Assert.Equal(2, result.Diagnostics.ConversationMessagesIncluded);
         Assert.Equal(NormalizeToLfWithTrailingNewline(ReviewedGoldenPrompt), result.PromptText);
+    }
+
+    [Fact]
+    public void AssembleAgentTurn_IncludesVersionedLookAroundToolBlock_AndOnlyEnabledTool()
+    {
+        var assembler = new PromptAssembler();
+
+        var result = assembler.AssembleAgentTurn(
+            new AgentPromptInputs(
+                Snapshot: CreateSyntheticSnapshot(),
+                Conversation:
+                [
+                    new PromptConversationMessage(PromptMessageRole.Assistant, "Stone stands."),
+                    new PromptConversationMessage(PromptMessageRole.Player, "What is nearby?")
+                ],
+                PlayerMessage: "What do you see around you right now?",
+                EnabledTools:
+                [
+                    new PromptToolDefinition(
+                        FakePerceptionToolService.LookAroundToolName,
+                        PromptContract.LookAroundArgumentsSchemaVersion,
+                        PromptContract.LookAroundResultSchemaVersion)
+                ]));
+
+        Assert.True(result.Succeeded);
+        Assert.NotNull(result.PromptText);
+        Assert.Contains($"TOOL_INSTRUCTION_VERSION: {PromptContract.ToolInstructionVersion}", result.PromptText, StringComparison.Ordinal);
+        Assert.Contains("ENABLED_TOOLS: look_around", result.PromptText, StringComparison.Ordinal);
+        Assert.Contains("TOOL_SCHEMAS_JSON:", result.PromptText, StringComparison.Ordinal);
+        Assert.Contains(PromptContract.LookAroundArgumentsSchemaVersion, result.PromptText, StringComparison.Ordinal);
+        Assert.Contains(PromptContract.LookAroundResultSchemaVersion, result.PromptText, StringComparison.Ordinal);
+        Assert.Contains("Qualify conclusions when separate tool calls may reflect different game times.", result.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain("inspect_stocks", result.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain($"\"tool\":\"{FakePerceptionToolService.ListDwarvesToolName}\"", result.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain($"\"tool\":\"{FakePerceptionToolService.InspectDwarfToolName}\"", result.PromptText, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void AssembleAgentTurn_IncludesBoundedDwarfInspectionToolsWhenEnabled()
+    {
+        var assembler = new PromptAssembler();
+
+        var result = assembler.AssembleAgentTurn(
+            new AgentPromptInputs(
+                Snapshot: CreateSyntheticSnapshot(),
+                Conversation: [],
+                PlayerMessage: "Tell me about another dwarf in the fortress.",
+                EnabledTools:
+                [
+                    new PromptToolDefinition(
+                        FakePerceptionToolService.ListDwarvesToolName,
+                        PromptContract.ListDwarvesArgumentsSchemaVersion,
+                        PromptContract.ListDwarvesResultSchemaVersion),
+                    new PromptToolDefinition(
+                        FakePerceptionToolService.InspectDwarfToolName,
+                        PromptContract.InspectDwarfArgumentsSchemaVersion,
+                        PromptContract.InspectDwarfResultSchemaVersion)
+                ]));
+
+        Assert.True(result.Succeeded);
+        Assert.NotNull(result.PromptText);
+        Assert.Contains("ENABLED_TOOLS: inspect_dwarf, list_dwarves", result.PromptText, StringComparison.Ordinal);
+        Assert.Contains(PromptContract.ListDwarvesArgumentsSchemaVersion, result.PromptText, StringComparison.Ordinal);
+        Assert.Contains(PromptContract.ListDwarvesResultSchemaVersion, result.PromptText, StringComparison.Ordinal);
+        Assert.Contains(PromptContract.InspectDwarfArgumentsSchemaVersion, result.PromptText, StringComparison.Ordinal);
+        Assert.Contains(PromptContract.InspectDwarfResultSchemaVersion, result.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain("look_around", result.PromptText, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void AssembleAgentTurn_OrdersEnabledToolsDeterministically()
+    {
+        var assembler = new PromptAssembler();
+
+        var result = assembler.AssembleAgentTurn(
+            new AgentPromptInputs(
+                Snapshot: CreateSyntheticSnapshot(),
+                Conversation: [],
+                PlayerMessage: "What do you see around you right now?",
+                EnabledTools:
+                [
+                    new PromptToolDefinition("z_tool", "args-z", "result-z"),
+                    new PromptToolDefinition("a_tool", "args-a", "result-a")
+                ]));
+
+        Assert.True(result.Succeeded);
+        Assert.NotNull(result.PromptText);
+        Assert.Contains("ENABLED_TOOLS: a_tool, z_tool", result.PromptText, StringComparison.Ordinal);
+        Assert.True(
+            result.PromptText!.IndexOf("\"tool\":\"a_tool\"", StringComparison.Ordinal) < result.PromptText.IndexOf("\"tool\":\"z_tool\"", StringComparison.Ordinal));
     }
 
     [Fact]

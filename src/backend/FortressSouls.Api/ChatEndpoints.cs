@@ -92,7 +92,10 @@ internal static class ChatEndpoints
                         result.Diagnostics.Provider,
                         result.Diagnostics.Model,
                         result.Diagnostics.DurationMs,
-                        result.Diagnostics.PromptId)));
+                        result.Diagnostics.PromptId),
+                    ToolReceipts: result.ToolReceipts
+                        .Select(receipt => new ChatToolReceiptResponse(receipt.Tool, receipt.Outcome))
+                        .ToArray()));
         }
         catch (OperationCanceledException)
         {

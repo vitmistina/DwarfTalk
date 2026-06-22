@@ -21,6 +21,12 @@ Model = deepseek/deepseek-v3.2
 Keep the non-secret provider settings in `fortress-souls.config.jsonc` and the
 API key in `.env`.
 
+Fortress Souls supports one secret-loading seam for the provider key:
+`FortressSouls__Llm__ApiKey`. The `scripts/dev.*` entry points load that name
+from `.env` into the app process. A raw PowerShell session does not read `.env`
+automatically, so the manual smoke commands below must set the same variable in
+the current shell.
+
 In `fortress-souls.config.jsonc`:
 
 ```jsonc
@@ -56,7 +62,7 @@ existing application environment-variable seams.
 Use this before implementing or debugging the provider adapter.
 
 ```powershell
-$env:OPENROUTER_API_KEY = ""
+$env:FortressSouls__Llm__ApiKey = ""
 
 $body = @{
   model = "deepseek/deepseek-v3.2"
@@ -78,7 +84,7 @@ Invoke-RestMethod `
   -Uri "https://openrouter.ai/api/v1/chat/completions" `
   -Method Post `
   -Headers @{
-    "Authorization" = "Bearer $env:OPENROUTER_API_KEY"
+    "Authorization" = "Bearer $env:FortressSouls__Llm__ApiKey"
     "Content-Type" = "application/json"
     "HTTP-Referer" = "http://localhost:5173"
     "X-Title" = "FortressSouls"
@@ -98,6 +104,130 @@ The exact phrasing is not important. This test only proves:
 - the model slug works,
 - the request shape is accepted,
 - the model returns plain chat text.
+
+## Manual OpenRouter tool-call smoke test for R2-001
+
+Use this to complete the remaining live proof for
+`docs/backlog/v0.2-backlog.md#r2-001` after a valid provider API key has been
+made available through the supported `FortressSouls__Llm__ApiKey` seam. If you
+store it in `.env`, load it through `scripts/dev.*` first. If you run the
+commands directly in PowerShell, set the same variable in that shell.
+
+If the key is missing, stop here. The local R2-001 work is intentionally not
+claiming full completion without this proof.
+
+```powershell
+$env:FortressSouls__Llm__ApiKey = ""
+
+$messages = @(
+  @{
+    role = "system"
+    content = "Use the provided function when current structured data is needed. Reply briefly after tool use."
+  },
+  @{
+    role = "user"
+    content = "What do you see near the ore bins?"
+  }
+)
+
+$tools = @(
+  @{
+    type = "function"
+    function = @{
+      name = "probe_observe"
+      description = "Return a deterministic observation for the Fortress Souls R2-001 spike."
+      parameters = @{
+        type = "object"
+        additionalProperties = $false
+        properties = @{
+          subject = @{ type = "string" }
+          repeatCount = @{ type = "integer"; minimum = 1; maximum = 4 }
+          emitLargePayload = @{ type = "boolean" }
+          delayMs = @{ type = "integer"; minimum = 0; maximum = 10000 }
+        }
+        required = @("subject", "repeatCount", "emitLargePayload", "delayMs")
+      }
+    }
+  }
+)
+
+$body1 = @{
+  model = "deepseek/deepseek-v3.2"
+  messages = $messages
+  tools = $tools
+  tool_choice = "auto"
+  parallel_tool_calls = $false
+  temperature = 0
+  max_tokens = 256
+} | ConvertTo-Json -Depth 12
+
+$response1 = Invoke-RestMethod `
+  -Uri "https://openrouter.ai/api/v1/chat/completions" `
+  -Method Post `
+  -Headers @{
+    "Authorization" = "Bearer $env:FortressSouls__Llm__ApiKey"
+    "Content-Type" = "application/json"
+    "HTTP-Referer" = "http://localhost:5173"
+    "X-Title" = "FortressSouls"
+  } `
+  -Body $body1
+
+$toolCall = $response1.choices[0].message.tool_calls[0]
+
+$toolResult = @{
+  schemaVersion = "probe.v1"
+  summary = "ore bins ore bins"
+} | ConvertTo-Json -Compress
+
+$messages2 = @(
+  $messages
+  @{
+    role = "assistant"
+    content = $null
+    tool_calls = @($toolCall)
+  }
+  @{
+    role = "tool"
+    tool_call_id = $toolCall.id
+    content = $toolResult
+  }
+)
+
+$body2 = @{
+  model = "deepseek/deepseek-v3.2"
+  messages = $messages2
+  tools = $tools
+  tool_choice = "auto"
+  parallel_tool_calls = $false
+  temperature = 0
+  max_tokens = 256
+} | ConvertTo-Json -Depth 12
+
+$response2 = Invoke-RestMethod `
+  -Uri "https://openrouter.ai/api/v1/chat/completions" `
+  -Method Post `
+  -Headers @{
+    "Authorization" = "Bearer $env:FortressSouls__Llm__ApiKey"
+    "Content-Type" = "application/json"
+    "HTTP-Referer" = "http://localhost:5173"
+    "X-Title" = "FortressSouls"
+  } `
+  -Body $body2
+
+$response1
+$response2
+```
+
+Expected live-proof result:
+
+- the first response returns one `tool_calls` entry for `probe_observe`,
+- the second response returns one assistant message with prose and no further
+  tool call,
+- no raw tool arguments or tool results are copied into default application
+  telemetry.
+
+Retain the redacted request and response evidence with the R2-001 handover
+before changing the backlog status.
 
 ## Provider status API
 

@@ -6,6 +6,7 @@ using FortressSouls.Llm;
 using FortressSouls.Prompting;
 
 var builder = WebApplication.CreateBuilder(args);
+var llmOptions = LlmProviderOptions.LoadAndValidate(builder.Configuration);
 builder.Logging.ClearProviders();
 builder.Logging.AddJsonConsole(options =>
 {
@@ -20,6 +21,12 @@ builder.Services.AddSingleton<IChatSessionStore, InMemoryChatSessionStore>();
 builder.Services.AddFortressSoulsLlm(builder.Configuration);
 builder.Services.AddSingleton<PromptAssembler>();
 builder.Services.AddScoped<DwarfQueryService>();
+
+if (llmOptions.ProviderType == LlmProviderType.Fake)
+{
+    builder.Services.AddFortressSoulsFakePerceptionAgent();
+}
+
 builder.Services.AddScoped<ChatSessionService>();
 
 var app = builder.Build();

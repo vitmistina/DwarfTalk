@@ -36,22 +36,58 @@ The observer dwarf ID, center position, z-level, and command name are derived
 by the application. v0.2 does not permit arbitrary coordinates, arbitrary unit
 IDs, or z-offset selection from the model.
 
-The product result is smaller than the R-003 research envelope and contains:
+The product result is intentionally smaller than the R-003 research envelope:
 
 ```text
 schemaVersion
 gameTime?
-bounds
+bounds { radius, width, height }
 cells[]
 legend
 warnings[]
 ```
 
-Cells may contain bounded terrain class, liquid class, walkability, visible
-construction/building/zone summaries, nearby unit summaries, loose item
-summaries, and visible flow classes. Hidden cells expose only position plus a
-hidden/unknown marker. Raw descriptions, full item lists, and unrestricted IDs
-are excluded.
+`bounds` carries only local dimensions around the selected dwarf. Absolute map
+coordinates, z-level, and observer position do not survive filtering.
+`legend` is a bounded allowlisted summary of the retained terrain or feature
+classes present in the result.
+
+Each cell is bounded to:
+
+```text
+dx
+dy
+visibility
+terrainClass?
+walkable?
+featureClass?
+unitCount?
+```
+
+`dx` and `dy` are relative to the selected dwarf. All optional fields are
+visible-cell only. `walkable` is the retained passable or walkable flag.
+`featureClass` is a coarse visible feature summary, bounded to `building` for
+now. `unitCount` is count-only. No item-count field is promoted in v0.2.
+
+Hidden-cell filtering is strict: a hidden cell may expose only `dx`, `dy`, and
+`visibility = hidden`. No terrain, materials, liquids, plants, units, items,
+buildings, zones, constructions, flows, names, or raw IDs survive that filter
+before the result reaches the model.
+
+R-003 research fields intentionally not promoted now: absolute coordinates,
+z-offsets, grid text, symbol precedence, material resolution, plant detail,
+liquid detail, raw building or zone detail, construction detail, raw unit or
+item lists, loose-item counts, contained-item detail, threat flags, flow
+detail, raw IDs, and names.
+
+Sparse live evidence still required before the retained fields are considered
+verified for product use:
+
+- at least one hidden cell proving the strict redaction path.
+
+Water, magma, fire, smoke, mist, zones, constructions, mineral resolution, and
+item cases are not verification gates for this DTO because those fields are
+not promoted.
 
 This is a revealed local-map query, not verified dwarf line-of-sight.
 
@@ -66,12 +102,55 @@ category: allowlisted category or "all"
 ```
 
 Categories are defined by the application contract. Unknown categories are
-invalid arguments, not search strings. Results contain exact usable quantities,
-bounded exclusion totals, optional verified approximate values, game time when
-available, and warnings.
+invalid arguments, not search strings.
 
-Until bookkeeping precision and UI comparison are verified, approximate values
-are omitted. Exact values must not be presented as game-style approximations.
+The product result is intentionally smaller than the R-003 research envelope:
+
+```text
+schemaVersion
+gameTime?
+requestedCategory
+categories[]
+warnings[]
+```
+
+Each category entry is bounded to:
+
+```text
+category
+exactCount
+```
+
+If `requestedCategory = "all"`, `categories[]` returns the allowlisted
+categories in stable order. Otherwise it returns exactly one category.
+
+`exactCount` is the exact usable quantity for that curated category.
+Approximate values are absent from the product DTO. Research bookkeeping
+fields, ownership or containment context, excluded-item bookkeeping,
+uncategorized totals, and other `gui/dfstatus` parity detail are intentionally
+not promoted.
+
+The contract remains exact-only until both a supported bookkeeping source and a
+manual stock-UI comparison are retained as evidence. Until then the product
+must omit approximate values rather than inventing DF-style rounding.
+
+## Future Live Command Proposals
+
+If `look_around` and `inspect_stocks` graduate to the live adapter, the
+proposed new production command names for those two R-003-derived tools are:
+
+- `fortress-souls/get-dwarf-surroundings`
+- `fortress-souls/get-stock-summary`
+
+These are proposed new allowlist entries for those two tools only. They do not
+redefine the existing v0.1 command allowlist accepted in ADR-0003 or the full
+eventual v0.2 live allowlist.
+
+The R-003 research commands remain evidence-only and are not promoted as
+production commands:
+
+- `fortress-souls/research-spatial-vision`
+- `fortress-souls/research-stock-summary`
 
 ## `list_dwarves`
 
@@ -146,8 +225,11 @@ Still required before live product integration:
 
 - product DTO schemas and fixtures smaller than research output,
 - hidden-cell redaction tests,
-- sparse spatial evidence listed by R-003 where it affects promoted fields,
-- a closed production command allowlist,
-- stock UI comparison or an explicit exact-count-only limitation,
+- sparse spatial evidence for retained fields: hidden-cell redaction evidence,
+- approved allowlist entries for these two R-003-derived live tools, using only
+  `fortress-souls/get-dwarf-surroundings` and
+  `fortress-souls/get-stock-summary`,
+- a retained manual stock UI comparison before any exact-to-visible parity
+  claim, and a separately verified bookkeeping source before any approximate
+  stock value is added,
 - live smoke instructions and retained output for promoted commands.
-

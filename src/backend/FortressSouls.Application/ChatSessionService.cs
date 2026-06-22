@@ -12,13 +12,56 @@ public sealed class ChatSessionService(
     IChatSessionStore sessionStore,
     IChatProvider chatProvider,
     PromptAssembler promptAssembler,
-    ChatSessionOptions options)
+    ChatSessionOptions options,
+    IEnumerable<IDwarfAgent> dwarfAgents)
 {
+    private static readonly AgentExecutionPolicy LookAroundExecutionPolicy = new(
+        MaximumRounds: 2,
+        MaximumToolCalls: 1,
+        MaximumToolResultBytes: 2_048,
+        MaximumTotalToolResultBytes: 2_048,
+        TurnTimeout: TimeSpan.FromSeconds(5),
+        ToolTimeout: TimeSpan.FromSeconds(1));
+    private static readonly AgentExecutionPolicy DwarfInspectionExecutionPolicy = new(
+        MaximumRounds: 3,
+        MaximumToolCalls: 2,
+        MaximumToolResultBytes: 2_048,
+        MaximumTotalToolResultBytes: 4_096,
+        TurnTimeout: TimeSpan.FromSeconds(5),
+        ToolTimeout: TimeSpan.FromSeconds(1));
+    private static readonly PromptToolDefinition[] LookAroundPromptTools =
+    [
+        new(
+            FakePerceptionToolService.LookAroundToolName,
+            PromptContract.LookAroundArgumentsSchemaVersion,
+            PromptContract.LookAroundResultSchemaVersion)
+    ];
+    private static readonly PromptToolDefinition[] DwarfInspectionPromptTools =
+    [
+        new(
+            FakePerceptionToolService.ListDwarvesToolName,
+            PromptContract.ListDwarvesArgumentsSchemaVersion,
+            PromptContract.ListDwarvesResultSchemaVersion),
+        new(
+            FakePerceptionToolService.InspectDwarfToolName,
+            PromptContract.InspectDwarfArgumentsSchemaVersion,
+            PromptContract.InspectDwarfResultSchemaVersion)
+    ];
+    private static readonly PerceptionRoute LookAroundRoute = new(
+        LookAroundExecutionPolicy,
+        LookAroundPromptTools,
+        [FakePerceptionToolService.LookAroundToolName]);
+    private static readonly PerceptionRoute DwarfInspectionRoute = new(
+        DwarfInspectionExecutionPolicy,
+        DwarfInspectionPromptTools,
+        [FakePerceptionToolService.ListDwarvesToolName, FakePerceptionToolService.InspectDwarfToolName]);
+
     private readonly DwarfQueryService _dwarfQueryService = dwarfQueryService ?? throw new ArgumentNullException(nameof(dwarfQueryService));
     private readonly IChatSessionStore _sessionStore = sessionStore ?? throw new ArgumentNullException(nameof(sessionStore));
     private readonly IChatProvider _chatProvider = chatProvider ?? throw new ArgumentNullException(nameof(chatProvider));
     private readonly PromptAssembler _promptAssembler = promptAssembler ?? throw new ArgumentNullException(nameof(promptAssembler));
     private readonly ChatSessionOptions _options = options ?? throw new ArgumentNullException(nameof(options));
+    private readonly IDwarfAgent? _dwarfAgent = SelectAgent(dwarfAgents);
 
     public async Task<ChatSessionCreateResult> CreateSessionAsync(string dwarfId, CancellationToken cancellationToken)
     {
@@ -79,6 +122,11 @@ public sealed class ChatSessionService(
 
             EnsureSnapshotIdentity(session);
 
+            if (TrySelectPerceptionRoute(normalizedMessage, out var route))
+            {
+                return await SendPerceptionMessageAsync(session, normalizedMessage, route, activity, cancellationToken);
+            }
+
             var promptResult = _promptAssembler.Assemble(
                 new PromptInputs(
                     Snapshot: session.Snapshot,
@@ -113,7 +161,8 @@ public sealed class ChatSessionService(
                     Provider: providerResponse.ProviderType,
                     Model: providerResponse.Model,
                     DurationMs: Math.Max(0, (int)Math.Round(providerResponse.Duration.TotalMilliseconds, MidpointRounding.AwayFromZero)),
-                    PromptId: promptId));
+                    PromptId: promptId),
+                ToolReceipts: []);
         }
         catch (OperationCanceledException)
         {
@@ -158,6 +207,76 @@ public sealed class ChatSessionService(
         }
     }
 
+    private async Task<ChatSendMessageResult> SendPerceptionMessageAsync(
+        ChatSessionState session,
+        string normalizedMessage,
+        PerceptionRoute route,
+        Activity? activity,
+        CancellationToken cancellationToken)
+    {
+        var promptResult = _promptAssembler.AssembleAgentTurn(
+            new AgentPromptInputs(
+                Snapshot: session.Snapshot,
+                Conversation: [.. session.Messages.Select(MapPromptConversationMessage)],
+                PlayerMessage: normalizedMessage,
+                EnabledTools: route.PromptTools,
+                StaticInterpretationGuide: PromptContract.DefaultStaticInterpretationGuide),
+            _options.PromptAssembly);
+
+        if (!promptResult.Succeeded || string.IsNullOrEmpty(promptResult.PromptText))
+        {
+            activity?.SetTag(FortressSoulsTelemetry.OperationOutcomeTagName, FortressSoulsTelemetry.ErrorOutcome);
+            throw new ChatValidationException("prompt_assembly_failed", "Failed to assemble a valid chat prompt.");
+        }
+
+        var promptId = CreatePromptId(promptResult.PromptText);
+        var stopwatch = Stopwatch.StartNew();
+        AgentTurnResult turnResult;
+
+        try
+        {
+            turnResult = await _dwarfAgent!.RunTurnAsync(
+                new AgentTurnRequest(
+                    Session: new AgentSessionContext(
+                        SessionId: session.SessionId,
+                        DwarfId: session.DwarfId,
+                        Snapshot: session.Snapshot,
+                        Conversation: [.. session.Messages]),
+                    UserMessage: normalizedMessage,
+                    ExecutionPolicy: route.ExecutionPolicy,
+                    InitialPromptText: promptResult.PromptText)
+                {
+                    EnabledToolNames = route.EnabledToolNames
+                },
+                cancellationToken);
+        }
+        catch (AgentTurnException exception)
+        {
+            activity?.SetTag(FortressSoulsTelemetry.OperationOutcomeTagName, FortressSoulsTelemetry.ErrorOutcome);
+            throw MapAgentFailure(exception);
+        }
+
+        stopwatch.Stop();
+        var assistantMessage = NormalizeAssistantMessage(turnResult.AssistantMessage);
+        AppendSuccessfulTurn(session, normalizedMessage, assistantMessage, promptResult.PromptText);
+
+        activity?.SetTag(FortressSoulsTelemetry.ProviderTypeTagName, turnResult.ProviderType);
+        activity?.SetTag(FortressSoulsTelemetry.LlmModelTagName, turnResult.Model);
+        activity?.SetTag(FortressSoulsTelemetry.PromptTemplateVersionTagName, promptResult.Diagnostics.TemplateVersion);
+        activity?.SetTag(FortressSoulsTelemetry.OperationOutcomeTagName, FortressSoulsTelemetry.SuccessOutcome);
+
+        return new ChatSendMessageResult(
+            SessionId: session.SessionId,
+            DwarfId: session.DwarfId.ToString(),
+            AssistantMessage: assistantMessage,
+            Diagnostics: new ChatTurnDiagnostics(
+                Provider: turnResult.ProviderType,
+                Model: turnResult.Model,
+                DurationMs: Math.Max(0, (int)Math.Round(stopwatch.Elapsed.TotalMilliseconds, MidpointRounding.AwayFromZero)),
+                PromptId: promptId),
+            ToolReceipts: turnResult.ToolReceipts);
+    }
+
     private void AppendSuccessfulTurn(ChatSessionState session, string playerMessage, string assistantMessage, string promptPreview)
     {
         session.Messages.Add(new ChatHistoryMessage(ChatRole.Player, playerMessage));
@@ -179,6 +298,96 @@ public sealed class ChatSessionService(
             ChatRole.Assistant => new PromptConversationMessage(PromptMessageRole.Assistant, message.Text),
             _ => throw new ChatValidationException("chat_role_invalid", "The chat message role is invalid.")
         };
+
+    private bool TrySelectPerceptionRoute(string normalizedMessage, out PerceptionRoute route)
+    {
+        route = null!;
+        if (_dwarfAgent is null)
+        {
+            return false;
+        }
+
+        if (LooksLikeOtherDwarfRequest(normalizedMessage))
+        {
+            route = DwarfInspectionRoute;
+            return true;
+        }
+
+        if (LooksLikeLookAroundRequest(normalizedMessage))
+        {
+            route = LookAroundRoute;
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool LooksLikeLookAroundRequest(string normalizedMessage)
+    {
+        var words = ExtractWords(normalizedMessage);
+        var mentionsLocalSurroundings = words.Contains("around")
+            || words.Contains("nearby")
+            || words.Any(word => word.StartsWith("surround", StringComparison.Ordinal));
+
+        if (!mentionsLocalSurroundings)
+        {
+            return false;
+        }
+
+        return (words.Contains("look") && words.Contains("around"))
+            || words.Contains("see")
+            || words.Contains("observe");
+    }
+
+    private static bool LooksLikeOtherDwarfRequest(string normalizedMessage)
+    {
+        var words = ExtractWords(normalizedMessage);
+        var mentionsAnotherDwarf = (words.Contains("another") || words.Contains("other")) && words.Contains("dwarf");
+        var mentionsSomeoneElse = words.Contains("someone") && words.Contains("else");
+
+        if (!mentionsAnotherDwarf && !mentionsSomeoneElse)
+        {
+            return false;
+        }
+
+        return words.Contains("about")
+            || words.Contains("tell")
+            || words.Contains("who")
+            || words.Contains("what")
+            || words.Contains("inspect")
+            || words.Contains("check");
+    }
+
+    private static HashSet<string> ExtractWords(string value)
+    {
+        var words = new HashSet<string>(StringComparer.Ordinal);
+        var currentWord = new StringBuilder();
+
+        foreach (var character in value)
+        {
+            if (char.IsLetterOrDigit(character))
+            {
+                currentWord.Append(char.ToLowerInvariant(character));
+                continue;
+            }
+
+            FlushWord(currentWord, words);
+        }
+
+        FlushWord(currentWord, words);
+        return words;
+    }
+
+    private static void FlushWord(StringBuilder currentWord, HashSet<string> words)
+    {
+        if (currentWord.Length == 0)
+        {
+            return;
+        }
+
+        words.Add(currentWord.ToString());
+        currentWord.Clear();
+    }
 
     private string NormalizeMessage(string message)
     {
@@ -259,4 +468,29 @@ public sealed class ChatSessionService(
         var hash = SHA256.HashData(bytes);
         return $"prompt-{Convert.ToHexString(hash[..6]).ToLowerInvariant()}";
     }
+
+    private static ChatProviderException MapAgentFailure(AgentTurnException exception) =>
+        exception.ErrorCode switch
+        {
+            AgentTurnErrorCode.TimedOut => new ChatProviderException(ChatProviderErrorCode.Timeout, "The chat provider timed out.", exception),
+            AgentTurnErrorCode.Unavailable => new ChatProviderException(ChatProviderErrorCode.Unavailable, "The chat provider is unavailable.", exception),
+            _ => new ChatProviderException(ChatProviderErrorCode.InvalidResponse, "The chat provider returned an invalid response.", exception)
+        };
+
+    private static IDwarfAgent? SelectAgent(IEnumerable<IDwarfAgent> dwarfAgents)
+    {
+        ArgumentNullException.ThrowIfNull(dwarfAgents);
+
+        return dwarfAgents.Take(2).ToArray() switch
+        {
+            [] => null,
+            [var agent] => agent,
+            _ => throw new InvalidOperationException("Only one dwarf agent may be registered.")
+        };
+    }
+
+    private sealed record PerceptionRoute(
+        AgentExecutionPolicy ExecutionPolicy,
+        IReadOnlyList<PromptToolDefinition> PromptTools,
+        IReadOnlyList<string> EnabledToolNames);
 }

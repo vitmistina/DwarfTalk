@@ -18,6 +18,18 @@ public sealed record PromptInputs(
     string PlayerMessage,
     string? StaticInterpretationGuide = null);
 
+public sealed record PromptToolDefinition(
+    string Name,
+    string ArgumentsSchemaVersion,
+    string ResultSchemaVersion);
+
+public sealed record AgentPromptInputs(
+    DwarfSnapshot Snapshot,
+    IReadOnlyList<PromptConversationMessage> Conversation,
+    string PlayerMessage,
+    IReadOnlyList<PromptToolDefinition> EnabledTools,
+    string? StaticInterpretationGuide = null);
+
 public sealed record PromptAssemblyOptions(
     int MaxPromptCharacters = 10_000,
     int MaxConversationMessages = 12,
