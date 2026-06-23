@@ -5,6 +5,7 @@ import {
   createChatSession,
   fetchChatPromptPreview,
   sendChatMessage,
+  type ChatToolReceipt,
   type ChatPromptPreviewResult,
   type CreateChatSessionResult,
   type SendChatMessageResult,
@@ -15,6 +16,7 @@ interface ChatTurn {
   role: "player" | "assistant";
   text: string;
   diagnostics?: SendChatMessageResult["diagnostics"];
+  toolReceipts?: SendChatMessageResult["toolReceipts"];
 }
 
 interface ChatSessionStateIdle {
@@ -215,6 +217,7 @@ export function ChatPanel({
             role: "assistant",
             text: result.assistantMessage.text,
             diagnostics: result.diagnostics,
+            toolReceipts: result.toolReceipts,
           },
         ]);
         setDraft("");
@@ -323,6 +326,21 @@ export function ChatPanel({
           <li key={turn.id} className="chat-turn">
             <p className="chat-turn__role">{turn.role === "player" ? "You" : "Dwarf"}</p>
             <p className="chat-turn__text">{turn.text}</p>
+            {turn.toolReceipts && turn.toolReceipts.length > 0 ? (
+              <div className="chat-turn__receipts">
+                <p className="chat-turn__receipt-label">Perception</p>
+                <ul className="chat-turn__receipt-list" aria-label="Perception receipts">
+                  {turn.toolReceipts.map((receipt, index) => (
+                    <li key={`${turn.id}-receipt-${index}`}>
+                      <span className={`receipt-chip ${receiptClassName(receipt.outcome)}`}>
+                        <span className="receipt-chip__tool">{getReceiptToolLabel(receipt.tool)}</span>
+                        <span className="receipt-chip__outcome">{getReceiptOutcomeLabel(receipt.outcome)}</span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
             {turn.diagnostics ? (
               <p className="chat-turn__meta">
                 Provider: <code>{turn.diagnostics.provider}</code> · Model: <code>{turn.diagnostics.model}</code> ·
@@ -456,5 +474,54 @@ function statusLabel(sessionState: ChatSessionState, pending: boolean): string {
       return "Error";
     default:
       return "No session";
+  }
+}
+
+function getReceiptToolLabel(tool: string): string {
+  switch (tool) {
+    case "look_around":
+      return "look_around";
+    case "inspect_stocks":
+      return "inspect_stocks";
+    case "list_dwarves":
+      return "list_dwarves";
+    case "inspect_dwarf":
+      return "inspect_dwarf";
+    default:
+      return "tool";
+  }
+}
+
+function getReceiptOutcomeLabel(outcome: string): string {
+  switch (outcome) {
+    case "success":
+      return "Success";
+    case "unavailable":
+      return "Unavailable";
+    case "invalid_arguments":
+      return "Invalid arguments";
+    case "not_found":
+      return "Not found";
+    case "timed_out":
+      return "Timed out";
+    case "invalid_data":
+      return "Invalid data";
+    case "result_too_large":
+      return "Too large";
+    case "budget_exhausted":
+      return "Budget exhausted";
+    default:
+      return "Unknown outcome";
+  }
+}
+
+function receiptClassName(outcome: ChatToolReceipt["outcome"]): string {
+  switch (outcome) {
+    case "success":
+      return "receipt-chip--success";
+    case "budget_exhausted":
+      return "receipt-chip--warning";
+    default:
+      return "receipt-chip--error";
   }
 }

@@ -157,6 +157,80 @@ public sealed class ChatApiTests
     }
 
     [Fact]
+    public async Task StockQuestion_UsesInspectStocksToolAndReturnsExactSafeReceipt()
+    {
+        using var factory = CreateFactory("Development");
+        using var client = factory.CreateClient();
+
+        var created = await (await client.PostAsJsonAsync("/api/chat/sessions", new CreateChatSessionRequest("4101")))
+            .Content.ReadFromJsonAsync<CreateChatSessionResponse>();
+
+        var sendResponse = await client.PostAsJsonAsync(
+            $"/api/chat/sessions/{created!.SessionId}/messages",
+            new SendChatMessageRequest("How much wood do we have in stock?"));
+        Assert.Equal(HttpStatusCode.OK, sendResponse.StatusCode);
+
+        using var sent = JsonDocument.Parse(await sendResponse.Content.ReadAsStreamAsync());
+        var root = sent.RootElement;
+
+        var assistantText = root.GetProperty("assistantMessage").GetProperty("text").GetString();
+        Assert.Equal("I can account for 48 wood.", assistantText);
+        Assert.DoesNotContain("~48", assistantText, StringComparison.Ordinal);
+
+        var receipts = root.GetProperty("toolReceipts").EnumerateArray().ToArray();
+        var receipt = Assert.Single(receipts);
+        Assert.Equal("inspect_stocks", receipt.GetProperty("tool").GetString());
+        Assert.Equal("success", receipt.GetProperty("outcome").GetString());
+
+        var preview = await (await client.GetAsync($"/api/chat/sessions/{created.SessionId}/prompt-preview"))
+            .Content.ReadFromJsonAsync<PromptPreviewResponse>();
+
+        Assert.NotNull(preview);
+        Assert.Contains("ENABLED_TOOLS: inspect_stocks", preview!.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain("look_around", preview.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain($"\"tool\":\"{FakePerceptionToolService.ListDwarvesToolName}\"", preview.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain($"\"tool\":\"{FakePerceptionToolService.InspectDwarfToolName}\"", preview.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain("\"categories\"", preview.PromptText, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task StockQuestion_UsesRegisteredStockInspectionService_WhenOverridden()
+    {
+        using var factory = CreateFactory(
+            "Development",
+            stockInspectionService: new StubStockInspectionService(
+                new InspectStocksToolResult(
+                    SchemaVersion: "fortress-souls.inspect-stocks-result.v0.2",
+                    GameTime: "126:9000",
+                    RequestedCategory: "wood",
+                    Categories:
+                    [
+                        new StockCategory("wood", 7)
+                    ],
+                    Warnings: [])));
+        using var client = factory.CreateClient();
+
+        var created = await (await client.PostAsJsonAsync("/api/chat/sessions", new CreateChatSessionRequest("4101")))
+            .Content.ReadFromJsonAsync<CreateChatSessionResponse>();
+
+        var sendResponse = await client.PostAsJsonAsync(
+            $"/api/chat/sessions/{created!.SessionId}/messages",
+            new SendChatMessageRequest("How much wood do we have in stock?"));
+        Assert.Equal(HttpStatusCode.OK, sendResponse.StatusCode);
+
+        var sent = await sendResponse.Content.ReadFromJsonAsync<SendChatMessageResponse>();
+        Assert.NotNull(sent);
+        Assert.Equal("I can account for 7 wood.", sent!.AssistantMessage.Text);
+        Assert.Collection(
+            sent.ToolReceipts,
+            receipt =>
+            {
+                Assert.Equal("inspect_stocks", receipt.Tool);
+                Assert.Equal("success", receipt.Outcome);
+            });
+    }
+
+    [Fact]
     public async Task OtherDwarfQuestion_UsesListAndInspectToolsAndReturnsSafeAdditiveReceipts()
     {
         using var factory = CreateFactory("Development");
@@ -631,7 +705,8 @@ public sealed class ChatApiTests
         IChatProvider? provider = null,
         ChatSessionOptions? options = null,
         IDwarfAgent? agent = null,
-        IChatClient? chatClient = null) =>
+        IChatClient? chatClient = null,
+        IStockInspectionService? stockInspectionService = null) =>
         new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>
             {
@@ -660,6 +735,12 @@ public sealed class ChatApiTests
                     {
                         services.RemoveAll<IChatClient>();
                         services.AddSingleton(chatClient);
+                    }
+
+                    if (stockInspectionService is not null)
+                    {
+                        services.RemoveAll<IStockInspectionService>();
+                        services.AddSingleton(stockInspectionService);
                     }
                 });
             });
@@ -807,6 +888,15 @@ public sealed class ChatApiTests
     {
         public Task<AgentTurnResult> RunTurnAsync(AgentTurnRequest request, CancellationToken cancellationToken) =>
             throw new AgentTurnException(AgentTurnErrorCode.InvalidData, "Simulated malformed tool payload.");
+    }
+
+    private sealed class StubStockInspectionService(InspectStocksToolResult result) : IStockInspectionService
+    {
+        public Task<InspectStocksToolResult> InspectStocksAsync(string requestedCategory, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return Task.FromResult(result);
+        }
     }
 
     private sealed record ApiErrorResponse(string ErrorCode, string Message);

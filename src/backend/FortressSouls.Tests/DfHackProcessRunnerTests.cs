@@ -87,10 +87,14 @@ public sealed class DfHackProcessRunnerTests
 
         var list = await runner.RunCommandAsync(DfHackCommand.ListDwarves, [], CancellationToken.None);
         var snapshot = await runner.RunCommandAsync(DfHackCommand.GetDwarfSnapshot, ["6597"], CancellationToken.None);
+        var surroundings = await runner.RunCommandAsync(DfHackCommand.GetDwarfSurroundings, ["6597", "1"], CancellationToken.None);
+        var stocks = await runner.RunCommandAsync(DfHackCommand.GetStockSummary, [], CancellationToken.None);
         var diagnose = await runner.RunCommandAsync(DfHackCommand.Diagnose, [], CancellationToken.None);
 
         Assert.True(list.IsSuccess);
         Assert.True(snapshot.IsSuccess);
+        Assert.True(surroundings.IsSuccess);
+        Assert.True(stocks.IsSuccess);
         Assert.True(diagnose.IsSuccess);
     }
 

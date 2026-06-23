@@ -10,13 +10,6 @@ using AiChatRole = Microsoft.Extensions.AI.ChatRole;
 
 public sealed class MicrosoftExtensionsAiDwarfAgent : IDwarfAgent
 {
-    private const string TurnActivityName = "fortresssouls.agent.turn";
-    private const string ToolActivityName = "fortresssouls.agent.tool.call";
-    private const string ToolNameTag = "fortresssouls.tool.name";
-    private const string ToolCallIndexTag = "fortresssouls.tool.call_index";
-    private const string ToolRoundIndexTag = "fortresssouls.tool.round_index";
-    private const string ToolOutputBytesTag = "fortresssouls.tool.output_bytes";
-    private const string ErrorCategoryTag = "fortresssouls.error.category";
     private static readonly JsonSerializerOptions SerializerOptions = new(JsonSerializerDefaults.Web)
     {
         TypeInfoResolver = new DefaultJsonTypeInfoResolver()
@@ -53,7 +46,7 @@ public sealed class MicrosoftExtensionsAiDwarfAgent : IDwarfAgent
         using var turnTimeoutSource = new CancellationTokenSource(policy.TurnTimeout);
         using var linkedSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, turnTimeoutSource.Token);
 
-        using var activity = FortressSoulsTelemetry.ActivitySource.StartActivity(TurnActivityName, ActivityKind.Internal);
+        using var activity = FortressSoulsTelemetry.ActivitySource.StartActivity(FortressSoulsTelemetry.AgentTurnActivityName, ActivityKind.Internal);
         activity?.SetTag(FortressSoulsTelemetry.ChatSessionIdTagName, session.SessionId);
         activity?.SetTag(FortressSoulsTelemetry.DwarfIdTagName, session.DwarfId.ToString());
         activity?.SetTag(FortressSoulsTelemetry.SnapshotSchemaVersionTagName, session.Snapshot.SchemaVersion);
@@ -142,10 +135,10 @@ public sealed class MicrosoftExtensionsAiDwarfAgent : IDwarfAgent
                     var toolDefinition = pendingToolCall.Invocation.Tool;
                     toolCalls++;
 
-                    using var toolActivity = FortressSoulsTelemetry.ActivitySource.StartActivity(ToolActivityName, ActivityKind.Internal);
-                    toolActivity?.SetTag(ToolNameTag, functionCall.Name);
-                    toolActivity?.SetTag(ToolCallIndexTag, toolCalls);
-                    toolActivity?.SetTag(ToolRoundIndexTag, roundIndex);
+                    using var toolActivity = FortressSoulsTelemetry.ActivitySource.StartActivity(FortressSoulsTelemetry.AgentToolCallActivityName, ActivityKind.Internal);
+                    toolActivity?.SetTag(FortressSoulsTelemetry.ToolNameTagName, functionCall.Name);
+                    toolActivity?.SetTag(FortressSoulsTelemetry.ToolCallIndexTagName, toolCalls);
+                    toolActivity?.SetTag(FortressSoulsTelemetry.ToolRoundIndexTagName, roundIndex);
 
                     using var toolTimeoutSource = new CancellationTokenSource(policy.ToolTimeout);
                     using var toolLinkedSource = CancellationTokenSource.CreateLinkedTokenSource(linkedSource.Token, toolTimeoutSource.Token);
@@ -167,20 +160,20 @@ public sealed class MicrosoftExtensionsAiDwarfAgent : IDwarfAgent
                     {
                         var exception = TimedOut();
                         toolActivity?.SetTag(FortressSoulsTelemetry.OperationOutcomeTagName, FortressSoulsTelemetry.ErrorOutcome);
-                        toolActivity?.SetTag(ErrorCategoryTag, MapErrorCategory(exception.ErrorCode));
+                        toolActivity?.SetTag(FortressSoulsTelemetry.ErrorCategoryTagName, MapErrorCategory(exception.ErrorCode));
                         throw exception;
                     }
                     catch (AgentTurnException exception)
                     {
                         toolActivity?.SetTag(FortressSoulsTelemetry.OperationOutcomeTagName, FortressSoulsTelemetry.ErrorOutcome);
-                        toolActivity?.SetTag(ErrorCategoryTag, MapErrorCategory(exception.ErrorCode));
+                        toolActivity?.SetTag(FortressSoulsTelemetry.ErrorCategoryTagName, MapErrorCategory(exception.ErrorCode));
                         throw;
                     }
                     catch (Exception exception)
                     {
                         var mapped = Unavailable(exception);
                         toolActivity?.SetTag(FortressSoulsTelemetry.OperationOutcomeTagName, FortressSoulsTelemetry.ErrorOutcome);
-                        toolActivity?.SetTag(ErrorCategoryTag, MapErrorCategory(mapped.ErrorCode));
+                        toolActivity?.SetTag(FortressSoulsTelemetry.ErrorCategoryTagName, MapErrorCategory(mapped.ErrorCode));
                         throw mapped;
                     }
 
@@ -189,7 +182,7 @@ public sealed class MicrosoftExtensionsAiDwarfAgent : IDwarfAgent
                     {
                         var exception = ResultTooLarge();
                         toolActivity?.SetTag(FortressSoulsTelemetry.OperationOutcomeTagName, FortressSoulsTelemetry.ErrorOutcome);
-                        toolActivity?.SetTag(ErrorCategoryTag, MapErrorCategory(exception.ErrorCode));
+                        toolActivity?.SetTag(FortressSoulsTelemetry.ErrorCategoryTagName, MapErrorCategory(exception.ErrorCode));
                         throw exception;
                     }
 
@@ -197,7 +190,7 @@ public sealed class MicrosoftExtensionsAiDwarfAgent : IDwarfAgent
                     {
                         var exception = BudgetExhausted();
                         toolActivity?.SetTag(FortressSoulsTelemetry.OperationOutcomeTagName, FortressSoulsTelemetry.ErrorOutcome);
-                        toolActivity?.SetTag(ErrorCategoryTag, MapErrorCategory(exception.ErrorCode));
+                        toolActivity?.SetTag(FortressSoulsTelemetry.ErrorCategoryTagName, MapErrorCategory(exception.ErrorCode));
                         var unresolvedPendingToolCalls = pendingToolCalls[pendingToolCallIndex..];
                         AppendBudgetExhaustedReceipts(receipts, unresolvedPendingToolCalls);
                         AppendBudgetExhaustedToolResults(messages, unresolvedPendingToolCalls);
@@ -216,7 +209,7 @@ public sealed class MicrosoftExtensionsAiDwarfAgent : IDwarfAgent
                     receipts.Add(new AgentToolReceipt(toolDefinition.Name, AgentToolOutcomes.Success));
 
                     toolActivity?.SetTag(FortressSoulsTelemetry.OperationOutcomeTagName, FortressSoulsTelemetry.SuccessOutcome);
-                    toolActivity?.SetTag(ToolOutputBytesTag, outputBytes);
+                    toolActivity?.SetTag(FortressSoulsTelemetry.ToolOutputBytesTagName, outputBytes);
 
                     messages.Add(CreateToolResultMessage(functionCall, result));
                 }
@@ -235,14 +228,14 @@ public sealed class MicrosoftExtensionsAiDwarfAgent : IDwarfAgent
         {
             var exception = TimedOut();
             activity?.SetTag(FortressSoulsTelemetry.OperationOutcomeTagName, FortressSoulsTelemetry.ErrorOutcome);
-            activity?.SetTag(ErrorCategoryTag, MapErrorCategory(exception.ErrorCode));
+            activity?.SetTag(FortressSoulsTelemetry.ErrorCategoryTagName, MapErrorCategory(exception.ErrorCode));
             throw exception;
         }
         catch (LlmProviderException exception)
         {
             var mapped = MapProviderException(exception);
             activity?.SetTag(FortressSoulsTelemetry.OperationOutcomeTagName, FortressSoulsTelemetry.ErrorOutcome);
-            activity?.SetTag(ErrorCategoryTag, MapProviderErrorCategory(exception.ErrorCode));
+            activity?.SetTag(FortressSoulsTelemetry.ErrorCategoryTagName, MapProviderErrorCategory(exception.ErrorCode));
             throw mapped;
         }
         catch (OperationCanceledException)
@@ -253,7 +246,7 @@ public sealed class MicrosoftExtensionsAiDwarfAgent : IDwarfAgent
         catch (AgentTurnException exception)
         {
             activity?.SetTag(FortressSoulsTelemetry.OperationOutcomeTagName, FortressSoulsTelemetry.ErrorOutcome);
-            activity?.SetTag(ErrorCategoryTag, MapErrorCategory(exception.ErrorCode));
+            activity?.SetTag(FortressSoulsTelemetry.ErrorCategoryTagName, MapErrorCategory(exception.ErrorCode));
             throw;
         }
         finally

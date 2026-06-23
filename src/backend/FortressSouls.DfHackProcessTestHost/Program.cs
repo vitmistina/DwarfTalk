@@ -47,6 +47,19 @@ public static class Program
                 snapshot.Replace("__UNIT_ID__", unitId, StringComparison.Ordinal));
         }
 
+        if (string.Equals(command, "fortress-souls/get-dwarf-surroundings", StringComparison.Ordinal))
+        {
+            return WriteRaw(BuildLookAroundSuccessJson(args));
+        }
+
+        if (string.Equals(command, "fortress-souls/get-stock-summary", StringComparison.Ordinal))
+        {
+            return WriteRaw(
+                """
+                {"schemaVersion":"fortress-souls-stock-summary.v0.2","provenance":{"kind":"live-dfhack","generatedBy":"fortress-souls/get-stock-summary"},"gameTime":{"year":100,"tick":16801},"categories":{"drinks":{"exact":60},"preparedFood":{"exact":0},"wood":{"exact":3},"stone":{"exact":0}},"warnings":[]}
+                """);
+        }
+
         return WriteRaw("""{"schemaVersion":"fortress-souls-diagnose.v0.1","worldLoaded":true,"siteLoaded":true,"mapLoaded":true}""");
     }
 
@@ -95,6 +108,20 @@ public static class Program
                 GetDfHackLikeOutputEncoding());
         }
 
+        if (string.Equals(command, "fortress-souls/get-dwarf-surroundings", StringComparison.Ordinal))
+        {
+            return WriteEncodedRaw(BuildLookAroundSuccessJson(args), GetDfHackLikeOutputEncoding());
+        }
+
+        if (string.Equals(command, "fortress-souls/get-stock-summary", StringComparison.Ordinal))
+        {
+            return WriteEncodedRaw(
+                """
+                {"schemaVersion":"fortress-souls-stock-summary.v0.2","provenance":{"kind":"live-dfhack","generatedBy":"fortress-souls/get-stock-summary"},"gameTime":{"year":100,"tick":16801},"categories":{"drinks":{"exact":60},"preparedFood":{"exact":0},"wood":{"exact":3},"stone":{"exact":0}},"warnings":[]}
+                """,
+                GetDfHackLikeOutputEncoding());
+        }
+
         return WriteRaw("""{"schemaVersion":"fortress-souls-diagnose.v0.1","worldLoaded":true,"siteLoaded":true,"mapLoaded":true}""");
     }
 
@@ -129,5 +156,20 @@ public static class Program
     {
         Thread.Sleep(Timeout.Infinite);
         return 0;
+    }
+
+    private static string BuildLookAroundSuccessJson(string[] args)
+    {
+        var radius = args.Length >= 2 && int.TryParse(args[1], out var parsedRadius) && parsedRadius == 2
+            ? 2
+            : 1;
+
+        return radius == 2
+            ? """
+              {"schemaVersion":"fortress-souls-dwarf-surroundings.v0.2","provenance":{"kind":"live-dfhack","generatedBy":"fortress-souls/get-dwarf-surroundings"},"gameTime":{"year":100,"tick":16801},"bounds":{"radius":2,"width":5,"height":5},"cells":[{"dx":-2,"dy":-2,"visibility":"hidden"},{"dx":-1,"dy":-2,"visibility":"visible","terrainClass":"wall","walkable":false},{"dx":0,"dy":-2,"visibility":"visible","terrainClass":"wall","walkable":false},{"dx":1,"dy":-2,"visibility":"visible","terrainClass":"floor","walkable":true},{"dx":2,"dy":-2,"visibility":"hidden"},{"dx":-2,"dy":-1,"visibility":"hidden"},{"dx":-1,"dy":-1,"visibility":"hidden"},{"dx":0,"dy":-1,"visibility":"visible","terrainClass":"wall","walkable":false},{"dx":1,"dy":-1,"visibility":"visible","terrainClass":"floor","walkable":true},{"dx":2,"dy":-1,"visibility":"visible","terrainClass":"floor","walkable":true},{"dx":-2,"dy":0,"visibility":"visible","terrainClass":"ramp","walkable":true},{"dx":-1,"dy":0,"visibility":"visible","terrainClass":"ramp","walkable":true},{"dx":0,"dy":0,"visibility":"visible","terrainClass":"floor","walkable":true,"unitCount":1},{"dx":1,"dy":0,"visibility":"visible","terrainClass":"floor","walkable":true},{"dx":2,"dy":0,"visibility":"hidden"},{"dx":-2,"dy":1,"visibility":"visible","terrainClass":"ramp","walkable":true},{"dx":-1,"dy":1,"visibility":"visible","terrainClass":"ramp","walkable":true},{"dx":0,"dy":1,"visibility":"visible","terrainClass":"building","walkable":false,"featureClass":"building"},{"dx":1,"dy":1,"visibility":"visible","terrainClass":"building","walkable":false,"featureClass":"building","unitCount":2},{"dx":2,"dy":1,"visibility":"hidden"},{"dx":-2,"dy":2,"visibility":"hidden"},{"dx":-1,"dy":2,"visibility":"hidden"},{"dx":0,"dy":2,"visibility":"visible","terrainClass":"floor","walkable":true},{"dx":1,"dy":2,"visibility":"hidden"},{"dx":2,"dy":2,"visibility":"hidden"}],"warnings":[]}
+              """
+            : """
+              {"schemaVersion":"fortress-souls-dwarf-surroundings.v0.2","provenance":{"kind":"live-dfhack","generatedBy":"fortress-souls/get-dwarf-surroundings"},"gameTime":{"year":100,"tick":16801},"bounds":{"radius":1,"width":3,"height":3},"cells":[{"dx":-1,"dy":-1,"visibility":"hidden"},{"dx":0,"dy":-1,"visibility":"visible","terrainClass":"wall","walkable":false},{"dx":1,"dy":-1,"visibility":"visible","terrainClass":"floor","walkable":true},{"dx":-1,"dy":0,"visibility":"visible","terrainClass":"ramp","walkable":true},{"dx":0,"dy":0,"visibility":"visible","terrainClass":"floor","walkable":true,"unitCount":1},{"dx":1,"dy":0,"visibility":"visible","terrainClass":"floor","walkable":true},{"dx":-1,"dy":1,"visibility":"visible","terrainClass":"ramp","walkable":true},{"dx":0,"dy":1,"visibility":"visible","terrainClass":"building","walkable":false,"featureClass":"building"},{"dx":1,"dy":1,"visibility":"visible","terrainClass":"building","walkable":false,"featureClass":"building","unitCount":2}],"warnings":[]}
+              """;
     }
 }

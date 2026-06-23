@@ -41,6 +41,10 @@ public static class FortressSoulsTelemetry
 
     public const string ChatTurnActivityName = "fortresssouls.chat.turn";
 
+    public const string AgentTurnActivityName = "fortresssouls.agent.turn";
+
+    public const string AgentToolCallActivityName = "fortresssouls.agent.tool.call";
+
     public const string DwarvesListDurationMetricName = "fortresssouls.dwarves.list.duration";
 
     public const string DwarvesSnapshotDurationMetricName = "fortresssouls.dwarves.snapshot.duration";
@@ -68,6 +72,14 @@ public static class FortressSoulsTelemetry
     public const string PromptTruncatedTagName = "fortresssouls.prompt.truncated";
 
     public const string ChatSessionIdTagName = "fortresssouls.chat.session_id";
+
+    public const string ToolNameTagName = "fortresssouls.tool.name";
+
+    public const string ToolCallIndexTagName = "fortresssouls.tool.call_index";
+
+    public const string ToolRoundIndexTagName = "fortresssouls.tool.round_index";
+
+    public const string ToolOutputBytesTagName = "fortresssouls.tool.output_bytes";
 
     public const string ConsoleFallbackObservabilityState = "ConsoleFallback";
 

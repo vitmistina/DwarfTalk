@@ -41,6 +41,20 @@ public sealed class FakeToolLoopChatClient : IChatClient
                         new Dictionary<string, object?>())])));
             }
 
+            if (availableToolNames.Contains(FakePerceptionToolService.InspectStocksToolName)
+                && LooksLikeStockRequest(latestUserMessage))
+            {
+                return Task.FromResult(new ChatResponse(new ChatMessage(
+                    AiChatRole.Assistant,
+                    [new FunctionCallContent(
+                        "call-1",
+                        FakePerceptionToolService.InspectStocksToolName,
+                        new Dictionary<string, object?>
+                        {
+                            ["category"] = SelectStockCategory(latestUserMessage)
+                        })])));
+            }
+
             if (availableToolNames.Contains(FakePerceptionToolService.LookAroundToolName)
                 && LooksLikeLookAroundRequest(latestUserMessage))
             {
@@ -104,6 +118,14 @@ public sealed class FakeToolLoopChatClient : IChatClient
         }
 
         if (observation.ValueKind == JsonValueKind.Object
+            && observation.TryGetProperty("requestedCategory", out _)
+            && observation.TryGetProperty("categories", out _))
+        {
+            var stockResult = Deserialize<InspectStocksToolResult>(observation);
+            return Task.FromResult(new ChatResponse(new ChatMessage(AiChatRole.Assistant, BuildGroundedReply(stockResult))));
+        }
+
+        if (observation.ValueKind == JsonValueKind.Object
             && observation.TryGetProperty("cells", out _)
             && observation.TryGetProperty("bounds", out _))
         {
@@ -164,6 +186,46 @@ public sealed class FakeToolLoopChatClient : IChatClient
             || words.Contains("what")
             || words.Contains("inspect")
             || words.Contains("check");
+    }
+
+    private static bool LooksLikeStockRequest(string normalizedMessage)
+    {
+        var words = ExtractWords(normalizedMessage);
+        var mentionsStockDomain = words.Contains("stock")
+            || words.Contains("stocks")
+            || words.Contains("supply")
+            || words.Contains("supplies")
+            || words.Contains("drink")
+            || words.Contains("drinks")
+            || words.Contains("booze")
+            || words.Contains("beer")
+            || words.Contains("ale")
+            || words.Contains("food")
+            || words.Contains("meal")
+            || words.Contains("meals")
+            || words.Contains("wood")
+            || words.Contains("log")
+            || words.Contains("logs")
+            || words.Contains("stone")
+            || words.Contains("rock")
+            || words.Contains("rocks");
+
+        if (!mentionsStockDomain)
+        {
+            return false;
+        }
+
+        return words.Contains("how")
+            || words.Contains("much")
+            || words.Contains("many")
+            || words.Contains("count")
+            || words.Contains("have")
+            || words.Contains("check")
+            || words.Contains("inspect")
+            || words.Contains("stock")
+            || words.Contains("stocks")
+            || words.Contains("supply")
+            || words.Contains("supplies");
     }
 
     private static HashSet<string> ExtractWords(string value)
@@ -287,6 +349,43 @@ public sealed class FakeToolLoopChatClient : IChatClient
             ?? listResult.Dwarves.FirstOrDefault()?.DwarfId;
     }
 
+    private static string SelectStockCategory(string userMessage)
+    {
+        var words = ExtractWords(userMessage);
+
+        if (words.Contains("drink")
+            || words.Contains("drinks")
+            || words.Contains("booze")
+            || words.Contains("beer")
+            || words.Contains("ale"))
+        {
+            return "drinks";
+        }
+
+        if (words.Contains("food")
+            || words.Contains("meal")
+            || words.Contains("meals"))
+        {
+            return "prepared_food";
+        }
+
+        if (words.Contains("wood")
+            || words.Contains("log")
+            || words.Contains("logs"))
+        {
+            return "wood";
+        }
+
+        if (words.Contains("stone")
+            || words.Contains("rock")
+            || words.Contains("rocks"))
+        {
+            return "stone";
+        }
+
+        return "all";
+    }
+
     private static string BuildGroundedReply(LookAroundToolResult lookAround)
     {
         var visibleTerrain = lookAround.Cells
@@ -330,4 +429,28 @@ public sealed class FakeToolLoopChatClient : IChatClient
 
         return $"{name}, a {profession}, is {work}.";
     }
+
+    private static string BuildGroundedReply(InspectStocksToolResult stockResult)
+    {
+        if (stockResult.Categories.Count == 0)
+        {
+            return "I cannot account for the stocks just now.";
+        }
+
+        var categorySummaries = stockResult.Categories
+            .Select(category => $"{category.ExactCount} {FormatStockCategory(category.Category)}")
+            .ToArray();
+
+        var summary = categorySummaries.Length switch
+        {
+            1 => categorySummaries[0],
+            2 => $"{categorySummaries[0]} and {categorySummaries[1]}",
+            _ => $"{string.Join(", ", categorySummaries[..^1])}, and {categorySummaries[^1]}"
+        };
+
+        return $"I can account for {summary}.";
+    }
+
+    private static string FormatStockCategory(string category) =>
+        category.Replace('_', ' ');
 }

@@ -8,11 +8,11 @@ The backend lists eligible dwarves and returns snapshots by validated dwarf ID.
 The player selects a dwarf in the web UI. Fortress Souls does not read or
 depend on the unit currently highlighted in the Dwarf Fortress UI.
 
-## Draft v0.2 perception work
+## v0.2 perception release
 
-v0.2 is a draft release plan for bounded, read-only perception during a
-selected dwarf's chat turn. It preserves application ownership of identity,
-policy, budgets, validation, and telemetry.
+v0.2 is the bounded, read-only perception release for the selected dwarf chat
+turn. It preserves application ownership of identity, policy, budgets,
+validation, and telemetry.
 
 Authoritative draft documents:
 
@@ -23,7 +23,8 @@ Authoritative draft documents:
 - `decisions/adr-0007-agent-runtime-and-tool-loop.md`
 
 ADR-0007 is accepted. The retained live provider evidence for R2-001 is in
-`research/r2-001-openrouter-tool-loop-live-proof-2026-06-22.md`.
+`research/r2-001-openrouter-tool-loop-live-proof-2026-06-22.md`. The current
+v0.2 release review is in `reviews/v0.2-release-review.md`.
 
 ## Decisions
 
@@ -72,7 +73,10 @@ See:
 
 ## Runbooks
 
+- `runbooks/local-dev.md` describes the supported fake-mode local workflow, focused browser smoke command, and optional local observability path.
 - `runbooks/dfhack-b019-manual-validation.md` describes the manual validation flow for the B-019 DFHack scripts.
+- `runbooks/dfhack-v0.2-manual-validation.md` describes the manual validation flow for the v0.2 DFHack perception scripts.
+- `runbooks/provider-configuration.md` describes the supported provider setup and safe diagnostics boundaries.
 
 ## Repository placement conventions
 

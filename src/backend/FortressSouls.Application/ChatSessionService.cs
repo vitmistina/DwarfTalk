@@ -22,6 +22,13 @@ public sealed class ChatSessionService(
         MaximumTotalToolResultBytes: 2_048,
         TurnTimeout: TimeSpan.FromSeconds(5),
         ToolTimeout: TimeSpan.FromSeconds(1));
+    private static readonly AgentExecutionPolicy StockInspectionExecutionPolicy = new(
+        MaximumRounds: 2,
+        MaximumToolCalls: 1,
+        MaximumToolResultBytes: 1_024,
+        MaximumTotalToolResultBytes: 1_024,
+        TurnTimeout: TimeSpan.FromSeconds(5),
+        ToolTimeout: TimeSpan.FromSeconds(1));
     private static readonly AgentExecutionPolicy DwarfInspectionExecutionPolicy = new(
         MaximumRounds: 3,
         MaximumToolCalls: 2,
@@ -35,6 +42,13 @@ public sealed class ChatSessionService(
             FakePerceptionToolService.LookAroundToolName,
             PromptContract.LookAroundArgumentsSchemaVersion,
             PromptContract.LookAroundResultSchemaVersion)
+    ];
+    private static readonly PromptToolDefinition[] StockInspectionPromptTools =
+    [
+        new(
+            FakePerceptionToolService.InspectStocksToolName,
+            PromptContract.InspectStocksArgumentsSchemaVersion,
+            PromptContract.InspectStocksResultSchemaVersion)
     ];
     private static readonly PromptToolDefinition[] DwarfInspectionPromptTools =
     [
@@ -51,6 +65,10 @@ public sealed class ChatSessionService(
         LookAroundExecutionPolicy,
         LookAroundPromptTools,
         [FakePerceptionToolService.LookAroundToolName]);
+    private static readonly PerceptionRoute StockInspectionRoute = new(
+        StockInspectionExecutionPolicy,
+        StockInspectionPromptTools,
+        [FakePerceptionToolService.InspectStocksToolName]);
     private static readonly PerceptionRoute DwarfInspectionRoute = new(
         DwarfInspectionExecutionPolicy,
         DwarfInspectionPromptTools,
@@ -313,6 +331,12 @@ public sealed class ChatSessionService(
             return true;
         }
 
+        if (LooksLikeStockRequest(normalizedMessage))
+        {
+            route = StockInspectionRoute;
+            return true;
+        }
+
         if (LooksLikeLookAroundRequest(normalizedMessage))
         {
             route = LookAroundRoute;
@@ -356,6 +380,46 @@ public sealed class ChatSessionService(
             || words.Contains("what")
             || words.Contains("inspect")
             || words.Contains("check");
+    }
+
+    private static bool LooksLikeStockRequest(string normalizedMessage)
+    {
+        var words = ExtractWords(normalizedMessage);
+        var mentionsStockDomain = words.Contains("stock")
+            || words.Contains("stocks")
+            || words.Contains("supply")
+            || words.Contains("supplies")
+            || words.Contains("drink")
+            || words.Contains("drinks")
+            || words.Contains("booze")
+            || words.Contains("beer")
+            || words.Contains("ale")
+            || words.Contains("food")
+            || words.Contains("meal")
+            || words.Contains("meals")
+            || words.Contains("wood")
+            || words.Contains("log")
+            || words.Contains("logs")
+            || words.Contains("stone")
+            || words.Contains("rock")
+            || words.Contains("rocks");
+
+        if (!mentionsStockDomain)
+        {
+            return false;
+        }
+
+        return words.Contains("how")
+            || words.Contains("much")
+            || words.Contains("many")
+            || words.Contains("count")
+            || words.Contains("have")
+            || words.Contains("check")
+            || words.Contains("inspect")
+            || words.Contains("stock")
+            || words.Contains("stocks")
+            || words.Contains("supply")
+            || words.Contains("supplies");
     }
 
     private static HashSet<string> ExtractWords(string value)

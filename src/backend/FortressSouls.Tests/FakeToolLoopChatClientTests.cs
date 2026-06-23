@@ -134,6 +134,54 @@ public sealed class FakeToolLoopChatClientTests
         Assert.Contains("HarvestPlants", finalMessage.Text, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public async Task GetResponseAsync_UsesInspectStocksForStockQuestionAndBuildsExactReply()
+    {
+        var client = new FakeToolLoopChatClient();
+        var options = new ChatOptions
+        {
+            Tools =
+            [
+                CreateTool(FakePerceptionToolService.InspectStocksToolName)
+            ]
+        };
+
+        var initialResponse = await client.GetResponseAsync(
+            [new ChatMessage(AiChatRole.User, "How much wood do we have in stock?")],
+            options,
+            CancellationToken.None);
+
+        var initialMessage = Assert.Single(initialResponse.Messages);
+        var stockCall = Assert.Single(initialMessage.Contents.OfType<FunctionCallContent>());
+        Assert.Equal(FakePerceptionToolService.InspectStocksToolName, stockCall.Name);
+        Assert.NotNull(stockCall.Arguments);
+        Assert.Equal("wood", Assert.IsType<string>(stockCall.Arguments!["category"]));
+
+        var stockResult = new InspectStocksToolResult(
+            SchemaVersion: "fortress-souls.inspect-stocks-result.v0.2",
+            GameTime: "125-03-12T08:15",
+            RequestedCategory: "wood",
+            Categories:
+            [
+                new StockCategory("wood", 48)
+            ],
+            Warnings: Array.Empty<string>());
+
+        var finalResponse = await client.GetResponseAsync(
+            [
+                new ChatMessage(AiChatRole.User, "How much wood do we have in stock?"),
+                new ChatMessage(
+                    AiChatRole.Tool,
+                    [new FunctionResultContent("call-1", SerializeToolResult(stockResult))])
+            ],
+            options,
+            CancellationToken.None);
+
+        var finalMessage = Assert.Single(finalResponse.Messages);
+        Assert.Equal("I can account for 48 wood.", finalMessage.Text);
+        Assert.DoesNotContain("~48", finalMessage.Text, StringComparison.Ordinal);
+    }
+
     private static AITool CreateTool(string name) =>
         AIFunctionFactory.Create(
             (CancellationToken cancellationToken) => Task.FromResult<object?>(null),

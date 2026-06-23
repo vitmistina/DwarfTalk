@@ -1,7 +1,7 @@
 # Local Development Runbook
 
-Status: Draft  
-Applies to: FortressSouls v0.1  
+Status: Draft
+Applies to: FortressSouls local development
 Related ADR: `docs/decisions/adr-0004-observability.md`
 
 ## Purpose
@@ -25,7 +25,7 @@ or check commands can succeed:
 
 ```powershell
 cd .\src\frontend
-npm install
+npm ci
 cd ..\..
 ```
 
@@ -174,9 +174,11 @@ Leave `workingDirectory` empty to derive it from `runPath`.
 
 This optional mode assumes the validated repo scripts under
 `dfhack/scripts/fortress-souls/` have already been manually copied into the
-DFHack runtime scripts path. Use the manual preparation flow in
-`docs/runbooks/dfhack-b019-manual-validation.md`; `scripts/import-dfhack-scripts.ps1`
-is a maintainer sync-back helper, not the setup step.
+DFHack runtime scripts path. Use `docs/runbooks/dfhack-b019-manual-validation.md`
+for the v0.1 list/snapshot scripts and
+`docs/runbooks/dfhack-v0.2-manual-validation.md` for the v0.2 perception
+scripts; `scripts/import-dfhack-scripts.ps1` is a maintainer sync-back helper,
+not the setup step.
 
 ### DfHackProcess plus OpenAiCompatible
 
@@ -253,8 +255,8 @@ On POSIX shells, use:
 ./scripts/check.sh
 ```
 
-Run `npm install` once in `src/frontend` before the first `dev`, `format`,
-`test`, or `check` command in a fresh workspace.
+Run `npm ci` once in `src/frontend` before the first `dev`, `format`, `test`,
+or `check` command in a fresh workspace.
 
 `dev` starts the backend and frontend together. It projects the root config
 plus `.env` into the existing environment-variable seams, prints a safe summary
@@ -266,7 +268,7 @@ Focused fake-mode browser smoke test:
 ```powershell
 cd .\src\frontend
 npm run test:e2e:install
-npm run test:e2e
+npm run test:e2e -- fake-mode-smoke.spec.ts
 ```
 
 The smoke harness starts backend and frontend in fake mode on controlled ports
@@ -313,7 +315,7 @@ From the repository root:
 
 ```powershell
 cd .\src\frontend
-npm install
+npm ci
 $env:FORTRESS_SOULS_FRONTEND_PORT = "5173"
 $env:FORTRESS_SOULS_API_PROXY_TARGET = "http://127.0.0.1:5230"
 npm run dev -- --host 127.0.0.1 --port 5173 --strictPort
@@ -382,7 +384,7 @@ command:
 
 ```powershell
 cd .\src\frontend
-npm install
+npm ci
 ```
 
 ### Dashboard is empty

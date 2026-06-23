@@ -11,6 +11,11 @@ export interface SendChatMessageDiagnostics {
   promptId: string;
 }
 
+export interface ChatToolReceipt {
+  tool: string;
+  outcome: string;
+}
+
 export interface SendChatMessageResult {
   sessionId: string;
   dwarfId: string;
@@ -19,6 +24,7 @@ export interface SendChatMessageResult {
     text: string;
   };
   diagnostics: SendChatMessageDiagnostics;
+  toolReceipts: ChatToolReceipt[];
   correlationId?: string;
 }
 
@@ -136,7 +142,7 @@ function parseCreateSessionResponse(value: unknown): CreateChatSessionResult {
 }
 
 function parseSendMessageResponse(value: unknown): SendChatMessageResult {
-  if (!isRecord(value) || !isRecord(value.assistantMessage) || !isRecord(value.diagnostics)) {
+  if (!isRecord(value) || !isRecord(value.assistantMessage) || !isRecord(value.diagnostics) || !Array.isArray(value.toolReceipts)) {
     throw new Error("Backend chat API returned an invalid response.");
   }
 
@@ -153,6 +159,18 @@ function parseSendMessageResponse(value: unknown): SendChatMessageResult {
       durationMs: requireNumberField(value.diagnostics, "durationMs"),
       promptId: requireStringField(value.diagnostics, "promptId"),
     },
+    toolReceipts: value.toolReceipts.map((receipt) => parseToolReceipt(receipt)),
+  };
+}
+
+function parseToolReceipt(value: unknown): ChatToolReceipt {
+  if (!isRecord(value)) {
+    throw new Error("Backend chat API returned an invalid response.");
+  }
+
+  return {
+    tool: requireStringField(value, "tool"),
+    outcome: requireStringField(value, "outcome"),
   };
 }
 

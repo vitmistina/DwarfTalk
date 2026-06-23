@@ -43,6 +43,25 @@ public sealed class PerceptionToolTests
     }
 
     [Fact]
+    public async Task ExecuteAsync_LookAround_AcceptsMaximumBoundedRadius()
+    {
+        var registry = CreateRegistry();
+
+        var result = await registry.ExecuteAsync(
+            CreateInvocation(registry, FakePerceptionToolService.LookAroundToolName, new { radius = 2 }),
+            CancellationToken.None);
+
+        var bounds = result.Content.GetProperty("bounds");
+        Assert.Equal(2, bounds.GetProperty("radius").GetInt32());
+        Assert.Equal(5, bounds.GetProperty("width").GetInt32());
+        Assert.Equal(5, bounds.GetProperty("height").GetInt32());
+
+        var cells = result.Content.GetProperty("cells").EnumerateArray().ToArray();
+        Assert.Equal(25, cells.Length);
+        Assert.True(cells.Count(cell => string.Equals(cell.GetProperty("visibility").GetString(), "hidden", StringComparison.Ordinal)) >= 2);
+    }
+
+    [Fact]
     public async Task ExecuteAsync_InspectStocks_ReturnsAllowlistedCategoriesInStableOrder()
     {
         var registry = CreateRegistry();

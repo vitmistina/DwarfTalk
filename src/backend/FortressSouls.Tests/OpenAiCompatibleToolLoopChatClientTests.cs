@@ -335,7 +335,7 @@ public sealed class OpenAiCompatibleToolLoopChatClientTests
         Assert.Equal("The agent turn is unavailable.", exception.Message);
         Assert.Equal(0, handler.RequestCount);
 
-        var turnActivity = Assert.Single(observed, activity => activity.DisplayName == "fortresssouls.agent.turn");
+        var turnActivity = Assert.Single(observed, activity => activity.DisplayName == FortressSoulsTelemetry.AgentTurnActivityName);
         Assert.Contains(turnActivity.Tags, tag =>
             tag.Key == FortressSoulsTelemetry.ErrorCategoryTagName
             && string.Equals(tag.Value, AgentToolOutcomes.Unavailable, StringComparison.Ordinal));
@@ -387,7 +387,7 @@ public sealed class OpenAiCompatibleToolLoopChatClientTests
         Assert.Equal("Timeout", providerException.GetType().GetProperty("ErrorCode")?.GetValue(providerException)?.ToString());
         Assert.Equal(1, handler.RequestCount);
 
-        var turnActivity = Assert.Single(observed, activity => activity.DisplayName == "fortresssouls.agent.turn");
+        var turnActivity = Assert.Single(observed, activity => activity.DisplayName == FortressSoulsTelemetry.AgentTurnActivityName);
         Assert.Contains(turnActivity.Tags, tag =>
             tag.Key == FortressSoulsTelemetry.ErrorCategoryTagName
             && string.Equals(tag.Value, AgentToolOutcomes.TimedOut, StringComparison.Ordinal));

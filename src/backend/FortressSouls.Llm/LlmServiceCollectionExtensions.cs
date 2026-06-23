@@ -46,10 +46,15 @@ public static class LlmServiceCollectionExtensions
         services.AddScoped<IAgentToolRegistry>(sp =>
         {
             var queryService = sp.GetRequiredService<DwarfQueryService>();
-            var toolService = new FakePerceptionToolService(queryService, FakePerceptionFixtureSet.Default);
+            var toolService = new FakePerceptionToolService(
+                queryService,
+                sp.GetRequiredService<ISurroundingsInspectionService>(),
+                sp.GetRequiredService<IStockInspectionService>(),
+                FakePerceptionFixtureSet.Default);
             var enabledToolNames = new HashSet<string>(StringComparer.Ordinal)
             {
                 FakePerceptionToolService.LookAroundToolName,
+                FakePerceptionToolService.InspectStocksToolName,
                 FakePerceptionToolService.ListDwarvesToolName,
                 FakePerceptionToolService.InspectDwarfToolName
             };

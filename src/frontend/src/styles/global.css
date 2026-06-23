@@ -363,6 +363,65 @@ a {
   color: var(--text-muted);
 }
 
+.chat-turn__receipts {
+  margin-top: 0.55rem;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.chat-turn__receipt-label {
+  margin: 0;
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.chat-turn__receipt-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.receipt-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.8rem;
+}
+
+.receipt-chip__tool {
+  font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+}
+
+.receipt-chip__outcome {
+  font-weight: 600;
+}
+
+.receipt-chip--success {
+  background: rgba(113, 195, 189, 0.14);
+  color: #a9efea;
+  border-color: rgba(113, 195, 189, 0.32);
+}
+
+.receipt-chip--warning {
+  background: rgba(220, 184, 106, 0.16);
+  color: #f0d18a;
+  border-color: rgba(220, 184, 106, 0.32);
+}
+
+.receipt-chip--error {
+  background: rgba(231, 139, 123, 0.14);
+  color: #f2b4a7;
+  border-color: rgba(231, 139, 123, 0.32);
+}
+
 .chat-input-form {
   display: grid;
   gap: 0.5rem;

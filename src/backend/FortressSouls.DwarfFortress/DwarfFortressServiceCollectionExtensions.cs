@@ -33,6 +33,8 @@ public static class DwarfFortressServiceCollectionExtensions
     private static IServiceCollection AddFakeAdapter(IServiceCollection services)
     {
         services.AddSingleton<IDwarfFortressAdapter, FakeDwarfFortressAdapter>();
+        services.AddSingleton<ISurroundingsInspectionService>(_ => new FixtureSurroundingsInspectionService(FakePerceptionFixtureSet.Default.LookAround));
+        services.AddSingleton<IStockInspectionService>(_ => new FixtureStockInspectionService(FakePerceptionFixtureSet.Default.Stocks));
         services.AddSingleton(new DwarfAdapterDescriptor(DwarfFortressAdapterType.Fake.ToString()));
         services.AddSingleton<IDwarfAdapterStatusReader>(new StaticDwarfAdapterStatusReader(DwarfFortressAdapterType.Fake.ToString()));
         return services;
@@ -45,6 +47,8 @@ public static class DwarfFortressServiceCollectionExtensions
         services.AddSingleton(options);
         services.AddSingleton<JsonFileDwarfFortressAdapter>();
         services.AddSingleton<IDwarfFortressAdapter>(sp => sp.GetRequiredService<JsonFileDwarfFortressAdapter>());
+        services.AddSingleton<ISurroundingsInspectionService, UnavailableSurroundingsInspectionService>();
+        services.AddSingleton<IStockInspectionService, UnavailableStockInspectionService>();
         services.AddSingleton(new DwarfAdapterDescriptor(DwarfFortressAdapterType.JsonFile.ToString()));
         services.AddSingleton<IDwarfAdapterStatusReader>(new StaticDwarfAdapterStatusReader(DwarfFortressAdapterType.JsonFile.ToString()));
         return services;
@@ -62,6 +66,8 @@ public static class DwarfFortressServiceCollectionExtensions
         services.AddSingleton<IDfHackAdapterStatusRecorder>(sp => sp.GetRequiredService<DfHackAdapterStatusTracker>());
         services.AddSingleton<IDwarfAdapterStatusReader>(sp => sp.GetRequiredService<DfHackAdapterStatusTracker>());
         services.AddSingleton<IDwarfFortressAdapter, DfHackDwarfFortressAdapter>();
+        services.AddSingleton<ISurroundingsInspectionService, DfHackSurroundingsInspectionService>();
+        services.AddSingleton<IStockInspectionService, DfHackStockInspectionService>();
         services.AddSingleton(new DwarfAdapterDescriptor(DwarfFortressAdapterType.DfHackProcess.ToString()));
         return services;
     }

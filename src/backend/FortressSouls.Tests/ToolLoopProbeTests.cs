@@ -597,7 +597,7 @@ public sealed class ToolLoopProbeTests
 
         Assert.Equal(AgentTurnErrorCode.InvalidData, exception.ErrorCode);
 
-        var turnActivity = Assert.Single(observed, activity => activity.DisplayName == "fortresssouls.agent.turn");
+        var turnActivity = Assert.Single(observed, activity => activity.DisplayName == FortressSoulsTelemetry.AgentTurnActivityName);
         Assert.Contains(turnActivity.Tags, tag =>
             tag.Key == FortressSoulsTelemetry.ErrorCategoryTagName
             && string.Equals(tag.Value, AgentToolOutcomes.InvalidData, StringComparison.Ordinal));
@@ -630,12 +630,56 @@ public sealed class ToolLoopProbeTests
         Assert.Equal("The bins look steady.", result.AssistantMessage);
 
         var snapshot = observed.ToArray();
-        Assert.Contains(snapshot, activity => activity.DisplayName == "fortresssouls.agent.turn");
-        Assert.Contains(snapshot, activity => activity.DisplayName == "fortresssouls.agent.tool.call");
+        Assert.Contains(snapshot, activity => activity.DisplayName == FortressSoulsTelemetry.AgentTurnActivityName);
+        Assert.Contains(snapshot, activity => activity.DisplayName == FortressSoulsTelemetry.AgentToolCallActivityName);
         Assert.DoesNotContain(snapshot.SelectMany(activity => activity.Tags), tag =>
             (tag.Value?.ToString() ?? string.Empty).Contains("SENTINEL-USER", StringComparison.Ordinal));
         Assert.DoesNotContain(snapshot.SelectMany(activity => activity.Tags), tag =>
             (tag.Value?.ToString() ?? string.Empty).Contains("SENTINEL-TOOL", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public async Task RunTurnAsync_EmitsBoundedAgentAndToolTelemetryTags()
+    {
+        var observed = new ConcurrentQueue<Activity>();
+        using var listener = new ActivityListener
+        {
+            ShouldListenTo = source => source.Name == FortressSoulsTelemetry.ActivitySourceName,
+            Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllDataAndRecorded,
+            ActivityStopped = activity => observed.Enqueue(activity)
+        };
+        ActivitySource.AddActivityListener(listener);
+
+        var fakeClient = new SequenceChatClient(
+            new ChatResponse(new ChatMessage(
+                AiChatRole.Assistant,
+                [new FunctionCallContent(
+                    "call-1",
+                    "probe_observe",
+                    ValidArguments(subject: "ore bins"))])),
+            new ChatResponse(new ChatMessage(AiChatRole.Assistant, "The ore bins are near the stockpile.")));
+
+        var agent = CreateAgent(fakeClient, new ProbeObservationToolService());
+        var result = await agent.RunTurnAsync(CreateRequest(), CancellationToken.None);
+
+        Assert.Equal("The ore bins are near the stockpile.", result.AssistantMessage);
+
+        var snapshot = observed.ToArray();
+        var turnActivity = Assert.Single(snapshot, activity => activity.DisplayName == FortressSoulsTelemetry.AgentTurnActivityName);
+        var toolActivity = Assert.Single(snapshot, activity => activity.DisplayName == FortressSoulsTelemetry.AgentToolCallActivityName);
+
+        Assert.Equal("session-4101", turnActivity.GetTagItem(FortressSoulsTelemetry.ChatSessionIdTagName));
+        Assert.Equal("4101", turnActivity.GetTagItem(FortressSoulsTelemetry.DwarfIdTagName));
+        Assert.Equal(DwarfSchemaVersions.Snapshot, turnActivity.GetTagItem(FortressSoulsTelemetry.SnapshotSchemaVersionTagName));
+        Assert.Equal("OpenAiCompatible", turnActivity.GetTagItem(FortressSoulsTelemetry.ProviderTypeTagName));
+        Assert.Equal("deepseek/deepseek-v3.2", turnActivity.GetTagItem(FortressSoulsTelemetry.LlmModelTagName));
+        Assert.Equal(FortressSoulsTelemetry.SuccessOutcome, turnActivity.GetTagItem(FortressSoulsTelemetry.OperationOutcomeTagName));
+
+        Assert.Equal(ProbeObservationToolService.StableToolName, toolActivity.GetTagItem(FortressSoulsTelemetry.ToolNameTagName));
+        Assert.Equal(1, Assert.IsType<int>(toolActivity.GetTagItem(FortressSoulsTelemetry.ToolCallIndexTagName)));
+        Assert.Equal(1, Assert.IsType<int>(toolActivity.GetTagItem(FortressSoulsTelemetry.ToolRoundIndexTagName)));
+        Assert.True(Assert.IsType<int>(toolActivity.GetTagItem(FortressSoulsTelemetry.ToolOutputBytesTagName)) > 0);
+        Assert.Equal(FortressSoulsTelemetry.SuccessOutcome, toolActivity.GetTagItem(FortressSoulsTelemetry.OperationOutcomeTagName));
     }
 
     private static MicrosoftExtensionsAiDwarfAgent CreateAgent(IChatClient chatClient, ProbeObservationToolService toolService) =>

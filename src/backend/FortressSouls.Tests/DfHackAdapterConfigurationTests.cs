@@ -75,10 +75,14 @@ public sealed class DfHackAdapterConfigurationTests
             using var provider = services.BuildServiceProvider();
 
             var adapter = provider.GetRequiredService<IDwarfFortressAdapter>();
+            var surroundings = provider.GetRequiredService<ISurroundingsInspectionService>();
+            var stocks = provider.GetRequiredService<IStockInspectionService>();
             var descriptor = provider.GetRequiredService<DwarfAdapterDescriptor>();
             var status = provider.GetRequiredService<IDwarfAdapterStatusReader>().GetCurrentStatus();
 
             Assert.IsType<JsonFileDwarfFortressAdapter>(adapter);
+            Assert.IsType<UnavailableSurroundingsInspectionService>(surroundings);
+            Assert.IsType<UnavailableStockInspectionService>(stocks);
             Assert.Equal(DwarfFortressAdapterType.JsonFile.ToString(), descriptor.AdapterType);
             Assert.Equal(DwarfFortressAdapterType.JsonFile.ToString(), status.AdapterType);
             Assert.True(status.IsConfigured);
@@ -156,10 +160,14 @@ public sealed class DfHackAdapterConfigurationTests
         using var provider = services.BuildServiceProvider();
 
         var adapter = provider.GetRequiredService<IDwarfFortressAdapter>();
+        var surroundings = provider.GetRequiredService<ISurroundingsInspectionService>();
+        var stocks = provider.GetRequiredService<IStockInspectionService>();
         var descriptor = provider.GetRequiredService<DwarfAdapterDescriptor>();
         var status = provider.GetRequiredService<IDwarfAdapterStatusReader>().GetCurrentStatus();
 
         Assert.IsType<FakeDwarfFortressAdapter>(adapter);
+        Assert.IsType<FixtureSurroundingsInspectionService>(surroundings);
+        Assert.IsType<FixtureStockInspectionService>(stocks);
         Assert.Equal(DwarfFortressAdapterType.Fake.ToString(), descriptor.AdapterType);
         Assert.Equal(DwarfFortressAdapterType.Fake.ToString(), status.AdapterType);
         Assert.True(status.IsConfigured);
@@ -186,10 +194,14 @@ public sealed class DfHackAdapterConfigurationTests
         using var provider = services.BuildServiceProvider();
 
         var adapter = provider.GetRequiredService<IDwarfFortressAdapter>();
+        var surroundings = provider.GetRequiredService<ISurroundingsInspectionService>();
+        var stocks = provider.GetRequiredService<IStockInspectionService>();
         var descriptor = provider.GetRequiredService<DwarfAdapterDescriptor>();
         var status = provider.GetRequiredService<IDwarfAdapterStatusReader>().GetCurrentStatus();
 
         Assert.IsType<DfHackDwarfFortressAdapter>(adapter);
+        Assert.IsType<DfHackSurroundingsInspectionService>(surroundings);
+        Assert.IsType<DfHackStockInspectionService>(stocks);
         Assert.Equal(DwarfFortressAdapterType.DfHackProcess.ToString(), descriptor.AdapterType);
         Assert.Equal(DwarfFortressAdapterType.DfHackProcess.ToString(), status.AdapterType);
         Assert.True(status.IsConfigured);
@@ -225,10 +237,14 @@ public sealed class DfHackAdapterConfigurationTests
         using var provider = services.BuildServiceProvider();
 
         var adapter = provider.GetRequiredService<IDwarfFortressAdapter>();
+        var surroundings = provider.GetRequiredService<ISurroundingsInspectionService>();
+        var stocks = provider.GetRequiredService<IStockInspectionService>();
         var descriptor = provider.GetRequiredService<DwarfAdapterDescriptor>();
         var status = provider.GetRequiredService<IDwarfAdapterStatusReader>().GetCurrentStatus();
 
         Assert.IsType<DfHackDwarfFortressAdapter>(adapter);
+        Assert.IsType<DfHackSurroundingsInspectionService>(surroundings);
+        Assert.IsType<DfHackStockInspectionService>(stocks);
         Assert.Equal(DwarfFortressAdapterType.DfHackProcess.ToString(), descriptor.AdapterType);
         Assert.Equal(DwarfFortressAdapterType.DfHackProcess.ToString(), status.AdapterType);
         Assert.True(status.IsConfigured);

@@ -95,6 +95,35 @@ public class ArchitectureTests
     }
 
     [Fact]
+    public void StockInspectionPort_ExposesSingleBoundedCancellationAwareMethod()
+    {
+        var methods = typeof(IStockInspectionService).GetMethods();
+        var method = Assert.Single(methods);
+        Assert.Equal(nameof(IStockInspectionService.InspectStocksAsync), method.Name);
+
+        var parameters = method.GetParameters();
+        Assert.Collection(
+            parameters,
+                    parameter => Assert.Equal(typeof(string), parameter.ParameterType),
+                    parameter => Assert.Equal(typeof(CancellationToken), parameter.ParameterType));
+    }
+
+    [Fact]
+    public void SurroundingsInspectionPort_ExposesSingleSessionBoundedCancellationAwareMethod()
+    {
+        var methods = typeof(ISurroundingsInspectionService).GetMethods();
+        var method = Assert.Single(methods);
+        Assert.Equal(nameof(ISurroundingsInspectionService.InspectAroundAsync), method.Name);
+
+        var parameters = method.GetParameters();
+        Assert.Collection(
+            parameters,
+            parameter => Assert.Equal(typeof(DwarfId), parameter.ParameterType),
+            parameter => Assert.Equal(typeof(int), parameter.ParameterType),
+            parameter => Assert.Equal(typeof(CancellationToken), parameter.ParameterType));
+    }
+
+    [Fact]
     public void AgentTurnRequest_ExposesSessionBoundDwarfContext()
     {
         Assert.Equal(typeof(AgentSessionContext), typeof(AgentTurnRequest).GetProperty(nameof(AgentTurnRequest.Session))?.PropertyType);
@@ -154,7 +183,7 @@ public class ArchitectureTests
     {
         var values = Enum.GetNames<DfHackCommand>();
         Assert.Equal(
-            ["Diagnose", "ListDwarves", "GetDwarfSnapshot"],
+            ["Diagnose", "ListDwarves", "GetDwarfSnapshot", "GetDwarfSurroundings", "GetStockSummary"],
             values);
     }
 

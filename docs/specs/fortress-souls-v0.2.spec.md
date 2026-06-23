@@ -1,6 +1,6 @@
 # Fortress Souls v0.2 Product Specification
 
-Status: Draft  
+Status: Complete
 Date: 2026-06-21  
 Backlog: `docs/backlog/v0.2-backlog.md`  
 Related decision: `docs/decisions/adr-0007-agent-runtime-and-tool-loop.md`

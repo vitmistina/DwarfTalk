@@ -1,0 +1,26 @@
+{
+  "categories": {
+    "drinks": {
+      "exact": 60
+    },
+    "preparedFood": {
+      "exact": 0
+    },
+    "stone": {
+      "exact": 0
+    },
+    "wood": {
+      "exact": 3
+    }
+  },
+  "gameTime": {
+    "tick": 16801,
+    "year": 100
+  },
+  "provenance": {
+    "generatedBy": "fortress-souls/get-stock-summary",
+    "kind": "live-dfhack"
+  },
+  "schemaVersion": "fortress-souls-stock-summary.v0.2",
+  "warnings": []
+}

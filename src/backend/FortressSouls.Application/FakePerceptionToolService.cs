@@ -10,6 +10,8 @@ public sealed class FakePerceptionToolService
     public const string InspectStocksToolName = "inspect_stocks";
     public const string ListDwarvesToolName = "list_dwarves";
     public const string InspectDwarfToolName = "inspect_dwarf";
+    public const int DefaultLookAroundRadius = 1;
+    public const int MaxLookAroundRadius = 2;
 
     private static readonly AgentToolDefinition LookAroundDefinition = new(
         LookAroundToolName,
@@ -35,15 +37,29 @@ public sealed class FakePerceptionToolService
     {
         "dwarfId"
     };
-    private static readonly string[] StockCategoryOrder = ["drinks", "prepared_food", "wood", "stone"];
-
     private readonly DwarfQueryService _dwarfQueryService;
-    private readonly FakePerceptionFixtureSet _fixtures;
+    private readonly ISurroundingsInspectionService _surroundingsInspectionService;
+    private readonly IStockInspectionService _stockInspectionService;
 
     public FakePerceptionToolService(DwarfQueryService dwarfQueryService, FakePerceptionFixtureSet fixtures)
+        : this(
+            dwarfQueryService,
+            new FixtureSurroundingsInspectionService((fixtures ?? throw new ArgumentNullException(nameof(fixtures))).LookAround),
+            new FixtureStockInspectionService((fixtures ?? throw new ArgumentNullException(nameof(fixtures))).Stocks),
+            fixtures)
+    {
+    }
+
+    public FakePerceptionToolService(
+        DwarfQueryService dwarfQueryService,
+        ISurroundingsInspectionService surroundingsInspectionService,
+        IStockInspectionService stockInspectionService,
+        FakePerceptionFixtureSet fixtures)
     {
         _dwarfQueryService = dwarfQueryService ?? throw new ArgumentNullException(nameof(dwarfQueryService));
-        _fixtures = fixtures ?? throw new ArgumentNullException(nameof(fixtures));
+        _surroundingsInspectionService = surroundingsInspectionService ?? throw new ArgumentNullException(nameof(surroundingsInspectionService));
+        _stockInspectionService = stockInspectionService ?? throw new ArgumentNullException(nameof(stockInspectionService));
+        ArgumentNullException.ThrowIfNull(fixtures);
     }
 
     public IReadOnlyList<AgentToolRegistration> CreateRegistrations() =>
@@ -55,33 +71,63 @@ public sealed class FakePerceptionToolService
     ];
 
     private Task<AgentToolResult> ExecuteLookAroundAsync(AgentToolInvocation invocation, CancellationToken cancellationToken)
+        => ExecuteLookAroundCoreAsync(invocation, cancellationToken);
+
+    private async Task<AgentToolResult> ExecuteLookAroundCoreAsync(AgentToolInvocation invocation, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
         var radius = ParseLookAroundArguments(invocation);
-        var result = CreateLookAroundResult(radius);
+        LookAroundToolResult result;
+        try
+        {
+            result = await _surroundingsInspectionService.InspectAroundAsync(
+                invocation.Session.DwarfId,
+                radius,
+                cancellationToken);
+        }
+        catch (DwarfFortressDataException exception) when (exception.ErrorCode is DwarfFortressDataErrorCode.DfHackUnavailable
+            or DwarfFortressDataErrorCode.DfHackExecutableUnavailable
+            or DwarfFortressDataErrorCode.DfHackInvocationTimedOut
+            or DwarfFortressDataErrorCode.SourceUnavailable)
+        {
+            throw Unavailable(exception);
+        }
+        catch (DwarfFortressDataException exception)
+        {
+            throw InvalidData(exception);
+        }
 
-        return Task.FromResult(AgentToolResult.Create(invocation.Tool, result));
+        return AgentToolResult.Create(invocation.Tool, result);
     }
 
     private Task<AgentToolResult> ExecuteInspectStocksAsync(AgentToolInvocation invocation, CancellationToken cancellationToken)
+        => ExecuteInspectStocksCoreAsync(invocation, cancellationToken);
+
+    private async Task<AgentToolResult> ExecuteInspectStocksCoreAsync(AgentToolInvocation invocation, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
         var requestedCategory = ParseInspectStocksArguments(invocation);
-        ValidateInspectStocksFixture(_fixtures.Stocks);
-        var categories = string.Equals(requestedCategory, "all", StringComparison.Ordinal)
-            ? _fixtures.Stocks.Categories
-            : _fixtures.Stocks.Categories.Where(category => string.Equals(category.Category, requestedCategory, StringComparison.Ordinal)).ToArray();
 
-        var result = new InspectStocksToolResult(
-            SchemaVersion: _fixtures.Stocks.SchemaVersion,
-            GameTime: _fixtures.Stocks.GameTime,
-            RequestedCategory: requestedCategory,
-            Categories: categories.Select(category => new StockCategory(category.Category, category.ExactCount)).ToArray(),
-            Warnings: _fixtures.Stocks.Warnings);
+        InspectStocksToolResult result;
+        try
+        {
+            result = await _stockInspectionService.InspectStocksAsync(requestedCategory, cancellationToken);
+        }
+        catch (DwarfFortressDataException exception) when (exception.ErrorCode is DwarfFortressDataErrorCode.DfHackUnavailable
+            or DwarfFortressDataErrorCode.DfHackExecutableUnavailable
+            or DwarfFortressDataErrorCode.DfHackInvocationTimedOut
+            or DwarfFortressDataErrorCode.SourceUnavailable)
+        {
+            throw Unavailable(exception);
+        }
+        catch (DwarfFortressDataException exception)
+        {
+            throw InvalidData(exception);
+        }
 
-        return Task.FromResult(AgentToolResult.Create(invocation.Tool, result));
+        return AgentToolResult.Create(invocation.Tool, result);
     }
 
     private async Task<AgentToolResult> ExecuteListDwarvesAsync(AgentToolInvocation invocation, CancellationToken cancellationToken)
@@ -182,27 +228,6 @@ public sealed class FakePerceptionToolService
     private void ValidateInspectDwarfInvocation(AgentToolInvocation invocation) =>
         _ = ParseInspectDwarfArguments(invocation);
 
-    private LookAroundToolResult CreateLookAroundResult(int requestedRadius)
-    {
-        ValidateLookAroundFixture(_fixtures.LookAround);
-
-        if (requestedRadius != _fixtures.LookAround.Radius)
-        {
-            throw InvalidArguments();
-        }
-
-        return new LookAroundToolResult(
-            SchemaVersion: _fixtures.LookAround.SchemaVersion,
-            GameTime: _fixtures.LookAround.GameTime,
-            Bounds: new LookAroundBounds(
-                Radius: _fixtures.LookAround.Radius,
-                Width: (_fixtures.LookAround.Radius * 2) + 1,
-                Height: (_fixtures.LookAround.Radius * 2) + 1),
-            Cells: _fixtures.LookAround.Cells,
-            Legend: _fixtures.LookAround.Legend,
-            Warnings: _fixtures.LookAround.Warnings);
-    }
-
     private static int ParseLookAroundArguments(AgentToolInvocation invocation)
     {
         ArgumentNullException.ThrowIfNull(invocation);
@@ -216,10 +241,13 @@ public sealed class FakePerceptionToolService
 
         if (!invocation.Arguments.TryGetProperty("radius", out var radiusValue))
         {
-            return 1;
+            return DefaultLookAroundRadius;
         }
 
-        if (radiusValue.ValueKind != JsonValueKind.Number || !radiusValue.TryGetInt32(out var radius) || radius < 1 || radius > 1)
+        if (radiusValue.ValueKind != JsonValueKind.Number
+            || !radiusValue.TryGetInt32(out var radius)
+            || radius < DefaultLookAroundRadius
+            || radius > MaxLookAroundRadius)
         {
             throw InvalidArguments();
         }
@@ -232,16 +260,16 @@ public sealed class FakePerceptionToolService
         ArgumentNullException.ThrowIfNull(invocation);
 
         var category = ReadRequiredString(invocation.Arguments, "category");
-        var normalized = NormalizeToken(category);
         EnsureOnlyProperties(invocation.Arguments, InspectStocksArgumentNames);
 
-        if (!string.Equals(normalized, "all", StringComparison.Ordinal)
-            && !StockCategoryOrder.Contains(normalized, StringComparer.Ordinal))
+        try
         {
-            throw InvalidArguments();
+            return FixtureStockInspectionService.NormalizeRequestedCategory(category);
         }
-
-        return normalized;
+        catch (DwarfFortressDataException exception)
+        {
+            throw InvalidArguments(exception);
+        }
     }
 
     private static DwarfId ParseInspectDwarfArguments(AgentToolInvocation invocation)
@@ -259,124 +287,6 @@ public sealed class FakePerceptionToolService
         {
             throw InvalidArguments(exception);
         }
-    }
-
-    private static void ValidateLookAroundFixture(FakeLookAroundFixture fixture)
-    {
-        ArgumentNullException.ThrowIfNull(fixture);
-
-        if (string.IsNullOrWhiteSpace(fixture.SchemaVersion)
-            || fixture.Radius < 1
-            || fixture.Cells is null
-            || fixture.Legend is null
-            || fixture.Warnings is null)
-        {
-            throw InvalidData();
-        }
-
-        var expectedWidth = (fixture.Radius * 2) + 1;
-        var seenPositions = new HashSet<(int Dx, int Dy)>();
-        var visibleLegendEntries = new HashSet<string>(StringComparer.Ordinal);
-        foreach (var cell in fixture.Cells)
-        {
-            if (cell is null
-                || cell.Dx < -fixture.Radius
-                || cell.Dx > fixture.Radius
-                || cell.Dy < -fixture.Radius
-                || cell.Dy > fixture.Radius
-                || !seenPositions.Add((cell.Dx, cell.Dy)))
-            {
-                throw InvalidData();
-            }
-
-            var isHidden = string.Equals(cell.Visibility, "hidden", StringComparison.Ordinal);
-            var isVisible = string.Equals(cell.Visibility, "visible", StringComparison.Ordinal);
-            if (!isHidden && !isVisible)
-            {
-                throw InvalidData();
-            }
-
-            if (isHidden
-                && (cell.TerrainClass is not null
-                    || cell.Walkable is not null
-                    || cell.FeatureClass is not null
-                    || cell.UnitCount is not null))
-            {
-                throw InvalidData();
-            }
-
-            if (isVisible)
-            {
-                AddLegendEntry(visibleLegendEntries, cell.TerrainClass);
-                AddLegendEntry(visibleLegendEntries, cell.FeatureClass);
-            }
-        }
-
-        if (fixture.Cells.Count != expectedWidth * expectedWidth)
-        {
-            throw InvalidData();
-        }
-
-        var legendEntries = new HashSet<string>(StringComparer.Ordinal);
-        foreach (var entry in fixture.Legend)
-        {
-            if (!legendEntries.Add(NormalizeFixtureToken(entry)))
-            {
-                throw InvalidData();
-            }
-        }
-
-        if (!legendEntries.SetEquals(visibleLegendEntries))
-        {
-            throw InvalidData();
-        }
-    }
-
-    private static void ValidateInspectStocksFixture(FakeStockFixture fixture)
-    {
-        ArgumentNullException.ThrowIfNull(fixture);
-
-        if (string.IsNullOrWhiteSpace(fixture.SchemaVersion)
-            || fixture.Categories is null
-            || fixture.Warnings is null
-            || fixture.Categories.Count != StockCategoryOrder.Length)
-        {
-            throw InvalidData();
-        }
-
-        for (var index = 0; index < StockCategoryOrder.Length; index++)
-        {
-            var category = fixture.Categories[index];
-            if (category is null
-                || !string.Equals(NormalizeFixtureToken(category.Category), StockCategoryOrder[index], StringComparison.Ordinal)
-                || category.ExactCount < 0)
-            {
-                throw InvalidData();
-            }
-        }
-    }
-
-    private static void AddLegendEntry(ISet<string> legendEntries, string? value)
-    {
-        if (value is null)
-        {
-            return;
-        }
-
-        legendEntries.Add(NormalizeFixtureToken(value));
-    }
-
-    private static string NormalizeFixtureToken(string value)
-    {
-        ArgumentNullException.ThrowIfNull(value);
-
-        var normalized = value.Replace("\r\n", "\n", StringComparison.Ordinal).Replace('\r', '\n').Trim();
-        if (string.IsNullOrWhiteSpace(normalized) || normalized.Length > 64)
-        {
-            throw InvalidData();
-        }
-
-        return normalized;
     }
 
     private static void ValidateNoArguments(JsonElement arguments)
@@ -434,6 +344,9 @@ public sealed class FakePerceptionToolService
     private static AgentTurnException InvalidData(Exception? innerException = null) =>
         new(AgentTurnErrorCode.InvalidData, "The agent turn received invalid data.", innerException);
 
+    private static AgentTurnException Unavailable(Exception? innerException = null) =>
+        new(AgentTurnErrorCode.Unavailable, "The agent tool is unavailable.", innerException);
+
     private static AgentTurnException NotFound(Exception? innerException = null) =>
         new(AgentTurnErrorCode.NotFound, "The requested dwarf was not found.", innerException);
 }
@@ -446,18 +359,34 @@ public sealed record FakePerceptionFixtureSet(
         LookAround: new FakeLookAroundFixture(
             SchemaVersion: "fortress-souls.look-around-result.v0.2",
             GameTime: "125-03-12T08:15",
-            Radius: 1,
+            Radius: 2,
             Cells:
             [
+                new LookAroundCell(-2, -2, "hidden"),
+                new LookAroundCell(-1, -2, "visible", TerrainClass: "wall", Walkable: false),
+                new LookAroundCell(0, -2, "visible", TerrainClass: "wall", Walkable: false),
+                new LookAroundCell(1, -2, "visible", TerrainClass: "floor", Walkable: true),
+                new LookAroundCell(2, -2, "hidden"),
+                new LookAroundCell(-2, -1, "hidden"),
                 new LookAroundCell(-1, -1, "hidden"),
                 new LookAroundCell(0, -1, "visible", TerrainClass: "wall", Walkable: false),
                 new LookAroundCell(1, -1, "visible", TerrainClass: "floor", Walkable: true),
+                new LookAroundCell(2, -1, "visible", TerrainClass: "floor", Walkable: true),
+                new LookAroundCell(-2, 0, "visible", TerrainClass: "ramp", Walkable: true),
                 new LookAroundCell(-1, 0, "visible", TerrainClass: "ramp", Walkable: true),
                 new LookAroundCell(0, 0, "visible", TerrainClass: "floor", Walkable: true, UnitCount: 1),
                 new LookAroundCell(1, 0, "visible", TerrainClass: "floor", Walkable: true),
+                new LookAroundCell(2, 0, "hidden"),
+                new LookAroundCell(-2, 1, "visible", TerrainClass: "ramp", Walkable: true),
                 new LookAroundCell(-1, 1, "visible", TerrainClass: "ramp", Walkable: true),
                 new LookAroundCell(0, 1, "visible", TerrainClass: "building", Walkable: false, FeatureClass: "building"),
-                new LookAroundCell(1, 1, "visible", TerrainClass: "building", Walkable: false, FeatureClass: "building", UnitCount: 2)
+                new LookAroundCell(1, 1, "visible", TerrainClass: "building", Walkable: false, FeatureClass: "building", UnitCount: 2),
+                new LookAroundCell(2, 1, "hidden"),
+                new LookAroundCell(-2, 2, "hidden"),
+                new LookAroundCell(-1, 2, "hidden"),
+                new LookAroundCell(0, 2, "visible", TerrainClass: "floor", Walkable: true),
+                new LookAroundCell(1, 2, "hidden"),
+                new LookAroundCell(2, 2, "hidden")
             ],
             Legend: ["building", "floor", "ramp", "wall"],
             Warnings: Array.Empty<string>()),
@@ -510,15 +439,6 @@ public sealed record LookAroundCell(
     string? FeatureClass = null,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     int? UnitCount = null);
-
-public sealed record InspectStocksToolResult(
-    string SchemaVersion,
-    string? GameTime,
-    string RequestedCategory,
-    IReadOnlyList<StockCategory> Categories,
-    IReadOnlyList<string> Warnings);
-
-public sealed record StockCategory(string Category, int ExactCount);
 
 public sealed record ListDwarvesToolResult(
     string SchemaVersion,

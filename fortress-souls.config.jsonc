@@ -16,7 +16,7 @@
 
   "dwarfFortress": {
     // Supported adapter types: Fake | JsonFile | DfHackProcess
-    "adapterType": "DfHackProcess",
+    "adapterType": "Fake",
 
     // Used when adapterType is JsonFile.
     "jsonFile": {

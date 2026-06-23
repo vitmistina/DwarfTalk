@@ -30,6 +30,7 @@ describe("ChatPanel", () => {
         durationMs: 25,
         promptId: "prompt-abc",
       },
+      toolReceipts: [{ tool: "look_around", outcome: "success" }],
     }));
 
     render(
@@ -48,6 +49,9 @@ describe("ChatPanel", () => {
 
     expect(await screen.findByText("How is the mine?")).toBeInTheDocument();
     expect(await screen.findByText(/Keep the pick sharp/i)).toBeInTheDocument();
+    expect(screen.getByText("Perception")).toBeInTheDocument();
+    expect(screen.getByText("look_around")).toBeInTheDocument();
+    expect(screen.getByText("Success")).toBeInTheDocument();
     expect(screen.getByText(/Provider:/)).toBeInTheDocument();
     expect(messageInput).toHaveValue("");
     expect(createSession).toHaveBeenCalledWith("4101");
@@ -60,6 +64,7 @@ describe("ChatPanel", () => {
       dwarfId: string;
       assistantMessage: { role: "assistant"; text: string };
       diagnostics: { provider: string; model: string; durationMs: number; promptId: string };
+      toolReceipts: { tool: string; outcome: string }[];
     }>();
     const sendMessage = vi.fn(() => turn.promise);
 
@@ -91,6 +96,7 @@ describe("ChatPanel", () => {
         durationMs: 10,
         promptId: "prompt-def",
       },
+      toolReceipts: [],
     });
 
     expect(await screen.findByText("Still digging.")).toBeInTheDocument();
@@ -121,6 +127,8 @@ describe("ChatPanel", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("The chat provider is unavailable right now.");
     expect(screen.getByText("trace-chat-error")).toBeInTheDocument();
     expect(messageInput).toHaveValue("Do you need help?");
+    expect(screen.queryByText("Perception")).not.toBeInTheDocument();
+    expect(screen.queryByText("Success")).not.toBeInTheDocument();
   });
 
   it("prevents mixed history when dwarf identity changes mid-turn", async () => {
@@ -129,6 +137,7 @@ describe("ChatPanel", () => {
       dwarfId: string;
       assistantMessage: { role: "assistant"; text: string };
       diagnostics: { provider: string; model: string; durationMs: number; promptId: string };
+      toolReceipts: { tool: string; outcome: string }[];
     }>();
     const createSession = vi
       .fn()
@@ -171,6 +180,7 @@ describe("ChatPanel", () => {
         durationMs: 16,
         promptId: "prompt-old",
       },
+      toolReceipts: [],
     });
 
     await waitFor(() => {
@@ -190,6 +200,7 @@ describe("ChatPanel", () => {
       dwarfId: "4101",
       assistantMessage: { role: "assistant" as const, text: "Keyboard accepted." },
       diagnostics: { provider: "Fake", model: "fake-dwarf", durationMs: 9, promptId: "prompt-key" },
+      toolReceipts: [],
     }));
 
     render(
@@ -332,5 +343,32 @@ describe("ChatPanel", () => {
       await screen.findByText((content) => content.includes("<b>unsafe</b>") && content.includes("line two")),
     ).toBeInTheDocument();
     expect(container.querySelector("b")).toBeNull();
+  });
+
+  it("renders safe receipt outcomes without exposing raw arguments or results", async () => {
+    render(
+      <ChatPanel
+        selectedDwarfId="4101"
+        selectedDwarfName="Iden Torrentshade"
+        showDevelopmentPreview={false}
+        createSession={async () => ({ sessionId: "chat-00000001", dwarfId: "4101" })}
+        sendMessage={async () => ({
+          sessionId: "chat-00000001",
+          dwarfId: "4101",
+          assistantMessage: { role: "assistant" as const, text: "I could not inspect further." },
+          diagnostics: { provider: "Fake", model: "fake-dwarf", durationMs: 14, promptId: "prompt-budget" },
+          toolReceipts: [{ tool: "inspect_stocks", outcome: "budget_exhausted" }],
+        })}
+      />,
+    );
+
+    const messageInput = await screen.findByLabelText("Message");
+    fireEvent.change(messageInput, { target: { value: "How much wood do we have in stock?" } });
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
+
+    expect(await screen.findByText("inspect_stocks")).toBeInTheDocument();
+    expect(screen.getByText("Budget exhausted")).toBeInTheDocument();
+    expect(screen.queryByText("\"categories\"")).not.toBeInTheDocument();
+    expect(screen.queryByText("radius")).not.toBeInTheDocument();
   });
 });

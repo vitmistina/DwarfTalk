@@ -62,8 +62,11 @@ public sealed class PromptAssemblerTests
         Assert.Contains("TOOL_SCHEMAS_JSON:", result.PromptText, StringComparison.Ordinal);
         Assert.Contains(PromptContract.LookAroundArgumentsSchemaVersion, result.PromptText, StringComparison.Ordinal);
         Assert.Contains(PromptContract.LookAroundResultSchemaVersion, result.PromptText, StringComparison.Ordinal);
+        Assert.Contains("use look_around before answering when it is enabled", result.PromptText, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Do not answer current-state questions from guesswork", result.PromptText, StringComparison.Ordinal);
         Assert.Contains("Qualify conclusions when separate tool calls may reflect different game times.", result.PromptText, StringComparison.Ordinal);
-        Assert.DoesNotContain("inspect_stocks", result.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain(PromptContract.InspectStocksArgumentsSchemaVersion, result.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain(PromptContract.InspectStocksResultSchemaVersion, result.PromptText, StringComparison.Ordinal);
         Assert.DoesNotContain($"\"tool\":\"{FakePerceptionToolService.ListDwarvesToolName}\"", result.PromptText, StringComparison.Ordinal);
         Assert.DoesNotContain($"\"tool\":\"{FakePerceptionToolService.InspectDwarfToolName}\"", result.PromptText, StringComparison.Ordinal);
     }
@@ -97,7 +100,39 @@ public sealed class PromptAssemblerTests
         Assert.Contains(PromptContract.ListDwarvesResultSchemaVersion, result.PromptText, StringComparison.Ordinal);
         Assert.Contains(PromptContract.InspectDwarfArgumentsSchemaVersion, result.PromptText, StringComparison.Ordinal);
         Assert.Contains(PromptContract.InspectDwarfResultSchemaVersion, result.PromptText, StringComparison.Ordinal);
-        Assert.DoesNotContain("look_around", result.PromptText, StringComparison.Ordinal);
+        Assert.Contains("use list_dwarves and then inspect_dwarf before answering", result.PromptText, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(PromptContract.LookAroundArgumentsSchemaVersion, result.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain(PromptContract.LookAroundResultSchemaVersion, result.PromptText, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void AssembleAgentTurn_IncludesExactStockInspectionToolWhenEnabled()
+    {
+        var assembler = new PromptAssembler();
+
+        var result = assembler.AssembleAgentTurn(
+            new AgentPromptInputs(
+                Snapshot: CreateSyntheticSnapshot(),
+                Conversation: [],
+                PlayerMessage: "How much wood do we have in stock?",
+                EnabledTools:
+                [
+                    new PromptToolDefinition(
+                        FakePerceptionToolService.InspectStocksToolName,
+                        PromptContract.InspectStocksArgumentsSchemaVersion,
+                        PromptContract.InspectStocksResultSchemaVersion)
+                ]));
+
+        Assert.True(result.Succeeded);
+        Assert.NotNull(result.PromptText);
+        Assert.Contains("ENABLED_TOOLS: inspect_stocks", result.PromptText, StringComparison.Ordinal);
+        Assert.Contains(PromptContract.InspectStocksArgumentsSchemaVersion, result.PromptText, StringComparison.Ordinal);
+        Assert.Contains(PromptContract.InspectStocksResultSchemaVersion, result.PromptText, StringComparison.Ordinal);
+        Assert.Contains("use inspect_stocks before answering", result.PromptText, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(PromptContract.LookAroundArgumentsSchemaVersion, result.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain(PromptContract.LookAroundResultSchemaVersion, result.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain($"\"tool\":\"{FakePerceptionToolService.ListDwarvesToolName}\"", result.PromptText, StringComparison.Ordinal);
+        Assert.DoesNotContain($"\"tool\":\"{FakePerceptionToolService.InspectDwarfToolName}\"", result.PromptText, StringComparison.Ordinal);
     }
 
     [Fact]
